@@ -43,6 +43,13 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Vercel Serverless Fallbacks (Handles when Vercel automatically strips the /api prefix)
+app.use('/auth', authRoutes);
+app.use('/products', productRoutes);
+app.use('/cart', cartRoutes);
+app.use('/orders', orderRoutes);
+app.use('/admin', adminRoutes);
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({

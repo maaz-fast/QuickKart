@@ -55,7 +55,13 @@ app.get('/', (req, res) => {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📚 Swagger Docs at http://localhost:${PORT}/api-docs`);
-});
+
+// Only listen locally, Vercel Serverless Functions handle binding automatically
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📚 Swagger Docs at http://localhost:${PORT}/api-docs`);
+  });
+}
+
+module.exports = app;

@@ -3,19 +3,8 @@ import { NavLink } from 'react-router-dom';
 const AdminSidebar = ({ isOpen, onClose }) => {
   return (
     <aside className={`admin-sidebar ${isOpen ? 'mobile-open' : ''}`}>
-      <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="sidebar-header">
         <h3>Admin Portal</h3>
-        {/* Mobile close button */}
-        <button 
-          className="admin-close-btn"
-          onClick={onClose}
-          style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '5px' }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
       </div>
       <nav className="sidebar-nav">
         <NavLink 

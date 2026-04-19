@@ -1,4 +1,6 @@
+const mongoose = require('mongoose');
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -22,7 +24,17 @@ const getProducts = async (req, res, next) => {
     }
 
     if (category && category !== 'All') {
-      query.category = category;
+      if (mongoose.Types.ObjectId.isValid(category)) {
+        query.category = category;
+      } else {
+        const categoryDoc = await Category.findOne({ name: category });
+        if (categoryDoc) {
+          query.category = categoryDoc._id;
+        } else {
+          // If category name doesn't exist, return no products for this filter
+          query.category = new mongoose.Types.ObjectId(); 
+        }
+      }
     }
 
     if (minPrice || maxPrice) {
@@ -38,6 +50,7 @@ const getProducts = async (req, res, next) => {
 
     // 3. Fetch Products
     const products = await Product.find(query)
+      .populate('category')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(Number(limit));
@@ -69,7 +82,7 @@ const getProductById = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      product,
+      product: await product.populate('category'),
     });
   } catch (error) {
     // Handle invalid ObjectId

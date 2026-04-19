@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 // Skeleton card shown while loading
 const SkeletonCard = () => (
@@ -14,6 +15,7 @@ const SkeletonCard = () => (
 );
 
 const HomePage = () => {
+  const { isAdmin } = useAuth();
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
@@ -22,7 +24,7 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [categories, setCategories] = useState(['All']);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [addingId, setAddingId] = useState(null);
@@ -35,7 +37,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const { data } = await api.get('/products/categories');
+        const { data } = await api.get('/products/categories?usedOnly=true');
         setCategories(data.categories);
       } catch (err) {
         console.error('Failed to fetch categories');
@@ -52,8 +54,8 @@ const HomePage = () => {
         setError('');
         
         let url = `/products?page=${page}&limit=8`;
-        if (search) url += `&search=${search}`;
-        if (category !== 'All') url += `&category=${category}`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
+        if (category !== 'All') url += `&category=${encodeURIComponent(category)}`;
         if (minPrice) url += `&minPrice=${minPrice}`;
         if (maxPrice) url += `&maxPrice=${maxPrice}`;
 
@@ -174,14 +176,21 @@ const HomePage = () => {
         </div>
 
         <div className="category-tabs" data-testid="category-tabs">
+          <button
+            className={`category-tab ${category === 'All' ? 'active' : ''}`}
+            onClick={() => { setCategory('All'); setPage(1); }}
+            data-testid="category-tab-all"
+          >
+            All
+          </button>
           {categories.map((cat) => (
             <button
-              key={cat}
-              className={`category-tab ${category === cat ? 'active' : ''}`}
-              onClick={() => { setCategory(cat); setPage(1); }}
-              data-testid={`category-tab-${cat.toLowerCase()}`}
+              key={cat._id}
+              className={`category-tab ${category === cat._id ? 'active' : ''}`}
+              onClick={() => { setCategory(cat._id); setPage(1); }}
+              data-testid={`category-tab-${cat.name.toLowerCase()}`}
             >
-              {cat}
+              {cat.name}
             </button>
           ))}
         </div>
@@ -244,7 +253,7 @@ const HomePage = () => {
                 </div>
 
                 <div className="product-card-body">
-                  <p className="product-card-category">{product.category}</p>
+                  <p className="product-card-category">{product.category?.name || 'Uncategorized'}</p>
                   <h3 className="product-card-name" data-testid={`product-name-${product._id}`}>
                     {product.name}
                   </h3>
@@ -254,14 +263,16 @@ const HomePage = () => {
                     <span className="product-card-price" data-testid={`product-price-${product._id}`}>
                       ${product.price.toFixed(2)}
                     </span>
-                    <button
-                      className={`btn ${successId === product._id ? 'btn-success' : 'btn-primary'} btn-sm`}
-                      onClick={(e) => handleAddToCart(e, product._id)}
-                      disabled={addingId === product._id}
-                      data-testid={`add-to-cart-button-${product._id}`}
-                    >
-                      {addingId === product._id ? '...' : successId === product._id ? '✓ Added' : '+ Cart'}
-                    </button>
+                    {!isAdmin && (
+                      <button
+                        className={`btn ${successId === product._id ? 'btn-success' : 'btn-primary'} btn-sm`}
+                        onClick={(e) => handleAddToCart(e, product._id)}
+                        disabled={addingId === product._id}
+                        data-testid={`add-to-cart-button-${product._id}`}
+                      >
+                        {addingId === product._id ? '...' : successId === product._id ? '✓ Added' : '+ Cart'}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

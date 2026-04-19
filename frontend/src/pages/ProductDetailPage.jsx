@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import BrandedLoader from '../components/common/BrandedLoader';
 
 const ProductDetailPage = () => {
+  const { isAdmin } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -48,23 +51,8 @@ const ProductDetailPage = () => {
     setQuantity((prev) => Math.max(1, Math.min(prev + delta, product?.stock || 99)));
   };
 
-  // Loading skeleton
-  if (loading) {
-    return (
-      <div className="container product-detail-page">
-        <div className="product-detail-grid">
-          <div className="skeleton" style={{ height: '420px', borderRadius: '20px' }} />
-          <div>
-            <div className="skeleton skeleton-text" style={{ height: '20px', width: '40%', marginBottom: '16px' }} />
-            <div className="skeleton skeleton-text" style={{ height: '40px', marginBottom: '12px' }} />
-            <div className="skeleton skeleton-text" style={{ height: '40px', width: '50%', marginBottom: '20px' }} />
-            <div className="skeleton skeleton-text" style={{ height: '90px', marginBottom: '24px' }} />
-            <div className="skeleton skeleton-text" style={{ height: '52px', width: '60%' }} />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Loading state
+  if (loading) return <BrandedLoader fullPage message="Analyzing Product Details..." />;
 
   // Error state
   if (error) {
@@ -115,7 +103,7 @@ const ProductDetailPage = () => {
         {/* Info */}
         <div className="product-detail-info" data-testid="product-detail-info">
           <p className="product-detail-category" data-testid="product-detail-category">
-            {product.category}
+            {product.category?.name || 'Uncategorized'}
           </p>
 
           <h1 className="product-detail-name" data-testid="product-detail-name">
@@ -136,55 +124,66 @@ const ProductDetailPage = () => {
           </div>
 
           {/* Quantity selector */}
-          <div className="quantity-selector" data-testid="quantity-selector">
-            <span className="qty-label">Quantity</span>
-            <div className="qty-controls">
-              <button
-                className="qty-btn"
-                onClick={() => handleQtyChange(-1)}
-                disabled={quantity <= 1}
-                data-testid="quantity-decrease-button"
-                aria-label="Decrease quantity"
-              >
-                −
-              </button>
-              <span className="qty-value" data-testid="quantity-display">
-                {quantity}
-              </span>
-              <button
-                className="qty-btn"
-                onClick={() => handleQtyChange(1)}
-                disabled={quantity >= product.stock}
-                data-testid="quantity-increase-button"
-                aria-label="Increase quantity"
-              >
-                +
-              </button>
+          {!isAdmin && (
+            <div className="quantity-selector" data-testid="quantity-selector">
+              <span className="qty-label">Quantity</span>
+              <div className="qty-controls">
+                <button
+                  className="qty-btn"
+                  onClick={() => handleQtyChange(-1)}
+                  disabled={quantity <= 1}
+                  data-testid="quantity-decrease-button"
+                  aria-label="Decrease quantity"
+                >
+                  −
+                </button>
+                <span className="qty-value" data-testid="quantity-display">
+                  {quantity}
+                </span>
+                <button
+                  className="qty-btn"
+                  onClick={() => handleQtyChange(1)}
+                  disabled={quantity >= product.stock}
+                  data-testid="quantity-increase-button"
+                  aria-label="Increase quantity"
+                >
+                  +
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Action Buttons */}
           <div className="product-detail-actions">
-            <button
-              className={`btn ${added ? 'btn-success' : 'btn-primary'} btn-lg`}
-              onClick={handleAddToCart}
-              disabled={adding || product.stock === 0}
-              data-testid="add-to-cart-button"
-            >
-              {adding
-                ? '⏳ Adding...'
-                : added
-                ? '✓ Added to Cart!'
-                : '🛒 Add to Cart'}
-            </button>
+            {!isAdmin ? (
+              <>
+                <button
+                  className={`btn ${added ? 'btn-success' : 'btn-primary'} btn-lg`}
+                  onClick={handleAddToCart}
+                  disabled={adding || product.stock === 0}
+                  data-testid="add-to-cart-button"
+                >
+                  {adding
+                    ? '⏳ Adding...'
+                    : added
+                    ? '✓ Added to Cart!'
+                    : '🛒 Add to Cart'}
+                </button>
 
-            <button
-              className="btn btn-outline"
-              onClick={() => navigate('/cart')}
-              data-testid="view-cart-button"
-            >
-              View Cart
-            </button>
+                <button
+                  className="btn btn-outline"
+                  onClick={() => navigate('/cart')}
+                  data-testid="view-cart-button"
+                >
+                  View Cart
+                </button>
+              </>
+            ) : (
+              <div style={{ padding: '16px', background: 'var(--bg-hover)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                <p style={{ color: 'var(--primary)', fontWeight: '600' }}>Admin View</p>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>You are viewing this product as an administrator. Purchase features are disabled for your role.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

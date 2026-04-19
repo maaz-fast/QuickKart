@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import BrandedLoader from '../components/common/BrandedLoader';
 
 const CartPage = () => {
   const { cartItems, cartTotal, cartCount, loading, removeFromCart } = useCart();
@@ -10,28 +11,7 @@ const CartPage = () => {
   };
 
   // Loading state
-  if (loading) {
-    return (
-      <div className="container cart-page">
-        <div className="page-header">
-          <h1>Your Cart</h1>
-        </div>
-        <div className="cart-layout">
-          <div className="cart-items-list">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="cart-item-card">
-                <div className="skeleton" style={{ width: 80, height: 80, borderRadius: '12px', flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <div className="skeleton skeleton-text" style={{ height: 16, width: '60%' }} />
-                  <div className="skeleton skeleton-text" style={{ height: 14, width: '30%', marginTop: 8 }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <BrandedLoader fullPage message="Synchronizing Your Cart..." />;
 
   // Empty cart
   if (!loading && cartItems.length === 0) {

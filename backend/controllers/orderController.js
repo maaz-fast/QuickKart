@@ -73,8 +73,8 @@ const getOrderById = async (req, res, next) => {
       throw new Error('Order not found');
     }
 
-    // Authorization check: ensure user owns the order
-    if (order.user._id.toString() !== req.user._id.toString()) {
+    // Authorization check: ensure user owns the order OR is an admin
+    if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       res.status(403);
       throw new Error('Not authorized to view this order');
     }

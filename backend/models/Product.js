@@ -22,9 +22,9 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Product image URL is required'],
     },
     category: {
-      type: String,
-      default: 'General',
-      trim: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
     },
     stock: {
       type: Number,

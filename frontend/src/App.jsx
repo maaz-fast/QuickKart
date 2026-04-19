@@ -3,7 +3,9 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import Navbar from './components/Navbar';
+import AdminLayout from './components/AdminLayout';
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -16,6 +18,14 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrdersPage from './pages/OrdersPage';
 import OrderDetailsPage from './pages/OrderDetailsPage';
+
+// Admin Pages
+import AdminDashboard from './pages/AdminDashboard';
+import AdminProductList from './pages/AdminProductList';
+import AdminProductForm from './pages/AdminProductForm';
+import AdminCategoryList from './pages/AdminCategoryList';
+import AdminOrderList from './pages/AdminOrderList';
+import AdminUserList from './pages/AdminUserList';
 
 function App() {
   return (
@@ -82,6 +92,19 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+
+                {/* Admin Routes */}
+                <Route element={<AdminRoute />}>
+                  <Route element={<AdminLayout />}>
+                    <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                    <Route path="/admin/products" element={<AdminProductList />} />
+                    <Route path="/admin/products/add" element={<AdminProductForm />} />
+                    <Route path="/admin/products/edit/:id" element={<AdminProductForm />} />
+                    <Route path="/admin/categories" element={<AdminCategoryList />} />
+                    <Route path="/admin/orders" element={<AdminOrderList />} />
+                    <Route path="/admin/users" element={<AdminUserList />} />
+                  </Route>
+                </Route>
 
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" replace />} />

@@ -4,13 +4,13 @@ A fully functional mini e-commerce web application built with MongoDB, Express, 
 
 ## 🚀 Features
 
-- **Authentication**: JWT-based login, signup, and forgot/reset password flow.
-- **Product Management**: Dynamic product listing with search, category filtering, and detailed views.
-- **Cart System**: Real-time cart updates, quantity management, and subtotal calculations.
-- **Checkout**: Multi-step checkout form with real-time validation and order simulation.
-- **API Documentation**: Interactive Swagger/OpenAPI 3.0 docs at `/api-docs`.
+- **Storefront & Admin Portals**: High-fidelity, mobile-responsive e-commerce platform with a dedicated administrative dashboard.
+- **Branded Design System**: Modern dark-mode aesthetic featuring glassmorphism, dynamic animations, and a custom branded loading experience.
+- **Authentication & RBAC**: JWT-based authentication with Role-Based Access Control restricting admin features from customers.
+- **Product & Cart Control**: Dynamic catalog fetching, real-time cart synchronization, and contextual empty states.
+- **Order Management**: Multi-step checkout, real-time status tracking, and global order management for administrators.
+- **API Documentation**: Comprehensive, 24-endpoint interactive Swagger/OpenAPI 3.0 docs available at `/api-docs`.
 - **Automation Ready**: Every interactive element is tagged with `data-testid` for Selenium/Playwright/Cypress.
-- **Design**: Modern dark-mode aesthetic with glassmorphism, gradients, and micro-animations.
 
 ---
 
@@ -20,22 +20,20 @@ A fully functional mini e-commerce web application built with MongoDB, Express, 
 - Node.js (v16+)
 - MongoDB Atlas account (connection string already configured in `.env`)
 
-### 2. Backend Setup
-```bash
-cd backend
-npm install
-npm dev
-```
-- Server runs at: `http://localhost:5000`
-- Swagger Docs: `http://localhost:5000/api-docs`
+### 2. Global Setup (New!)
+I have implemented a **Master Launch Script** using `concurrently` so you don't need to open multiple terminals.
 
-### 3. Frontend Setup
 ```bash
-cd frontend
-npm install
+# 1. Install dependencies for BOTH backend and frontend
+npm run install-all
+
+# 2. Start BOTH servers simultaneously
 npm run dev
 ```
-- App runs at: `http://localhost:5173` (default Vite port)
+
+- **Frontend App**: `http://localhost:5173`
+- **Backend API**: `http://localhost:5000`
+- **Swagger Docs**: `http://localhost:5000/api-docs`
 
 ---
 

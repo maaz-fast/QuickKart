@@ -16,7 +16,7 @@ const { protect } = require('../middleware/authMiddleware');
 
 /**
  * @swagger
- * /orders:
+ * /api/orders:
  *   post:
  *     summary: Create a new order
  *     tags: [Orders]
@@ -67,7 +67,7 @@ router.post('/', protect, createOrder);
 
 /**
  * @swagger
- * /orders/my-orders:
+ * /api/orders/my-orders:
  *   get:
  *     summary: Get logged in user's order history
  *     tags: [Orders]
@@ -81,7 +81,7 @@ router.get('/my-orders', protect, getMyOrders);
 
 /**
  * @swagger
- * /orders/{id}:
+ * /api/orders/{id}:
  *   get:
  *     summary: Get order details by ID
  *     tags: [Orders]

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { getProducts, getProductById, getCategories } = require('../controllers/productController');
+const { getProducts, getProductById } = require('../controllers/productController');
+const { getCategories } = require('../controllers/categoryController');
 
 /**
  * @swagger
@@ -48,7 +49,35 @@ const { getProducts, getProductById, getCategories } = require('../controllers/p
  *                         type: integer
  */
 router.get('/', getProducts);
+/**
+ * @swagger
+ * /api/products/categories:
+ *   get:
+ *     summary: Get all unique product categories
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: List of categories
+ */
 router.get('/categories', getCategories);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Get single product details by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Detailed product object
+ *       404:
+ *         description: Product not found
+ */
 router.get('/:id', getProductById);
 
 module.exports = router;

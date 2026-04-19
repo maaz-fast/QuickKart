@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import BrandedLoader from '../components/common/BrandedLoader';
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -34,18 +35,7 @@ const OrdersPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="container" style={{ padding: '40px 0' }}>
-        <div className="skeleton-text" style={{ width: '200px', height: '32px' }} />
-        <div style={{ marginTop: '24px' }}>
-          {[1, 2, 3].map(i => (
-            <div key={i} className="skeleton" style={{ height: '80px', marginBottom: '12px' }} />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <BrandedLoader fullPage message="Retrieving Purchase History..." />;
 
   if (orders.length === 0) {
     return (

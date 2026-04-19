@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import BrandedLoader from '../components/common/BrandedLoader';
 
 const OrderDetailsPage = () => {
   const { id } = useParams();
@@ -23,7 +24,7 @@ const OrderDetailsPage = () => {
     fetchOrder();
   }, [id]);
 
-  if (loading) return <div className="container" style={{ padding: '40px' }}><div className="spinner" /></div>;
+  if (loading) return <BrandedLoader fullPage message="Reviewing Shipment Details..." />;
   if (error) return <div className="container"><div className="alert alert-error">{error}</div></div>;
   if (!order) return <div className="container">Order not found.</div>;
 

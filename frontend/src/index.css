@@ -95,7 +95,7 @@ button { cursor: pointer; font-family: inherit; }
 
 .main-content {
   flex: 1;
-  padding-top: 70px; /* offset for fixed navbar */
+  padding-top: 94px; /* offset for fixed navbar + breathing room */
 }
 
 .container {

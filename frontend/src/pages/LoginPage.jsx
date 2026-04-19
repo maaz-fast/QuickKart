@@ -30,7 +30,12 @@ const LoginPage = () => {
       setLoading(true);
       const { data } = await api.post('/auth/login', { email, password });
       login(data.user, data.token);
-      navigate('/', { replace: true });
+      
+      if (data.user.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {

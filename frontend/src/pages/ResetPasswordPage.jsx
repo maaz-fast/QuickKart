@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { toast } from 'react-toastify';
 
 const ResetPasswordPage = () => {
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -28,36 +29,40 @@ const ResetPasswordPage = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError('');
+    setErrors({ ...errors, [e.target.name]: '' });
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.password) newErrors.password = 'Password is required';
+    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+
+    if (!formData.confirmPassword) newErrors.confirmPassword = 'Confirm your new password';
+    else if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     const { password, confirmPassword } = formData;
-
-    if (!password || !confirmPassword) {
-      setError('Please fill in both password fields.');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      return;
-    }
 
     try {
       setLoading(true);
       await api.post('/auth/reset-password', { email, password, confirmPassword });
       setSuccess(true);
+      toast.success('Password reset successfully!');
       // Redirect to login after 2.5 seconds
       setTimeout(() => navigate('/login', { replace: true }), 2500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to reset password. Try again.');
+      toast.error(err.response?.data?.message || 'Failed to reset password. Try again.');
     } finally {
       setLoading(false);
     }
@@ -89,13 +94,6 @@ const ResetPasswordPage = () => {
           Setting new password for <strong style={{ color: 'var(--primary-light)' }}>{email}</strong>
         </p>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="alert alert-error" data-testid="reset-password-error-message">
-            ⚠️ {error}
-          </div>
-        )}
-
         {/* Form */}
         <form onSubmit={handleSubmit} data-testid="reset-password-form" noValidate>
           <div className="form-group">
@@ -108,6 +106,7 @@ const ResetPasswordPage = () => {
                 placeholder="Min. 6 characters"
                 value={formData.password}
                 onChange={handleChange}
+                className={errors.password ? 'input-error' : ''}
                 data-testid="new-password-input"
                 autoComplete="new-password"
                 autoFocus
@@ -122,6 +121,7 @@ const ResetPasswordPage = () => {
                 {showPassword ? '👁️' : '🫣'}
               </button>
             </div>
+            {errors.password && <span className="field-error">{errors.password}</span>}
           </div>
 
           <div className="form-group">
@@ -134,6 +134,7 @@ const ResetPasswordPage = () => {
                 placeholder="Repeat new password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                className={errors.confirmPassword ? 'input-error' : ''}
                 data-testid="confirm-new-password-input"
                 autoComplete="new-password"
               />
@@ -147,6 +148,7 @@ const ResetPasswordPage = () => {
                 {showConfirmPassword ? '👁️' : '🫣'}
               </button>
             </div>
+            {errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
           </div>
 
           <button

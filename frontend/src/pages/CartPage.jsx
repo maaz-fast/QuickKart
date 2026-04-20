@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { toast } from 'react-toastify';
 import BrandedLoader from '../components/common/BrandedLoader';
 
 const CartPage = () => {
@@ -7,7 +8,12 @@ const CartPage = () => {
   const navigate = useNavigate();
 
   const handleRemove = async (cartItemId, itemName) => {
-    await removeFromCart(cartItemId);
+    const result = await removeFromCart(cartItemId);
+    if (result.success) {
+      toast.info('Item removed from cart');
+    } else {
+      toast.error(result.message || 'Failed to remove item');
+    }
   };
 
   // Loading state

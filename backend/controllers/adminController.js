@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const User = require('../models/User');
+const { createNotification } = require('../utils/notificationService');
 
 // @desc    Get dashboard metrics and chart data
 // @route   GET /api/admin/dashboard
@@ -129,6 +130,13 @@ const updateOrderStatus = async (req, res, next) => {
 
     order.status = status;
     const updatedOrder = await order.save();
+
+    // Notify the user about the status update
+    await createNotification(
+      updatedOrder.user,
+      `Your order status has been updated to ${status}`,
+      'order'
+    );
 
     res.status(200).json({ success: true, order: updatedOrder });
   } catch (error) {

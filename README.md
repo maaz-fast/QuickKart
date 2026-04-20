@@ -8,6 +8,8 @@ A fully functional mini e-commerce web application built with MongoDB, Express, 
 - **Branded Design System**: Modern dark-mode aesthetic featuring glassmorphism, dynamic animations, and a custom branded loading experience.
 - **Authentication & RBAC**: JWT-based authentication with Role-Based Access Control restricting admin features from customers.
 - **Product & Cart Control**: Dynamic catalog fetching, real-time cart synchronization, and contextual empty states.
+- **Wishlist Management**: Save products for later with interactive heart icons.
+- **In-App Notifications**: Real-time background polling for user events and administrative broadcast alerts.
 - **Order Management**: Multi-step checkout, real-time status tracking, and global order management for administrators.
 - **API Documentation**: Comprehensive, 24-endpoint interactive Swagger/OpenAPI 3.0 docs available at `/api-docs`.
 - **Automation Ready**: Every interactive element is tagged with `data-testid` for Selenium/Playwright/Cypress.
@@ -48,7 +50,7 @@ npm run dev
 
 ### Frontend (`/frontend`)
 - `src/api/`: Axios configuration with interceptors
-- `src/context/`: Auth and Cart state management (Context API)
+- `src/context/`: Auth, Cart, Wishlist, and Notification state management (Context API)
 - `src/pages/`: All UI pages (Login, Home, Cart, etc.)
 - `src/components/`: Reusable components (Navbar, ProtectedRoute)
 - `src/index.css`: Global design system and animations

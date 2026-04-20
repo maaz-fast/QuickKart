@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
+const { createNotification, notifyAdmins } = require('../utils/notificationService');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -35,6 +36,10 @@ const createOrder = async (req, res, next) => {
 
     // Clear user's cart in DB after successful order
     await Cart.deleteMany({ userId: req.user._id });
+
+    // Notify User and Admins
+    await createNotification(req.user._id, 'Your order has been placed successfully', 'order');
+    await notifyAdmins(`New order received from ${req.user.name || req.user.email}`, 'order');
 
     res.status(201).json({
       success: true,

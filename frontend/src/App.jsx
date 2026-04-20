@@ -1,11 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
+import { NotificationProvider } from './context/NotificationContext';
 import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import Navbar from './components/Navbar';
 import AdminLayout from './components/AdminLayout';
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -18,6 +23,10 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrdersPage from './pages/OrdersPage';
 import OrderDetailsPage from './pages/OrderDetailsPage';
+import ProfilePage from './pages/ProfilePage';
+import WishlistPage from './pages/WishlistPage';
+import NotificationsPage from './pages/NotificationsPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 // Admin Pages
 import AdminDashboard from './pages/AdminDashboard';
@@ -33,7 +42,10 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <CartProvider>
-            <div className="app-wrapper">
+            <WishlistProvider>
+              <NotificationProvider>
+                <div className="app-wrapper">
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
             <Navbar />
             <main className="main-content">
               <Routes>
@@ -92,6 +104,30 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <ProfilePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/wishlist"
+                  element={
+                    <ProtectedRoute>
+                      <WishlistPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/notifications"
+                  element={
+                    <ProtectedRoute>
+                      <NotificationsPage />
+                    </ProtectedRoute>
+                  }
+                />
 
                 {/* Admin Routes */}
                 <Route element={<AdminRoute />}>
@@ -107,10 +143,12 @@ function App() {
                 </Route>
 
                 {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </main>
           </div>
+              </NotificationProvider>
+            </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </ThemeProvider>

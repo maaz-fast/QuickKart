@@ -1,35 +1,42 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { toast } from 'react-toastify';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
+  const validate = () => {
+    const newErrors = {};
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    
+    if (!email.trim()) newErrors.email = 'Please enter your email address';
+    else if (!emailRegex.test(email)) newErrors.email = 'Please enter a valid email address';
+    
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email.trim()) {
-      setError('Please enter your email address.');
-      return;
-    }
-
-    const emailRegex = /^\S+@\S+\.\S+$/;
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address.');
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
     try {
       setLoading(true);
       await api.post('/auth/forgot-password', { email });
+      toast.success('Email verified successfully!');
       // Navigate to reset page carrying the email as state
       navigate('/reset-password', { state: { email } });
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong. Try again.');
+      toast.error(err.response?.data?.message || 'Something went wrong. Try again.');
     } finally {
       setLoading(false);
     }
@@ -44,12 +51,9 @@ const ForgotPasswordPage = () => {
           Enter your registered email and we&apos;ll allow you to reset your password
         </p>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="alert alert-error" data-testid="forgot-password-error-message">
-            ⚠️ {error}
-          </div>
-        )}
+        <p className="subtitle">
+          Enter your registered email and we&apos;ll allow you to reset your password
+        </p>
 
         {/* Form */}
         <form onSubmit={handleSubmit} data-testid="forgot-password-form" noValidate>
@@ -63,12 +67,14 @@ const ForgotPasswordPage = () => {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                setError('');
+                setErrors({ ...errors, email: '' });
               }}
+              className={errors.email ? 'input-error' : ''}
               data-testid="email-input"
               autoComplete="email"
               autoFocus
             />
+            {errors.email && <span className="field-error">{errors.email}</span>}
           </div>
 
           <button

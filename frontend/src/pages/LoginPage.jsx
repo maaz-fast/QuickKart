@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
+import api from '../api/axiosConfig';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -14,17 +15,26 @@ const LoginPage = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError('');
+    setErrors({ ...errors, [e.target.name]: '' });
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    if (!formData.password) newErrors.password = 'Password is required';
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, password } = formData;
-
-    if (!email || !password) {
-      setError('Please fill in all fields.');
+    const validationErrors = validate();
+    
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
+
+    const { email, password } = formData;
 
     try {
       setLoading(true);
@@ -32,12 +42,14 @@ const LoginPage = () => {
       login(data.user, data.token);
       
       if (data.user.role === 'admin') {
+        toast.success(`Welcome back, Admin ${data.user.name.split(' ')[0]}!`);
         navigate('/admin/dashboard', { replace: true });
       } else {
+        toast.success(`Welcome back, ${data.user.name.split(' ')[0]}!`);
         navigate('/', { replace: true });
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      toast.error(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -50,13 +62,6 @@ const LoginPage = () => {
         <h1>Welcome back 👋</h1>
         <p className="subtitle">Sign in to continue shopping on QuickKart</p>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="alert alert-error" data-testid="login-error-message">
-            ⚠️ {error}
-          </div>
-        )}
-
         {/* Form */}
         <form onSubmit={handleSubmit} data-testid="login-form" noValidate>
           <div className="form-group">
@@ -68,10 +73,12 @@ const LoginPage = () => {
               placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
+              className={errors.email ? 'input-error' : ''}
               data-testid="email-input"
               autoComplete="email"
               autoFocus
             />
+            {errors.email && <span className="field-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
@@ -84,6 +91,7 @@ const LoginPage = () => {
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
+                className={errors.password ? 'input-error' : ''}
                 data-testid="password-input"
                 autoComplete="current-password"
               />
@@ -97,6 +105,7 @@ const LoginPage = () => {
                 {showPassword ? '👁️' : '🫣'}
               </button>
             </div>
+            {errors.password && <span className="field-error">{errors.password}</span>}
           </div>
 
           <div className="auth-extras">

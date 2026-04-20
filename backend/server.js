@@ -16,6 +16,9 @@ const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
+const userRoutes = require('./routes/userRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 // Error handler middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -42,6 +45,9 @@ app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Vercel Serverless Fallbacks (Handles when Vercel automatically strips the /api prefix)
 app.use('/auth', authRoutes);
@@ -49,6 +55,8 @@ app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
 app.use('/admin', adminRoutes);
+app.use('/wishlist', wishlistRoutes);
+app.use('/users', userRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

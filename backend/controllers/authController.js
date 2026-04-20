@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { notifyAdmins } = require('../utils/notificationService');
 
 // Generate JWT token
 const generateToken = (id) => {
@@ -28,6 +29,9 @@ const signup = async (req, res, next) => {
 
     // Create user (password is hashed via pre-save hook)
     const user = await User.create({ name, email, password });
+
+    // Notify Admins
+    await notifyAdmins(`New user registered: ${email}`, 'user');
 
     res.status(201).json({
       success: true,

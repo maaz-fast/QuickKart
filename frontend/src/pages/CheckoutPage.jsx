@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosConfig';
+import { toast } from 'react-toastify';
 
 const CheckoutPage = () => {
   const { cartItems, cartTotal, fetchCart } = useCart();
@@ -135,9 +136,10 @@ const CheckoutPage = () => {
 
       setCreatedOrderId(data.order._id);
       setOrderPlaced(true);
+      toast.success('Order placed successfully!');
       await fetchCart(); // Refresh cart (will be empty)
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to place order. Try again.');
+      toast.error(err.response?.data?.message || 'Failed to place order. Try again.');
     } finally {
       setSubmitting(false);
     }

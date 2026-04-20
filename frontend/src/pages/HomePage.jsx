@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
+import { toast } from 'react-toastify';
 
 // Skeleton card shown while loading
 const SkeletonCard = () => (
@@ -29,8 +31,10 @@ const HomePage = () => {
   const [error, setError] = useState('');
   const [addingId, setAddingId] = useState(null);
   const [successId, setSuccessId] = useState(null);
+  const [addingWishlistId, setAddingWishlistId] = useState(null);
 
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const navigate = useNavigate();
 
   // Fetch unique categories once
@@ -86,8 +90,18 @@ const HomePage = () => {
 
     if (result.success) {
       setSuccessId(productId);
+      toast.success('Added to cart!');
       setTimeout(() => setSuccessId(null), 1500);
+    } else {
+      toast.error(result.message || 'Failed to add to cart');
     }
+  };
+
+  const handleAddToWishlist = async (e, productId) => {
+    e.stopPropagation();
+    setAddingWishlistId(productId);
+    await toggleWishlist(productId);
+    setAddingWishlistId(null);
   };
 
   const handlePageChange = (newPage) => {
@@ -264,14 +278,38 @@ const HomePage = () => {
                       ${product.price.toFixed(2)}
                     </span>
                     {!isAdmin && (
-                      <button
-                        className={`btn ${successId === product._id ? 'btn-success' : 'btn-primary'} btn-sm`}
-                        onClick={(e) => handleAddToCart(e, product._id)}
-                        disabled={addingId === product._id}
-                        data-testid={`add-to-cart-button-${product._id}`}
-                      >
-                        {addingId === product._id ? '...' : successId === product._id ? '✓ Added' : '+ Cart'}
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          className="btn btn-outline btn-sm"
+                          onClick={(e) => handleAddToWishlist(e, product._id)}
+                          disabled={addingWishlistId === product._id}
+                          data-testid={`add-to-wishlist-${product._id}`}
+                          title={isInWishlist(product._id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                          style={{ width: '36px', height: '36px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          {addingWishlistId === product._id ? (
+                            <span className="btn-spinner" style={{ width: '14px', height: '14px', display: 'inline-block', borderWidth: '2px' }} />
+                          ) : isInWishlist(product._id) ? (
+                            <svg viewBox="0 0 24 24" fill="var(--error)" stroke="var(--error)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em' }}>
+                              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                            </svg>
+                          ) : (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="var(--error)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em' }}>
+                              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                            </svg>
+                          )}
+                        </button>
+                        <button
+                          className={`btn ${successId === product._id ? 'btn-success' : 'btn-primary'} btn-sm`}
+                          onClick={(e) => handleAddToCart(e, product._id)}
+                          disabled={addingId === product._id}
+                          data-testid={`add-to-cart-button-${product._id}`}
+                        >
+                          {addingId === product._id ? (
+                            <span className="btn-spinner" style={{ width: '14px', height: '14px', display: 'inline-block', borderWidth: '2px' }} />
+                          ) : successId === product._id ? '✓ Added' : '+ Cart'}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>

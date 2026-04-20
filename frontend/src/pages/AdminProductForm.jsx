@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import BrandedLoader from '../components/common/BrandedLoader';
 
 const AdminProductForm = () => {
   const { id } = useParams();
@@ -121,7 +122,7 @@ const AdminProductForm = () => {
     }
   };
 
-  if (fetching) return <div className="loading-screen"><div className="spinner"></div></div>;
+  if (fetching) return <BrandedLoader fullPage message={isEditMode ? "Loading Product Details..." : "Preparing Form..."} />;
 
   return (
     <div className="admin-product-form-page" data-testid="admin-product-form-page">

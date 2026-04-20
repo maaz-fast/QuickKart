@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
+import { toast } from 'react-toastify';
 import BrandedLoader from '../components/common/BrandedLoader';
 
 const ProductDetailPage = () => {
@@ -13,10 +15,12 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
+  const [addingWishlist, setAddingWishlist] = useState(false);
 
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -43,8 +47,17 @@ const ProductDetailPage = () => {
     setAdding(false);
     if (result.success) {
       setAdded(true);
+      toast.success('Added to cart!');
       setTimeout(() => setAdded(false), 2000);
+    } else {
+      toast.error(result.message || 'Failed to add to cart');
     }
+  };
+
+  const handleAddToWishlist = async () => {
+    setAddingWishlist(true);
+    await toggleWishlist(product._id);
+    setAddingWishlist(false);
   };
 
   const handleQtyChange = (delta) => {
@@ -156,28 +169,44 @@ const ProductDetailPage = () => {
           {/* Action Buttons */}
           <div className="product-detail-actions">
             {!isAdmin ? (
-              <>
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                 <button
                   className={`btn ${added ? 'btn-success' : 'btn-primary'} btn-lg`}
                   onClick={handleAddToCart}
                   disabled={adding || product.stock === 0}
                   data-testid="add-to-cart-button"
+                  style={{ flex: 1 }}
                 >
-                  {adding
-                    ? '⏳ Adding...'
-                    : added
-                    ? '✓ Added to Cart!'
-                    : '🛒 Add to Cart'}
+                  {adding ? (
+                    <><span className="btn-spinner" style={{ width: '16px', height: '16px', display: 'inline-block', borderWidth: '2px', marginRight: '8px', verticalAlign: 'middle' }} /> Adding...</>
+                  ) : added ? (
+                    '✓ Added to Cart!'
+                  ) : (
+                    '🛒 Add to Cart'
+                  )}
                 </button>
 
                 <button
-                  className="btn btn-outline"
-                  onClick={() => navigate('/cart')}
-                  data-testid="view-cart-button"
+                  className="btn btn-outline btn-lg"
+                  onClick={handleAddToWishlist}
+                  disabled={addingWishlist}
+                  data-testid="detail-add-to-wishlist"
+                  title={isInWishlist(product._id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                  style={{ width: '54px', height: '54px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  View Cart
+                  {addingWishlist ? (
+                    <span className="btn-spinner" style={{ width: '16px', height: '16px', display: 'inline-block', borderWidth: '2px' }} />
+                  ) : isInWishlist(product._id) ? (
+                    <svg viewBox="0 0 24 24" fill="var(--error)" stroke="var(--error)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.4em', height: '1.4em' }}>
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--error)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.4em', height: '1.4em' }}>
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>
+                  )}
                 </button>
-              </>
+              </div>
             ) : (
               <div style={{ padding: '16px', background: 'var(--bg-hover)', borderRadius: '12px', border: '1px solid var(--border)' }}>
                 <p style={{ color: 'var(--primary)', fontWeight: '600' }}>Admin View</p>

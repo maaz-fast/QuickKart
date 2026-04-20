@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
+import api from '../api/axiosConfig';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +11,7 @@ const SignupPage = () => {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -20,40 +21,48 @@ const SignupPage = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError('');
+    setErrors({ ...errors, [e.target.name]: '' });
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
+    else if (formData.name.trim().length < 2) newErrors.name = 'Name must be at least 2 characters';
+
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    else if (!emailRegex.test(formData.email)) newErrors.email = 'Please enter a valid email address';
+
+    if (!formData.password) newErrors.password = 'Password is required';
+    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+
+    if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
+    else if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, password, confirmPassword } = formData;
-
-    if (!name || !email || !password || !confirmPassword) {
-      setError('Please fill in all fields.');
+    const validationErrors = validate();
+    
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
-    if (name.trim().length < 2) {
-      setError('Name must be at least 2 characters.');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      return;
-    }
+    const { name, email, password } = formData;
 
     try {
       setLoading(true);
       const { data } = await api.post('/auth/signup', { name, email, password });
       login(data.user, data.token);
+      toast.success('Account created successfully!');
       navigate('/', { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Sign up failed. Please try again.');
+      console.error('Signup Error:', err);
+      toast.error(err.response?.data?.message || err.message || 'Sign up failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -66,12 +75,7 @@ const SignupPage = () => {
         <h1>Create account ✨</h1>
         <p className="subtitle">Join QuickKart and start shopping today</p>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="alert alert-error" data-testid="signup-error-message">
-            ⚠️ {error}
-          </div>
-        )}
+        <p className="subtitle">Join QuickKart and start shopping today</p>
 
         {/* Form */}
         <form onSubmit={handleSubmit} data-testid="signup-form" noValidate>
@@ -84,10 +88,12 @@ const SignupPage = () => {
               placeholder="John Doe"
               value={formData.name}
               onChange={handleChange}
+              className={errors.name ? 'input-error' : ''}
               data-testid="name-input"
               autoComplete="name"
               autoFocus
             />
+            {errors.name && <span className="field-error">{errors.name}</span>}
           </div>
 
           <div className="form-group">
@@ -99,9 +105,11 @@ const SignupPage = () => {
               placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
+              className={errors.email ? 'input-error' : ''}
               data-testid="email-input"
               autoComplete="email"
             />
+            {errors.email && <span className="field-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
@@ -114,6 +122,7 @@ const SignupPage = () => {
                 placeholder="Min. 6 characters"
                 value={formData.password}
                 onChange={handleChange}
+                className={errors.password ? 'input-error' : ''}
                 data-testid="password-input"
                 autoComplete="new-password"
               />
@@ -127,6 +136,7 @@ const SignupPage = () => {
                 {showPassword ? '👁️' : '🫣'}
               </button>
             </div>
+            {errors.password && <span className="field-error">{errors.password}</span>}
           </div>
 
           <div className="form-group">
@@ -139,6 +149,7 @@ const SignupPage = () => {
                 placeholder="Repeat your password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                className={errors.confirmPassword ? 'input-error' : ''}
                 data-testid="confirm-password-input"
                 autoComplete="new-password"
               />
@@ -152,6 +163,7 @@ const SignupPage = () => {
                 {showConfirmPassword ? '👁️' : '🫣'}
               </button>
             </div>
+            {errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
           </div>
 
           <button

@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useTheme } from '../context/ThemeContext';
+import NotificationDropdown from './NotificationDropdown';
 
 const Navbar = () => {
   const { user, logout, isAuthenticated, isAdmin } = useAuth();
   const { cartCount } = useCart();
+  const { wishlistItems } = useWishlist();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -48,6 +51,7 @@ const Navbar = () => {
         </button>
         {isAuthenticated ? (
           <>
+            <NotificationDropdown />
             <Link to="/" onClick={closeMenu} data-testid="navbar-home-link" className="nav-link">
               Home
             </Link>
@@ -59,6 +63,19 @@ const Navbar = () => {
                   <path d="M12 22V12" />
                 </svg>
                 My Orders
+              </Link>
+            )}
+            {!isAdmin && (
+              <Link to="/wishlist" onClick={closeMenu} data-testid="navbar-wishlist-link" className="nav-link cart-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em', verticalAlign: 'middle', marginRight: '4px' }}>
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                </svg>
+                Wishlist
+                {wishlistItems.length > 0 && (
+                  <span className="cart-badge" data-testid="wishlist-count-badge">
+                    {wishlistItems.length}
+                  </span>
+                )}
               </Link>
             )}
             {!isAdmin && (
@@ -88,13 +105,13 @@ const Navbar = () => {
               </Link>
             )}
 
-            <span className="nav-user" data-testid="navbar-username">
+            <Link to="/profile" onClick={closeMenu} className="nav-user" data-testid="navbar-username" style={{ textDecoration: 'none', color: 'inherit' }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em', verticalAlign: 'middle', marginRight: '6px' }}>
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
               {user?.name}
-            </span>
+            </Link>
             <button
               className="btn btn-outline"
               onClick={handleLogout}

@@ -1,6 +1,6 @@
-# QuickKart - Project File Structure
+# QuickKart - Project File Structure (Phase-Wise Timeline)
 
-Detailed breakdown of the QuickKart monolithic codebase structure separating frontend UI components from backend API services.
+Detailed breakdown of the QuickKart monolithic codebase structure, organized by the implementation phases to show the evolution of the application.
 
 ## 📦 Root Workspace (`/`)
 - `package.json` — Master configuration and root scripts (e.g., `npm run dev`)
@@ -10,102 +10,97 @@ Detailed breakdown of the QuickKart monolithic codebase structure separating fro
 
 ---
 
-## 🖥️ Frontend Client (`/frontend`)
-The React SPA built with Vite.
+## 🚀 Phase 1: Core Setup, Auth, & Product Catalog
+*The foundational phase establishing the MERN stack, user authentication, and storefront catalog.*
 
-### Core Configuration
-- `package.json` — Frontend dependencies and build scripts
-- `vite.config.js` — Vite bundler configuration
-- `eslint.config.js` — JavaScript linting rules
-- `index.html` — Base HTML template
+### Frontend Client
+- `src/main.jsx` & `src/App.jsx` — React root and application router wrapper
+- `src/index.css` — Global CSS, design tokens, and branded aesthetics
+- `src/api/axiosConfig.js` — Base API configuration for network requests
+- `src/context/AuthContext.jsx` — Stores active user profile, JWT, and roles
+- `src/components/Navbar.jsx` — Top navigation with auth states
+- `src/components/ProtectedRoute.jsx` — Route guard for authenticated paths
+- `src/pages/HomePage.jsx` — Catalog browser
+- `src/pages/ProductDetailPage.jsx` — Single item viewing
+- `src/pages/LoginPage.jsx` & `src/pages/SignupPage.jsx` — User onboarding
 
-### Source Code (`/frontend/src`)
-- `main.jsx` — React root rendering entry point
-- `App.jsx` — Application router and global context provider wrapper
-- `index.css` — Global CSS, design tokens, and branded animations
-
-#### `/components` - Modular UI Building Blocks
-- **`/common`**
-  - `Pagination.jsx` — Reusable pagination controls
-  - `BrandedLoader.jsx` — Custom platform loading animations
-- `Navbar.jsx` — Top navigation with mobile hamburger and auth states
-- `ProtectedRoute.jsx` — Higher-order component preventing unauthorized access
-- `AdminRoute.jsx` — Strict route guard for `/admin` paths
-- `AdminLayout.jsx` — Admin-specific frame wrapping dashboard content
-- `AdminSidebar.jsx` — Slide-out navigation drawer for admin pages
-
-#### `/pages` - Routed Views
-**Storefront (Customer)**
-- `HomePage.jsx` — Catalog browser with keyword search
-- `ProductDetailPage.jsx` — Single item viewing and cart addition
-- `CartPage.jsx` — Item subtotals and checkout initiation
-- `CheckoutPage.jsx` — Order placement and validation
-- `OrdersPage.jsx` — Customer order history list
-- `OrderDetailsPage.jsx` — Specific executed order receipt
-
-**Admin Portal (Restricted)**
-- `AdminDashboard.jsx` — Statistical overview and metric charts
-- `AdminProductList.jsx` — Product catalog management grid
-- `AdminCategoryList.jsx` — Dynamic category management
-- `AdminOrderList.jsx` — Global fulfillment queue
-- `AdminUserList.jsx` — Customer directory management
-
-**Authentication**
-- `LoginPage.jsx` — User login gateway
-- `SignupPage.jsx` — New user registration
-- `ForgotPasswordPage.jsx` — Credential recovery workflow
-- `ResetPasswordPage.jsx` — Secure password resetting
-
-#### `/context` - Global State Management
-- `AuthContext.jsx` — Stores active user profile, JWT validity, and RBAC roles
-- `CartContext.jsx` — Manages cart array, subtotals, and persistence
-
-#### `/api` - Network Layer
-- `axiosConfig.js` — Base API configuration injecting Bearer tokens into requests
+### Backend Server
+- `server.js` — Express application instantiation
+- `config/db.js` — MongoDB Atlas connection logic
+- `config/swagger.js` — OpenAPI 3.0 specification generator
+- `middleware/authMiddleware.js` — JWT verification and Admin role validation
+- `middleware/errorHandler.js` — Standardized JSON error response formatting
+- `models/User.js`, `models/Product.js`, `models/Category.js` — Core Mongoose schemas
+- `controllers/authController.js`, `controllers/productController.js`, `controllers/categoryController.js` — Core endpoints
+- `routes/authRoutes.js`, `routes/productRoutes.js`, `routes/categoryRoutes.js` — Route definitions
+- `utils/seedData.js` — Database population utility
 
 ---
 
-## ⚙️ Backend Server (`/backend`)
-The Node.js/Express REST API serving the storefront.
+## 🛒 Phase 2: Cart & Checkout Features
+*Implementing persistent cart management linked to user accounts.*
 
-### Core Configuration
-- `package.json` — Server dependencies and startup scripts
-- `server.js` — Express application instantiation, middleware stacking, and port binding
-- `.env` — Secure cryptographic keys and database URIs
+### Frontend Client
+- `src/context/CartContext.jsx` — Manages cart array, subtotals, and persistence
+- `src/pages/CartPage.jsx` — Item subtotals and modification
+- `src/pages/CheckoutPage.jsx` — Order placement workflow
 
-### Application Logic
+### Backend Server
+- `models/Cart.js` — Persistent cart contents linked to User IDs
+- `controllers/cartController.js` — Cart state management
+- `routes/cartRoutes.js` — Cart endpoints
 
-#### `/config` - System Configurations
-- `db.js` — MongoDB Atlas connection logic
-- `swagger.js` — OpenAPI 3.0 specification generator
+---
 
-#### `/controllers` - Request Handlers
-- `authController.js` — JWT generation, signup, login, and recovery logic
-- `productController.js` — Catalog fetching and detail retrieval
-- `categoryController.js` — Category taxonomy management
-- `cartController.js` — User cart state persistence
-- `orderController.js` — Order processing and user retrieval
-- `adminController.js` — Elevated actions (e.g., dashboard metrics, global order edits)
+## 👔 Phase 3: Admin Portal & Order Management
+*Adding global transaction tracking and restricted administrative dashboards.*
 
-#### `/routes` - Endpoint Routing Maps
-- `authRoutes.js` — Mounts `/api/auth` endpoints
-- `productRoutes.js` — Mounts `/api/products` endpoints
-- `cartRoutes.js` — Mounts `/api/cart` endpoints
-- `orderRoutes.js` — Mounts `/api/orders` endpoints
-- `adminRoutes.js` — Mounts `/api/admin` endpoints
+### Frontend Client
+- `src/components/AdminLayout.jsx` & `src/components/AdminSidebar.jsx` — Admin frame and navigation drawer
+- `src/components/AdminRoute.jsx` — Strict route guard for `/admin` paths
+- `src/components/common/Pagination.jsx` — Reusable pagination controls
+- `src/pages/AdminDashboard.jsx` — Statistical overview and metric charts
+- `src/pages/AdminProductList.jsx`, `src/pages/AdminCategoryList.jsx`, `src/pages/AdminUserList.jsx` — Entity management grids
+- `src/pages/AdminOrderList.jsx` — Global fulfillment queue
+- `src/pages/OrdersPage.jsx` — Customer order history list
+- `src/pages/OrderDetailsPage.jsx` — Specific executed order receipt
 
-#### `/models` - MongoDB Schemas
-- `User.js` — User accounts, role definitions, and password hashing hooks
-- `Product.js` — Product definitions, inventory count, and pricing
-- `Category.js` — Taxonomy definitions
-- `Cart.js` — Persistent cart contents linked to User IDs
-- `Order.js` — Archived transaction receipts and fulfillment statuses
+### Backend Server
+- `models/Order.js` — Archived transaction receipts and fulfillment statuses
+- `controllers/orderController.js` — Order processing and user retrieval
+- `controllers/adminController.js` — Elevated actions (dashboard metrics, global edits)
+- `routes/orderRoutes.js` & `routes/adminRoutes.js` — Restricted route definitions
+- `utils/promoteAdmin.js` — CLI tool to manually elevate user privileges
 
-#### `/middleware` - Request Interceptors
-- `authMiddleware.js` — Verifies JWTs and validates Admin role flags before execution
-- `errorHandler.js` — Standardized JSON error response formatting
+---
 
-#### `/utils` & `/scripts` - Utilities
-- `seedData.js` — Automated database population for testing
-- `promoteAdmin.js` — CLI tool to manually elevate user privileges
-- `migrateCategories.js` — Schema migration tooling
+## ✨ Phase 4: UX & Profile Enhancements
+*Polishing the application with wishlists, custom loaders, and profile management.*
+
+### Frontend Client
+- `src/context/WishlistContext.jsx` — Manages favorited items
+- `src/pages/WishlistPage.jsx` — Wishlist viewing and management
+- `src/pages/ProfilePage.jsx` — User details and password editing
+- `src/pages/ForgotPasswordPage.jsx` & `src/pages/ResetPasswordPage.jsx` — Password recovery flow
+- `src/pages/NotFoundPage.jsx` — 404 catch-all route
+- `src/components/common/BrandedLoader.jsx` — Custom platform loading animations
+
+### Backend Server
+- `models/Wishlist.js` — Wishlist schema linked to users and products
+- `controllers/wishlistController.js` & `routes/wishlistRoutes.js` — Wishlist endpoints
+
+---
+
+## 🔔 Phase 5: In-App Notification System
+*Providing real-time system alerts and broadcast notifications for both users and admins.*
+
+### Frontend Client
+- `src/context/NotificationContext.jsx` — Global unread counts with 15-second silent background polling
+- `src/components/NotificationDropdown.jsx` — Interactive bell dropdown with unread dot indicators
+- `src/pages/NotificationsPage.jsx` — Dedicated view-all page for notification history
+
+### Backend Server
+- `models/Notification.js` — Stores user-specific system alerts with read status
+- `utils/notificationService.js` — Reusable service to trigger targeted alerts or broadcast to admins
+- `controllers/notificationController.js` — Notification retrieval and mark-as-read logic
+- `routes/notificationRoutes.js` — Endpoints for the notification system

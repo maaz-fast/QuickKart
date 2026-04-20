@@ -279,11 +279,16 @@ button { cursor: pointer; font-family: inherit; }
 .btn-spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: white;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   display: inline-block;
+  opacity: 0.8;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .auth-extras {
@@ -2145,4 +2150,183 @@ button { cursor: pointer; font-family: inherit; }
   .page-header h1 {
     font-size: 1.5rem;
   }
+}
+
+/* =====================
+   NOTIFICATIONS
+   ===================== */
+.notification-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.notification-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.notification-btn:hover {
+  background: var(--bg-hover);
+  color: var(--primary);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--error);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  border: 2px solid var(--bg-card); /* To stand out from the icon */
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: -10px; /* Aligned nicely */
+  width: 320px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notification-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-hover);
+}
+
+.notification-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.notification-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.notification-item.unread {
+  background-color: rgba(108, 99, 255, 0.05); /* very faint primary bg */
+}
+
+.notification-icon-type {
+  font-size: 1.2rem;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: var(--bg-input);
+  border-radius: 50%;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-message {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.notification-item.unread .notification-message {
+  font-weight: 600;
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.unread-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.notification-footer {
+  padding: 12px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  background-color: var(--bg-card);
+}
+
+.notification-footer a {
+  font-size: 0.875rem;
+  color: var(--primary);
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.notification-footer a:hover {
+  color: var(--primary-light);
+  text-decoration: underline;
+}
+
+.notification-page-list .notification-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.notification-page-list .notification-item:last-child {
+  border-bottom: none;
 }

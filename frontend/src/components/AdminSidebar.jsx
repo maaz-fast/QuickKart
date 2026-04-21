@@ -1,14 +1,34 @@
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import api from '../api/axiosConfig';
 
 const AdminSidebar = ({ isOpen, onClose }) => {
+  const [counts, setCounts] = useState({ pendingOrders: 0, pendingSupport: 0 });
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const { data } = await api.get('/admin/counts');
+        setCounts(data.counts);
+      } catch (err) {
+        console.error('Failed to fetch sidebar counts');
+      }
+    };
+    fetchCounts();
+
+    // Refresh counts every 60 seconds
+    const interval = setInterval(fetchCounts, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <aside className={`admin-sidebar ${isOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
         <h3>Admin Portal</h3>
       </div>
       <nav className="sidebar-nav">
-        <NavLink 
-          to="/admin/dashboard" 
+        <NavLink
+          to="/admin/dashboard"
           onClick={onClose}
           className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
           data-testid="admin-nav-dashboard"
@@ -22,8 +42,8 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           Dashboard
         </NavLink>
 
-        <NavLink 
-          to="/admin/products" 
+        <NavLink
+          to="/admin/products"
           onClick={onClose}
           className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
           data-testid="admin-nav-products"
@@ -37,8 +57,8 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           Products
         </NavLink>
 
-        <NavLink 
-          to="/admin/categories" 
+        <NavLink
+          to="/admin/categories"
           onClick={onClose}
           className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
           data-testid="admin-nav-categories"
@@ -53,8 +73,8 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           Categories
         </NavLink>
 
-        <NavLink 
-          to="/admin/orders" 
+        <NavLink
+          to="/admin/orders"
           onClick={onClose}
           className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
           data-testid="admin-nav-orders"
@@ -66,10 +86,15 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             <path d="m9 17 2 2 4-4" />
           </svg>
           Orders
+          {/* {counts.pendingOrders > 0 && (
+            <span className="sidebar-badge" style={{ marginLeft: 'auto', background: 'var(--primary)', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '0.7rem' }}>
+              {counts.pendingOrders}
+            </span>
+          )} */}
         </NavLink>
 
-        <NavLink 
-          to="/admin/users" 
+        <NavLink
+          to="/admin/users"
           onClick={onClose}
           className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
           data-testid="admin-nav-users"
@@ -81,6 +106,25 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
           Users
+        </NavLink>
+
+        <NavLink
+          to="/admin/support"
+          onClick={onClose}
+          className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
+          data-testid="admin-nav-support"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sidebar-icon">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          Support
+          {counts.pendingSupport > 0 && (
+            <span className="sidebar-badge" style={{ marginLeft: 'auto', background: 'var(--warning)', color: '#000', fontWeight: '700', padding: '2px 8px', borderRadius: '10px', fontSize: '0.7rem' }}>
+              {counts.pendingSupport}
+            </span>
+          )}
         </NavLink>
       </nav>
       <div className="sidebar-footer">

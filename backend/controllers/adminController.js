@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const User = require('../models/User');
+const Support = require('../models/Support');
 const { createNotification } = require('../utils/notificationService');
 
 // @desc    Get dashboard metrics and chart data
@@ -11,6 +12,7 @@ const getDashboardStats = async (req, res, next) => {
     const totalUsers = await User.countDocuments({});
     const totalProducts = await Product.countDocuments({});
     const totalOrders = await Order.countDocuments({});
+    const pendingSupport = await Support.countDocuments({ status: 'Pending' });
     
     // Total Revenue
     const revenueData = await Order.aggregate([
@@ -70,7 +72,8 @@ const getDashboardStats = async (req, res, next) => {
         totalUsers,
         totalProducts,
         totalOrders,
-        totalRevenue
+        totalRevenue,
+        pendingSupport
       },
       statusDistribution: statusData,
       salesHistory
@@ -271,6 +274,23 @@ const getAnalytics = async (req, res, next) => {
   }
 };
 
+const getAdminCounts = async (req, res, next) => {
+  try {
+    const pendingOrders = await Order.countDocuments({ status: { $ne: 'Delivered' } });
+    const pendingSupport = await Support.countDocuments({ status: 'Pending' });
+
+    res.status(200).json({
+      success: true,
+      counts: {
+        pendingOrders,
+        pendingSupport
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllOrders,
@@ -280,4 +300,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getAnalytics,
+  getAdminCounts
 };

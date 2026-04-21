@@ -9,7 +9,12 @@ const {
   updateProduct,
   deleteProduct,
   getAnalytics,
+  getAdminCounts,
 } = require('../controllers/adminController');
+const {
+  getQueries,
+  updateQueryStatus
+} = require('../controllers/supportController');
 const {
   getCategories,
   createCategory,
@@ -42,6 +47,7 @@ router.use(admin);
  *         description: Dashboard statistics and performance data
  */
 router.get('/dashboard', getDashboardStats);
+router.get('/counts', getAdminCounts);
 
 /**
  * @swagger
@@ -289,5 +295,51 @@ router.put('/orders/:id/status', updateOrderStatus);
  *         description: List of registered users
  */
 router.get('/users', getAllUsers);
+
+/**
+ * @swagger
+ * /api/admin/support:
+ *   get:
+ *     summary: Get all customer support queries
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [Pending, Resolved] }
+ *     responses:
+ *       200:
+ *         description: List of queries
+ */
+router.get('/support', getQueries);
+
+/**
+ * @swagger
+ * /api/admin/support/{id}:
+ *   put:
+ *     summary: Update a support query status
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [status]
+ *             properties:
+ *               status: { type: string, enum: [Pending, Resolved] }
+ *     responses:
+ *       200:
+ *         description: Status updated successfully
+ */
+router.put('/support/:id', updateQueryStatus);
 
 module.exports = router;

@@ -409,6 +409,12 @@ button { cursor: pointer; font-family: inherit; }
   color: var(--text-primary);
 }
 
+textarea {
+  resize: vertical;
+  max-width: 100%;
+  min-height: 100px;
+}
+
 .auth-footer {
   text-align: center;
   margin-top: 24px;
@@ -449,6 +455,24 @@ button { cursor: pointer; font-family: inherit; }
   background: rgba(67, 233, 123, 0.1);
   border: 1px solid rgba(67, 233, 123, 0.3);
   color: #43e97b;
+}
+
+/* Field Validation Errors */
+.field-error, .admin-field-error {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--error);
+  margin-top: 4px;
+  font-weight: 500;
+  animation: fadeInDown 0.2s ease;
+}
+
+.input-error, .admin-input-error {
+  border-color: var(--error) !important;
+}
+
+.input-error:focus, .admin-input-error:focus {
+  box-shadow: 0 0 0 3px rgba(255, 101, 132, 0.15) !important;
 }
 
 /* =====================
@@ -500,6 +524,22 @@ button { cursor: pointer; font-family: inherit; }
 }
 
 .search-input::placeholder { color: var(--text-muted); }
+
+/* Custom Styled Select */
+select.search-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236c63ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 1.2em;
+  cursor: pointer;
+}
+
+select.search-input option {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  padding: 10px;
+}
 
 .search-clear {
   position: absolute;

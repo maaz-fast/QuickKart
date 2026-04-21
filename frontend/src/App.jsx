@@ -26,6 +26,7 @@ import OrderDetailsPage from './pages/OrderDetailsPage';
 import ProfilePage from './pages/ProfilePage';
 import WishlistPage from './pages/WishlistPage';
 import NotificationsPage from './pages/NotificationsPage';
+import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Admin Pages
@@ -35,6 +36,7 @@ import AdminProductForm from './pages/AdminProductForm';
 import AdminCategoryList from './pages/AdminCategoryList';
 import AdminOrderList from './pages/AdminOrderList';
 import AdminUserList from './pages/AdminUserList';
+import AdminSupport from './pages/AdminSupport';
 
 function App() {
   return (
@@ -54,6 +56,7 @@ function App() {
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/contact" element={<ContactPage />} />
 
                 {/* Protected Routes */}
                 <Route
@@ -139,6 +142,7 @@ function App() {
                     <Route path="/admin/categories" element={<AdminCategoryList />} />
                     <Route path="/admin/orders" element={<AdminOrderList />} />
                     <Route path="/admin/users" element={<AdminUserList />} />
+                    <Route path="/admin/support" element={<AdminSupport />} />
                   </Route>
                 </Route>
 

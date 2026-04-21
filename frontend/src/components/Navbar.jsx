@@ -55,6 +55,9 @@ const Navbar = () => {
             <Link to="/" onClick={closeMenu} data-testid="navbar-home-link" className="nav-link">
               Home
             </Link>
+            <Link to="/contact" onClick={closeMenu} data-testid="navbar-contact-link" className="nav-link">
+              Contact
+            </Link>
             {!isAdmin && (
               <Link to="/orders" onClick={closeMenu} data-testid="navbar-orders-link" className="nav-link">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em', verticalAlign: 'middle', marginRight: '4px' }}>

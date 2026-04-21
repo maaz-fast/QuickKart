@@ -57,6 +57,7 @@ app.use('/orders', orderRoutes);
 app.use('/admin', adminRoutes);
 app.use('/wishlist', wishlistRoutes);
 app.use('/users', userRoutes);
+app.use('/notifications', notificationRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

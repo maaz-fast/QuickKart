@@ -160,7 +160,7 @@ const CheckoutPage = () => {
             Thank you, <strong>{user?.name}</strong>! Your order has been confirmed.
           </p>
           <div className="order-id-badge" data-testid="order-id">
-            Order ID: <strong>{createdOrderId}</strong>
+            Order ID: <strong>ORD-{createdOrderId.slice(-8).toUpperCase()}</strong>
           </div>
           <div className="success-actions">
             <button

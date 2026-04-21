@@ -86,7 +86,7 @@ const OrdersPage = () => {
                   year: 'numeric', month: 'long', day: 'numeric' 
                 })}
               </span>
-              <span className="order-id-short">ID: {order._id.slice(-8).toUpperCase()}</span>
+              <span className="order-id-short">ID: ORD-{order._id.slice(-8).toUpperCase()}</span>
             </div>
 
             <div className="order-details-preview">

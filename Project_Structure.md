@@ -104,3 +104,144 @@ Detailed breakdown of the QuickKart monolithic codebase structure, organized by 
 - `utils/notificationService.js` — Reusable service to trigger targeted alerts or broadcast to admins
 - `controllers/notificationController.js` — Notification retrieval and mark-as-read logic
 - `routes/notificationRoutes.js` — Endpoints for the notification system
+
+Phase 6
+You are a senior full-stack MERN developer. Enhance the existing QuickKart e-commerce application by adding the following features: Invoice/Receipt system, Admin Analytics Dashboard, Test Suites (documentation only), API Rate Limiting, and UI Polish improvements.
+
+The implementation must be simple, clean, and consistent with the existing architecture.
+
+========================
+1. INVOICE / ORDER RECEIPT
+========================
+
+Generate an invoice/receipt after order placement.
+
+Frontend:
+* Create Order Receipt Page (/orders/:id)
+* Display:
+  - Order ID
+  - User details
+  - Product list (name, quantity, price)
+  - Total amount
+  - Order date
+  - Order status
+
+Optional:
+* Add “Download Invoice” button (simple print/download)
+
+Backend:
+* Use existing order data
+* No separate API required (use GET /api/orders/:id)
+
+Rules:
+* Only logged-in user can view their order
+* Admin can view all orders
+
+========================
+2. ADMIN ANALYTICS DASHBOARD
+========================
+
+Enhance admin dashboard with basic analytics.
+
+Metrics:
+* Total Users
+* Total Products
+* Total Orders
+* Total Revenue
+
+Analytics:
+* Orders per day (basic count)
+* Most ordered products (top 5)
+
+Backend:
+* Create analytics endpoint:
+  - GET /api/admin/analytics
+
+Frontend:
+* Show analytics using:
+  - Cards (for totals)
+  - Simple charts (optional)
+
+Rules:
+* Only admin can access analytics
+* Use aggregation queries in MongoDB
+
+========================
+3. TEST SUITES (DOCUMENTATION ONLY - NO CODE)
+========================
+
+Create structured test cases for the application.
+
+Coverage:
+* Authentication (signup/login/logout)
+* Product listing & filtering
+* Cart functionality
+* Checkout & order placement
+* Admin panel (product CRUD, order updates)
+* Notifications system
+
+Format:
+* Test Case ID
+* Scenario
+* Steps
+* Expected Result
+
+Rules:
+* No automation scripts required
+* Focus on manual test scenarios
+* Keep test cases clear and structured
+
+========================
+4. API RATE LIMITING (SECURITY)
+========================
+
+Protect backend APIs from abuse.
+
+Implementation:
+* Use express-rate-limit
+
+Apply on:
+* Auth routes (login/signup)
+* Global API (optional)
+
+Example:
+* Limit: 100 requests per 15 minutes
+* Login: stricter limit (e.g., 10 attempts)
+
+Rules:
+* Return proper error message when limit exceeded
+* Do not break existing APIs
+
+========================
+5. UI POLISH IMPROVEMENTS
+========================
+
+Enhance frontend appearance and usability.
+
+Improvements:
+* Better product card design (spacing, alignment)
+* Add category icons or labels
+* Improve buttons (hover effects, consistent style)
+* Improve typography and spacing
+* Add empty states:
+  - No products found
+  - Empty cart
+  - No orders
+
+Optional:
+* Add dark mode toggle
+
+Rules:
+* Keep UI clean and minimal
+* Maintain consistency across pages
+
+========================
+IMPORTANT RULES
+========================
+
+* Do NOT break existing features (auth, cart, admin, notifications)
+* Keep code modular and clean
+* Follow MVC architecture
+* Use async/await
+* Ensure all features are working end-to-end
+* Maintain automation-friendly data-testid attributes

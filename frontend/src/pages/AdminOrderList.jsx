@@ -138,7 +138,7 @@ const AdminOrderList = () => {
                 <tr key={order._id} data-testid={`admin-order-row-${order._id}`}>
                   <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                   <td>
-                    <code style={{ fontSize: '0.85rem' }}>#{order._id.slice(-8).toUpperCase()}</code>
+                    <code style={{ fontSize: '0.85rem' }}>ORD-{order._id.slice(-8).toUpperCase()}</code>
                   </td>
                   <td>
                     <div>

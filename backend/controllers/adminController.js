@@ -225,6 +225,52 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+// @desc    Get advanced analytics: top products & orders per day
+// @route   GET /api/admin/analytics
+// @access  Private/Admin
+const getAnalytics = async (req, res, next) => {
+  try {
+    // Top 5 most ordered products
+    const topProducts = await Order.aggregate([
+      { $unwind: '$orderItems' },
+      {
+        $group: {
+          _id: '$orderItems.product',
+          name: { $first: '$orderItems.name' },
+          image: { $first: '$orderItems.image' },
+          totalOrdered: { $sum: '$orderItems.quantity' },
+          totalRevenue: { $sum: { $multiply: ['$orderItems.price', '$orderItems.quantity'] } },
+        }
+      },
+      { $sort: { totalOrdered: -1 } },
+      { $limit: 5 }
+    ]);
+
+    // Orders per day (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const ordersPerDay = await Order.aggregate([
+      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          count: { $sum: 1 },
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      topProducts,
+      ordersPerDay,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllOrders,
@@ -232,5 +278,6 @@ module.exports = {
   getAllUsers,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getAnalytics,
 };

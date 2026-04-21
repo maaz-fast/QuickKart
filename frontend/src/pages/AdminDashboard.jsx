@@ -8,6 +8,7 @@ import BrandedLoader from '../components/common/BrandedLoader';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [chartLoading, setChartLoading] = useState(false);
   const [error, setError] = useState('');
@@ -26,13 +27,17 @@ const AdminDashboard = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Initial Fetch (Stats & Default Chart)
+  // Initial Fetch (Stats, Default Chart & Analytics)
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
-        const { data } = await api.get(`/admin/dashboard?period=${period}`);
-        setStats(data);
+        const [dashRes, analyticsRes] = await Promise.all([
+          api.get(`/admin/dashboard?period=${period}`),
+          api.get('/admin/analytics'),
+        ]);
+        setStats(dashRes.data);
+        setAnalytics(analyticsRes.data);
       } catch (err) {
         setError('Failed to load dashboard data');
       } finally {
@@ -229,6 +234,67 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* ── Analytics Section ── */}
+      {analytics && (
+        <div className="analytics-section" data-testid="analytics-section">
+          <h2 className="analytics-section-title">Advanced Analytics</h2>
+
+          <div className="analytics-grid">
+            {/* Top 5 Most Ordered Products */}
+            <div className="chart-card" data-testid="top-products-card">
+              <h3>🏆 Top 5 Most Ordered Products</h3>
+              {analytics.topProducts.length === 0 ? (
+                <div className="empty-state-sm">No order data yet.</div>
+              ) : (
+                <div className="top-products-list">
+                  {analytics.topProducts.map((product, i) => (
+                    <div key={product._id} className="top-product-row" data-testid={`top-product-${i + 1}`}>
+                      <span className="top-product-rank">#{i + 1}</span>
+                      <img src={product.image} alt={product.name} className="top-product-img" />
+                      <div className="top-product-info">
+                        <p className="top-product-name">{product.name}</p>
+                        <p className="top-product-meta">${product.totalRevenue.toFixed(2)} revenue</p>
+                      </div>
+                      <div className="top-product-badge">{product.totalOrdered} sold</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Orders Per Day */}
+            <div className="chart-card" data-testid="orders-per-day-card">
+              <h3>📅 Orders Per Day (Last 30 Days)</h3>
+              {analytics.ordersPerDay.length === 0 ? (
+                <div className="empty-state-sm">No orders in the last 30 days.</div>
+              ) : (
+                <div style={{ width: '100%', height: 260 }}>
+                  <ResponsiveContainer>
+                    <AreaChart data={analytics.ordersPerDay}>
+                      <defs>
+                        <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="var(--secondary)" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="var(--secondary)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+                      <XAxis dataKey="_id" stroke="var(--text-secondary)" fontSize={10} tickMargin={8} />
+                      <YAxis stroke="var(--text-secondary)" fontSize={11} allowDecimals={false} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}
+                        itemStyle={{ color: 'var(--secondary)' }}
+                        formatter={(v) => [v, 'Orders']}
+                      />
+                      <Area type="monotone" dataKey="count" stroke="var(--secondary)" strokeWidth={3} fillOpacity={1} fill="url(#colorOrders)" animationDuration={1500} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

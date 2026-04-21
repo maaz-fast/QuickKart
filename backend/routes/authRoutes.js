@@ -1,4 +1,5 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
 const {
   signup,
@@ -6,6 +7,18 @@ const {
   forgotPassword,
   resetPassword,
 } = require('../controllers/authController');
+
+// Strict rate limiter for auth endpoints (login & signup)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many attempts from this IP, please try again after 15 minutes.',
+  },
+});
 
 /**
  * @swagger
@@ -57,7 +70,7 @@ const {
  *       400:
  *         description: Validation error or user already exists
  */
-router.post('/signup', signup);
+router.post('/signup', authLimiter, signup);
 
 /**
  * @swagger
@@ -87,7 +100,7 @@ router.post('/signup', signup);
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', login);
+router.post('/login', authLimiter, login);
 
 /**
  * @swagger

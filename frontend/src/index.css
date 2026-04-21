@@ -2330,3 +2330,572 @@ button { cursor: pointer; font-family: inherit; }
 .notification-page-list .notification-item:last-child {
   border-bottom: none;
 }
+
+/* =====================
+   PHASE 6 — ORDER CONTROLS
+   ===================== */
+.order-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 0 16px;
+  gap: 16px;
+}
+
+/* =====================
+   PHASE 6 — BRANDED INVOICE
+   ===================== */
+.invoice-wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  margin-bottom: 60px;
+  animation: fadeInUp 0.4s ease both;
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 36px 40px 28px;
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.12) 0%, rgba(255, 101, 132, 0.06) 100%);
+}
+
+.invoice-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.invoice-logo-gradient {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 4px 16px rgba(108, 99, 255, 0.45);
+  flex-shrink: 0;
+}
+
+.invoice-brand-name {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.invoice-brand-tagline {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  margin-top: 3px;
+}
+
+.invoice-meta {
+  text-align: right;
+}
+
+.invoice-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: var(--text-primary);
+  opacity: 0.15;
+  margin-bottom: 12px;
+}
+
+.invoice-meta-table {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.invoice-meta-table td {
+  padding: 4px 8px;
+  color: var(--text-secondary);
+}
+
+.invoice-meta-table td:first-child {
+  text-align: right;
+  padding-right: 12px;
+}
+
+.invoice-meta-table td:last-child {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+}
+
+.invoice-divider {
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+  opacity: 0.6;
+}
+
+.invoice-addresses {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 28px 40px;
+  background: var(--bg-hover);
+}
+
+.invoice-address-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.invoice-section-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--primary-light);
+  margin-bottom: 8px;
+}
+
+.invoice-address-name {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.invoice-address-text {
+  color: var(--text-secondary);
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+
+.invoice-order-id {
+  color: var(--primary-light);
+  font-size: 0.72rem;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+/* Items Table */
+.invoice-items {
+  padding: 0 40px 24px;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.invoice-th {
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.invoice-tr:hover {
+  background: var(--bg-hover);
+}
+
+.invoice-td {
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.invoice-td-total {
+  font-weight: 700;
+  color: var(--primary-light);
+}
+
+.invoice-product-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.invoice-product-img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.invoice-product-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Totals */
+.invoice-totals-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 40px 32px;
+}
+
+.invoice-totals {
+  min-width: 300px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.invoice-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 11px 18px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.invoice-total-row:last-child {
+  border-bottom: none;
+}
+
+.invoice-grand-total {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.15), rgba(255, 101, 132, 0.08));
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* Footer */
+.invoice-footer {
+  padding: 24px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.invoice-footer-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(255, 101, 132, 0.05));
+  pointer-events: none;
+}
+
+.invoice-footer-text {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  position: relative;
+}
+
+.invoice-footer-subtext {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  position: relative;
+}
+
+/* =====================
+   PHASE 6 — PRINT / INVOICE STYLES
+   ===================== */
+@media print {
+  .no-print,
+  .navbar,
+  .footer,
+  .notification-bell,
+  .theme-toggle {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #111 !important;
+    font-size: 12px;
+  }
+
+  .main-content {
+    padding-top: 0 !important;
+  }
+
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .invoice-wrapper {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    background: #fff !important;
+  }
+
+  .invoice-header {
+    background: linear-gradient(135deg, #f0eeff 0%, #fff0f4 100%) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .invoice-divider {
+    background: linear-gradient(90deg, #6c63ff, #ff6584, #6c63ff) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .invoice-logo-gradient {
+    background: linear-gradient(135deg, #6c63ff, #ff6584) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .invoice-brand-name {
+    color: #6c63ff !important;
+    -webkit-text-fill-color: #6c63ff !important;
+  }
+
+  .invoice-grand-total {
+    background: #f0eeff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .invoice-addresses {
+    background: #f9f9fc !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .invoice-footer-gradient {
+    background: linear-gradient(135deg, #f0eeff, #fff0f4) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .invoice-tr:hover {
+    background: transparent !important;
+  }
+
+  @page {
+    margin: 15mm;
+    size: A4;
+  }
+}
+
+/* =====================
+   PHASE 6 — ANALYTICS SECTION
+   ===================== */
+.analytics-section {
+  margin-top: 40px;
+  padding-bottom: 60px;
+}
+
+.analytics-section-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 24px;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .analytics-grid { grid-template-columns: 1fr; }
+}
+
+.top-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.top-product-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: var(--bg-hover);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.top-product-row:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.top-product-rank {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--primary-light);
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.top-product-img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.top-product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.top-product-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top-product-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.top-product-badge {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.empty-state-sm {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* =====================
+   PHASE 6 — UI POLISH: IMPROVED EMPTY STATES
+   ===================== */
+.empty-state {
+  text-align: center;
+  padding: 80px 24px;
+  animation: fadeInUp 0.4s ease;
+}
+
+.empty-state-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  font-size: 3.5rem;
+  opacity: 0.6;
+  animation: floatUpDown 3s ease-in-out infinite;
+}
+
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.empty-state h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 28px;
+  max-width: 380px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* =====================
+   PHASE 6 — UI POLISH: PRODUCT CARDS
+   ===================== */
+.product-card {
+  position: relative;
+}
+
+.product-card-image-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card-stock-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(239, 68, 68, 0.85);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 100px;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+}
+
+/* =====================
+   PHASE 6 — RESPONSIVE ADJUSTMENTS
+   ===================== */
+@media (max-width: 768px) {
+  .invoice-header {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .invoice-meta {
+    text-align: left;
+  }
+
+  .invoice-addresses {
+    grid-template-columns: 1fr;
+    padding: 20px 24px;
+  }
+
+  .invoice-items {
+    padding: 0 16px 16px;
+  }
+
+  .invoice-totals-wrapper {
+    padding: 0 16px 24px;
+    justify-content: stretch;
+  }
+
+  .invoice-totals {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .invoice-footer {
+    padding: 20px 24px;
+  }
+
+  .order-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

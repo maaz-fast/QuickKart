@@ -195,18 +195,31 @@ const HomePage = () => {
             onClick={() => { setCategory('All'); setPage(1); }}
             data-testid="category-tab-all"
           >
-            All
+            <span>🏠</span> All
           </button>
-          {categories.map((cat) => (
-            <button
-              key={cat._id}
-              className={`category-tab ${category === cat._id ? 'active' : ''}`}
-              onClick={() => { setCategory(cat._id); setPage(1); }}
-              data-testid={`category-tab-${cat.name.toLowerCase()}`}
-            >
-              {cat.name}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const getIcon = (name) => {
+              const n = name.toLowerCase();
+              if (n.includes('elect')) return '💻';
+              if (n.includes('fash') || n.includes('cloth')) return '👕';
+              if (n.includes('home')) return '🏠';
+              if (n.includes('sport')) return '⚽';
+              if (n.includes('beaut') || n.includes('care')) return '✨';
+              if (n.includes('food') || n.includes('grocer')) return '🍎';
+              if (n.includes('toy') || n.includes('kid')) return '🧸';
+              return '📦';
+            };
+            return (
+              <button
+                key={cat._id}
+                className={`category-tab ${category === cat._id ? 'active' : ''}`}
+                onClick={() => { setCategory(cat._id); setPage(1); }}
+                data-testid={`category-tab-${cat.name.toLowerCase()}`}
+              >
+                <span>{getIcon(cat.name)}</span> {cat.name}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -267,7 +280,20 @@ const HomePage = () => {
                 </div>
 
                 <div className="product-card-body">
-                  <p className="product-card-category">{product.category?.name || 'Uncategorized'}</p>
+                  <p className="product-card-category">
+                    {(() => {
+                      const n = (product.category?.name || '').toLowerCase();
+                      if (n.includes('elect')) return '💻 ';
+                      if (n.includes('fash') || n.includes('cloth')) return '👕 ';
+                      if (n.includes('home')) return '🏠 ';
+                      if (n.includes('sport')) return '⚽ ';
+                      if (n.includes('beaut') || n.includes('care')) return '✨ ';
+                      if (n.includes('food') || n.includes('grocer')) return '🍎 ';
+                      if (n.includes('toy') || n.includes('kid')) return '🧸 ';
+                      return '📦 ';
+                    })()}
+                    {product.category?.name || 'Uncategorized'}
+                  </p>
                   <h3 className="product-card-name" data-testid={`product-name-${product._id}`}>
                     {product.name}
                   </h3>

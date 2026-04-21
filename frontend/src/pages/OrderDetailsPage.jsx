@@ -1,13 +1,43 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import BrandedLoader from '../components/common/BrandedLoader';
+import { useAuth } from '../context/AuthContext';
+
+const StatusBadge = ({ status }) => {
+  const colorMap = {
+    Pending: '#f59e0b',
+    Processing: '#3b82f6',
+    Shipped: '#6366f1',
+    Delivered: '#10b981',
+    Cancelled: '#ef4444',
+  };
+  return (
+    <span
+      className="invoice-status-badge"
+      style={{
+        background: colorMap[status] || '#94a3b8',
+        color: '#fff',
+        padding: '4px 14px',
+        borderRadius: '100px',
+        fontWeight: 700,
+        fontSize: '0.8rem',
+        letterSpacing: '0.5px',
+        textTransform: 'uppercase',
+      }}
+    >
+      {status}
+    </span>
+  );
+};
 
 const OrderDetailsPage = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const invoiceRef = useRef(null);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -24,96 +54,161 @@ const OrderDetailsPage = () => {
     fetchOrder();
   }, [id]);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   if (loading) return <BrandedLoader fullPage message="Reviewing Shipment Details..." />;
   if (error) return <div className="container"><div className="alert alert-error">{error}</div></div>;
   if (!order) return <div className="container">Order not found.</div>;
 
+  const subtotal = order.totalAmount - order.taxAmount - order.shippingPrice;
+  const orderDate = new Date(order.createdAt);
+
   return (
     <div className="container order-details-page">
-      <Link to="/orders" className="back-link">← Back to My Orders</Link>
-      
-      <div className="page-header" style={{ marginTop: '20px' }}>
-        <h1 data-testid="order-details-title">
-          Order Details 
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.9em', height: '0.9em', verticalAlign: 'middle', marginLeft: '12px' }}>
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-            <path d="M9 2h6" />
-            <path d="M12 11h4" />
-            <path d="M12 16h4" />
-            <path d="M8 11h.01" />
-            <path d="M8 16h.01" />
+      {/* ── Controls (hidden on print) ── */}
+      <div className="order-controls no-print">
+        <Link to="/orders" className="back-link">← Back to My Orders</Link>
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={handlePrint}
+          data-testid="download-invoice-btn"
+          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+            strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
-        </h1>
-        <p>Order ID: <span style={{ color: 'var(--primary-light)' }}>{order._id}</span> • {new Date(order.createdAt).toLocaleDateString()}</p>
+          Download Invoice
+        </button>
       </div>
 
-      <div className="order-details-grid">
-        <div className="order-content">
-          <div className="order-card">
-            <h3>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1em', height: '1em', verticalAlign: 'middle', marginRight: '10px' }}>
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-              </svg>
-              Order Items
-            </h3>
-            <div className="order-items-table">
-              {order.orderItems.map((item) => (
-                <div key={item._id} className="order-detail-item" data-testid={`order-item-${item.product}`}>
-                  <img src={item.image} alt={item.name} />
-                  <div className="item-info">
-                    <h4>{item.name}</h4>
-                    <p>${item.price.toFixed(2)} × {item.quantity}</p>
-                  </div>
-                  <div className="item-total">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </div>
-                </div>
-              ))}
+      {/* ══════════════════════════════════════
+          BRANDED INVOICE (printable section)
+          ══════════════════════════════════════ */}
+      <div className="invoice-wrapper" ref={invoiceRef} data-testid="invoice-section">
+
+        {/* Invoice Header */}
+        <div className="invoice-header">
+          <div className="invoice-brand">
+            <div className="invoice-logo-gradient">⚡</div>
+            <div>
+              <h1 className="invoice-brand-name">QuickKart</h1>
+              <p className="invoice-brand-tagline">Your Smart Shopping Destination</p>
             </div>
           </div>
-
-          <div className="order-card" style={{ marginTop: '20px' }}>
-            <h3>📦 Shipping Address</h3>
-            <div className="shipping-info-display">
-              <p><strong>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</strong></p>
-              <p>{order.shippingAddress.address}</p>
-              <p>{order.shippingAddress.city}, {order.shippingAddress.zipCode}</p>
-              <p>{order.shippingAddress.country}</p>
-              <p>📞 {order.shippingAddress.phone}</p>
-            </div>
+          <div className="invoice-meta">
+            <h2 className="invoice-title">INVOICE</h2>
+            <table className="invoice-meta-table">
+              <tbody>
+                <tr>
+                  <td>Invoice #</td>
+                  <td><strong>ORD-{order._id.slice(-8).toUpperCase()}</strong></td>
+                </tr>
+                <tr>
+                  <td>Date</td>
+                  <td>{orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                </tr>
+                <tr>
+                  <td>Status</td>
+                  <td><StatusBadge status={order.status} /></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div className="order-summary-sidebar">
-          <div className="order-card summary-card">
-            <h3>Summary</h3>
-            <div className="summary-row">
+        {/* Divider */}
+        <div className="invoice-divider" />
+
+        {/* Bill To / Ship To */}
+        <div className="invoice-addresses">
+          <div className="invoice-address-block">
+            <p className="invoice-section-label">BILLED TO</p>
+            <p className="invoice-address-name">{user?.name || order.shippingAddress.firstName + ' ' + order.shippingAddress.lastName}</p>
+            <p className="invoice-address-text">{user?.email}</p>
+          </div>
+          <div className="invoice-address-block">
+            <p className="invoice-section-label">SHIPPED TO</p>
+            <p className="invoice-address-name">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
+            <p className="invoice-address-text">{order.shippingAddress.address}</p>
+            <p className="invoice-address-text">{order.shippingAddress.city}, {order.shippingAddress.zipCode}</p>
+            <p className="invoice-address-text">{order.shippingAddress.country}</p>
+            <p className="invoice-address-text">📞 {order.shippingAddress.phone}</p>
+          </div>
+          <div className="invoice-address-block">
+            <p className="invoice-section-label">ORDER INFO</p>
+            <p className="invoice-address-text">Order ID:</p>
+            <p className="invoice-order-id" style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>ORD-{order._id.slice(-8).toUpperCase()}</p>
+            <p className="invoice-address-text" style={{ marginTop: '8px' }}>Payment: {order.paymentMethod || 'Card'}</p>
+          </div>
+        </div>
+
+        {/* Items Table */}
+        <div className="invoice-items">
+          <table className="invoice-table" data-testid="invoice-items-table">
+            <thead>
+              <tr>
+                <th className="invoice-th" style={{ width: '50%' }}>Product</th>
+                <th className="invoice-th" style={{ textAlign: 'center' }}>Qty</th>
+                <th className="invoice-th" style={{ textAlign: 'right' }}>Unit Price</th>
+                <th className="invoice-th" style={{ textAlign: 'right' }}>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {order.orderItems.map((item) => (
+                <tr key={item._id} className="invoice-tr" data-testid={`invoice-item-${item.product}`}>
+                  <td className="invoice-td">
+                    <div className="invoice-product-cell">
+                      <img src={item.image} alt={item.name} className="invoice-product-img" />
+                      <span className="invoice-product-name">{item.name}</span>
+                    </div>
+                  </td>
+                  <td className="invoice-td" style={{ textAlign: 'center' }}>{item.quantity}</td>
+                  <td className="invoice-td" style={{ textAlign: 'right' }}>${item.price.toFixed(2)}</td>
+                  <td className="invoice-td invoice-td-total" style={{ textAlign: 'right' }}>
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Totals */}
+        <div className="invoice-totals-wrapper">
+          <div className="invoice-totals">
+            <div className="invoice-total-row">
               <span>Subtotal</span>
-              <span>${(order.totalAmount - order.taxAmount - order.shippingPrice).toFixed(2)}</span>
+              <span>${subtotal.toFixed(2)}</span>
             </div>
-            <div className="summary-row">
+            <div className="invoice-total-row">
               <span>Tax</span>
               <span>${order.taxAmount.toFixed(2)}</span>
             </div>
-            <div className="summary-row">
+            <div className="invoice-total-row">
               <span>Shipping</span>
-              <span>${order.shippingPrice.toFixed(2)}</span>
+              <span>{order.shippingPrice === 0 ? 'Free' : `$${order.shippingPrice.toFixed(2)}`}</span>
             </div>
-            <div className="summary-row total-row">
-              <span>Order Total</span>
-              <span data-testid="order-total">${order.totalAmount.toFixed(2)}</span>
-            </div>
-            <div className="status-box" style={{ marginTop: '20px' }}>
-              <label>Status</label>
-              <div className="status-indicator" data-testid="order-status">
-                {order.status}
-              </div>
+            <div className="invoice-total-row invoice-grand-total">
+              <span>Grand Total</span>
+              <span data-testid="invoice-grand-total">${order.totalAmount.toFixed(2)}</span>
             </div>
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="invoice-footer">
+          <div className="invoice-footer-gradient" />
+          <p className="invoice-footer-text">Thank you for shopping with <strong>QuickKart</strong>! 🛒</p>
+          <p className="invoice-footer-subtext">For support, contact us at support@quickkart.com</p>
+        </div>
+
       </div>
+      {/* ── End Invoice ── */}
     </div>
   );
 };

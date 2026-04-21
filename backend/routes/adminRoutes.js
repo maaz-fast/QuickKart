@@ -7,7 +7,8 @@ const {
   getAllUsers,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getAnalytics,
 } = require('../controllers/adminController');
 const {
   getCategories,
@@ -41,6 +42,67 @@ router.use(admin);
  *         description: Dashboard statistics and performance data
  */
 router.get('/dashboard', getDashboardStats);
+
+/**
+ * @swagger
+ * /api/admin/analytics:
+ *   get:
+ *     summary: Get advanced analytics (top products & orders per day)
+ *     description: Returns the top 5 most ordered products by quantity and a daily order count for the last 30 days. Admin only.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Analytics data retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 topProducts:
+ *                   type: array
+ *                   description: Top 5 most ordered products
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         description: Product ID
+ *                       name:
+ *                         type: string
+ *                         example: Wireless Headphones
+ *                       image:
+ *                         type: string
+ *                         example: https://example.com/image.jpg
+ *                       totalOrdered:
+ *                         type: integer
+ *                         example: 42
+ *                       totalRevenue:
+ *                         type: number
+ *                         example: 2099.58
+ *                 ordersPerDay:
+ *                   type: array
+ *                   description: Order counts grouped by day (last 30 days)
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         description: Date in YYYY-MM-DD format
+ *                         example: "2026-04-15"
+ *                       count:
+ *                         type: integer
+ *                         example: 7
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not authorized as admin
+ */
+router.get('/analytics', getAnalytics);
 
 /**
  * @swagger

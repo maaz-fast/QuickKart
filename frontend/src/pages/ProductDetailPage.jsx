@@ -132,8 +132,8 @@ const ProductDetailPage = () => {
           </p>
 
           {/* Stock badge */}
-          <div className="product-detail-stock" data-testid="product-detail-stock">
-            ✅ {product.stock} in stock
+          <div className={`product-detail-stock ${product.stock === 0 ? 'out-of-stock' : ''}`} data-testid="product-detail-stock">
+            {product.stock === 0 ? '❌ Out of Stock' : `✅ ${product.stock} in stock`}
           </div>
 
           {/* Quantity selector */}
@@ -171,7 +171,7 @@ const ProductDetailPage = () => {
             {!isAdmin ? (
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                 <button
-                  className={`btn ${added ? 'btn-success' : 'btn-primary'} btn-lg`}
+                  className={`btn ${added ? 'btn-success' : product.stock === 0 ? 'btn-outline' : 'btn-primary'} btn-lg`}
                   onClick={handleAddToCart}
                   disabled={adding || product.stock === 0}
                   data-testid="add-to-cart-button"
@@ -181,6 +181,8 @@ const ProductDetailPage = () => {
                     <><span className="btn-spinner" style={{ width: '16px', height: '16px', display: 'inline-block', borderWidth: '2px', marginRight: '8px', verticalAlign: 'middle' }} /> Adding...</>
                   ) : added ? (
                     '✓ Added to Cart!'
+                  ) : product.stock === 0 ? (
+                    'Sold Out'
                   ) : (
                     '🛒 Add to Cart'
                   )}

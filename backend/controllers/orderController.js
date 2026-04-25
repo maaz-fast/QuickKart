@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
+const Product = require('../models/Product');
 const { createNotification, notifyAdmins } = require('../utils/notificationService');
 
 // @desc    Create new order
@@ -21,6 +22,19 @@ const createOrder = async (req, res, next) => {
       throw new Error('No order items');
     }
 
+    // Check stock availability for all items
+    for (const item of orderItems) {
+      const product = await Product.findById(item.product);
+      if (!product) {
+        res.status(404);
+        throw new Error(`Product not found: ${item.name}`);
+      }
+      if (product.stock < item.quantity) {
+        res.status(400);
+        throw new Error(`Not enough stock for ${product.name}. Available: ${product.stock}`);
+      }
+    }
+
     // Create order
     const order = new Order({
       user: req.user._id,
@@ -33,6 +47,13 @@ const createOrder = async (req, res, next) => {
     });
 
     const createdOrder = await order.save();
+
+    // Decrement stock for each product
+    for (const item of orderItems) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { stock: -item.quantity }
+      });
+    }
 
     // Clear user's cart in DB after successful order
     await Cart.deleteMany({ userId: req.user._id });

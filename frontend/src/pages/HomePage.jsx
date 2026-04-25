@@ -276,6 +276,9 @@ const HomePage = () => {
                 tabIndex={0}
               >
                 <div className="product-card-image-wrapper">
+                  {product.stock === 0 && (
+                    <div className="out-of-stock-badge">Out of Stock</div>
+                  )}
                   <img
                     src={product.image}
                     alt={product.name}
@@ -334,12 +337,18 @@ const HomePage = () => {
                         <button
                           className={`btn ${successId === product._id ? 'btn-success' : 'btn-primary'} btn-sm`}
                           onClick={(e) => handleAddToCart(e, product._id)}
-                          disabled={addingId === product._id}
+                          disabled={addingId === product._id || product.stock === 0}
                           data-testid={`add-to-cart-button-${product._id}`}
                         >
                           {addingId === product._id ? (
                             <span className="btn-spinner" style={{ width: '14px', height: '14px', display: 'inline-block', borderWidth: '2px' }} />
-                          ) : successId === product._id ? '✓ Added' : '+ Cart'}
+                          ) : successId === product._id ? (
+                            '✓ Added'
+                          ) : product.stock === 0 ? (
+                            'Sold Out'
+                          ) : (
+                            '+ Cart'
+                          )}
                         </button>
                       </div>
                     )}

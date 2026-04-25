@@ -36,7 +36,7 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-glow: 0 0 15px rgba(79, 70, 229, 0.2);
-  --nav-bg: rgba(15, 23, 42, 0.8);
+  --nav-bg: rgba(15, 23, 42, 0.98);
 }
 
 [data-theme='light'] {
@@ -54,7 +54,7 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-glow: 0 0 15px rgba(79, 70, 229, 0.05);
-  --nav-bg: rgba(255, 255, 255, 0.8);
+  --nav-bg: rgba(255, 255, 255, 0.98);
 }
 
 /* =====================
@@ -910,13 +910,19 @@ select.search-input option {
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  background: rgba(67, 233, 123, 0.1);
-  border: 1px solid rgba(67, 233, 123, 0.25);
+  background: rgba(108, 99, 255, 0.05);
+  border: 1px solid rgba(108, 99, 255, 0.1);
   border-radius: 100px;
-  color: var(--success);
+  color: var(--primary-light);
   font-size: 0.8rem;
   font-weight: 600;
   margin-bottom: 28px;
+}
+
+.product-detail-stock.out-of-stock {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--error);
 }
 
 /* Quantity Selector */
@@ -3202,4 +3208,21 @@ select.search-input option {
 
 .confirmation-modal .modal-footer .btn {
   padding: 12px;
+}
+
+.out-of-stock-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  z-index: 2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
 }

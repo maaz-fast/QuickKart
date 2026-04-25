@@ -20,7 +20,8 @@ const getProducts = async (req, res, next) => {
     const query = {};
 
     if (search) {
-      query.name = { $regex: search, $options: 'i' };
+      const sanitizedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query.name = { $regex: sanitizedSearch, $options: 'i' };
     }
 
     if (category && category !== 'All') {

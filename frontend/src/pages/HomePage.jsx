@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { toast } from 'react-toastify';
+import useDebounce from '../hooks/useDebounce';
 
 // Skeleton card shown while loading
 const SkeletonCard = () => (
@@ -32,6 +33,11 @@ const HomePage = () => {
   const [addingId, setAddingId] = useState(null);
   const [successId, setSuccessId] = useState(null);
   const [addingWishlistId, setAddingWishlistId] = useState(null);
+  
+  // Debounced values
+  const debouncedSearch = useDebounce(search, 500);
+  const debouncedMinPrice = useDebounce(minPrice, 500);
+  const debouncedMaxPrice = useDebounce(maxPrice, 500);
 
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -58,10 +64,10 @@ const HomePage = () => {
         setError('');
         
         let url = `/products?page=${page}&limit=8`;
-        if (search) url += `&search=${encodeURIComponent(search)}`;
+        if (debouncedSearch) url += `&search=${encodeURIComponent(debouncedSearch)}`;
         if (category !== 'All') url += `&category=${encodeURIComponent(category)}`;
-        if (minPrice) url += `&minPrice=${minPrice}`;
-        if (maxPrice) url += `&maxPrice=${maxPrice}`;
+        if (debouncedMinPrice) url += `&minPrice=${debouncedMinPrice}`;
+        if (debouncedMaxPrice) url += `&maxPrice=${debouncedMaxPrice}`;
 
         const { data } = await api.get(url);
         setProducts(data.products);
@@ -74,13 +80,8 @@ const HomePage = () => {
       }
     };
 
-    // Debounce search if needed, but for now simple trigger
-    const timer = setTimeout(() => {
-      fetchProducts();
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, [search, category, minPrice, maxPrice, page]);
+    fetchProducts();
+  }, [debouncedSearch, category, debouncedMinPrice, debouncedMaxPrice, page]);
 
   const handleAddToCart = async (e, productId) => {
     e.stopPropagation();

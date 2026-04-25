@@ -105,104 +105,163 @@ button { cursor: pointer; font-family: inherit; }
 }
 
 /* =====================
-   NAVBAR
+   NAVBAR (Redesigned)
    ===================== */
 .navbar {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
-  height: 70px;
+  height: 76px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 40px;
   background: var(--nav-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .navbar-brand a {
-  font-size: 1.5rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  font-size: 1.6rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
+  transition: transform 0.3s ease;
+}
+
+.navbar-brand a:hover {
+  transform: scale(1.02);
 }
 
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
 
 .nav-link {
   color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 0.95rem;
-  transition: color var(--transition);
-}
-
-.nav-link:hover { color: var(--text-primary); }
-
-.cart-link {
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 8px 4px;
   position: relative;
+  transition: color 0.3s ease;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-link.active::after {
+  width: 100%;
+}
+
+.cart-link {
+  position: relative;
+}
+
 .cart-badge {
   position: absolute;
-  top: -8px;
-  right: -10px;
+  top: -6px;
+  right: -8px;
   background: var(--secondary);
   color: white;
   font-size: 0.65rem;
-  font-weight: 700;
-  width: 18px;
+  font-weight: 800;
+  min-width: 18px;
   height: 18px;
-  border-radius: 50%;
+  padding: 0 4px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: pop 0.3s ease;
-}
-
-@keyframes pop {
-  0% { transform: scale(0); }
-  70% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+  border: 2px solid var(--bg-card);
+  box-shadow: 0 2px 8px rgba(255, 101, 132, 0.4);
 }
 
 .theme-toggle {
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+  background: rgba(108, 99, 255, 0.1);
+  border: 1px solid rgba(108, 99, 255, 0.2);
+  color: var(--primary-light);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: all var(--transition);
-  margin-right: 12px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .theme-toggle:hover {
-  transform: scale(1.1);
+  transform: rotate(15deg) scale(1.1);
+  background: rgba(108, 99, 255, 0.2);
   border-color: var(--primary);
-  background: var(--bg-hover);
 }
 
 .nav-user {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.nav-user:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--text-muted);
+}
+
+.admin-nav-link {
+  background: rgba(67, 233, 123, 0.1);
+  color: var(--success) !important;
+  padding: 6px 14px !important;
+  border-radius: 100px;
+  border: 1px solid rgba(67, 233, 123, 0.2);
+}
+
+.admin-nav-link:hover {
+  background: rgba(67, 233, 123, 0.2);
+  border-color: var(--success);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 10px;
 }
 
 /* =====================

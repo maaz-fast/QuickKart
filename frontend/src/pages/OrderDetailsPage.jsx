@@ -69,21 +69,25 @@ const OrderDetailsPage = () => {
     <div className="container order-details-page">
       {/* ── Controls (hidden on print) ── */}
       <div className="order-controls no-print">
-        <Link to="/orders" className="back-link">← Back to My Orders</Link>
-        <button
-          className="btn btn-primary btn-sm"
-          onClick={handlePrint}
-          data-testid="download-invoice-btn"
-          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-            strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          Download Invoice
-        </button>
+        <Link to={user?.role === 'admin' ? "/admin/orders" : "/orders"} className="back-link">
+          {user?.role === 'admin' ? "← Back to All Orders" : "← Back to My Orders"}
+        </Link>
+        {user?.role !== 'admin' && (
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={handlePrint}
+            data-testid="download-invoice-btn"
+            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+              strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download Invoice
+          </button>
+        )}
       </div>
 
       {/* ══════════════════════════════════════
@@ -91,21 +95,30 @@ const OrderDetailsPage = () => {
           ══════════════════════════════════════ */}
       <div className="invoice-wrapper" ref={invoiceRef} data-testid="invoice-section">
 
-        {/* Invoice Header */}
+        {/* Order Header */}
         <div className="invoice-header">
-          <div className="invoice-brand">
-            <div className="invoice-logo-gradient">⚡</div>
-            <div>
-              <h1 className="invoice-brand-name">QuickKart</h1>
-              <p className="invoice-brand-tagline">Your Smart Shopping Destination</p>
+          {user?.role !== 'admin' ? (
+            <div className="invoice-brand">
+              <div className="invoice-logo-gradient">⚡</div>
+              <div>
+                <h1 className="invoice-brand-name">QuickKart</h1>
+                <p className="invoice-brand-tagline">Your Smart Shopping Destination</p>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="invoice-brand">
+              <div>
+                <h1 className="invoice-brand-name" style={{ fontSize: '2rem' }}>Order Management</h1>
+                <p className="invoice-brand-tagline">Reviewing Customer Order Details</p>
+              </div>
+            </div>
+          )}
           <div className="invoice-meta">
-            <h2 className="invoice-title">INVOICE</h2>
+            <h2 className="invoice-title">{user?.role === 'admin' ? 'ORDER SUMMARY' : 'INVOICE'}</h2>
             <table className="invoice-meta-table">
               <tbody>
                 <tr>
-                  <td>Invoice #</td>
+                  <td>Order #</td>
                   <td><strong>ORD-{order._id.slice(-8).toUpperCase()}</strong></td>
                 </tr>
                 <tr>
@@ -201,11 +214,17 @@ const OrderDetailsPage = () => {
         </div>
 
         {/* Footer */}
-        <div className="invoice-footer">
-          <div className="invoice-footer-gradient" />
-          <p className="invoice-footer-text">Thank you for shopping with <strong>QuickKart</strong>! 🛒</p>
-          <p className="invoice-footer-subtext">For support, contact us at support@quickkart.com</p>
-        </div>
+        {user?.role !== 'admin' ? (
+          <div className="invoice-footer">
+            <div className="invoice-footer-gradient" />
+            <p className="invoice-footer-text">Thank you for shopping with <strong>QuickKart</strong>! 🛒</p>
+            <p className="invoice-footer-subtext">For support, contact us at support@quickkart.com</p>
+          </div>
+        ) : (
+          <div className="invoice-footer" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
+             <p className="invoice-footer-text">Customer Order Record - Admin View</p>
+          </div>
+        )}
 
       </div>
       {/* ── End Invoice ── */}

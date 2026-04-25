@@ -3,13 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import BrandedLoader from '../components/common/BrandedLoader';
 
+import { useAuth } from '../context/AuthContext';
+
 const OrdersPage = () => {
+  const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (user?.role === 'admin') {
+      navigate('/admin/orders');
+      return;
+    }
     const fetchOrders = async () => {
       try {
         setLoading(true);
@@ -22,7 +29,7 @@ const OrdersPage = () => {
       }
     };
     fetchOrders();
-  }, []);
+  }, [user, navigate]);
 
   const getStatusColor = (status) => {
     switch (status) {

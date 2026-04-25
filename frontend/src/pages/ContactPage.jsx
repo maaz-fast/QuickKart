@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosConfig';
 import { toast } from 'react-toastify';
@@ -84,7 +85,19 @@ const ContactPage = () => {
         <p>Have questions or feedback? We&apos;d love to hear from you.</p>
       </div>
 
-      <div className="auth-card" style={{ maxWidth: '600px', margin: '40px auto' }}>
+      {user?.role === 'admin' ? (
+        <div className="auth-card" style={{ maxWidth: '600px', margin: '40px auto', textAlign: 'center', padding: '40px' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '20px' }}>🛠️</div>
+          <h2>Admin Support Portal</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>
+            As an administrator, you should use the Admin Dashboard to manage customer queries and support tickets.
+          </p>
+          <Link to="/admin/support" className="btn btn-primary">
+            Go to Support Dashboard
+          </Link>
+        </div>
+      ) : (
+        <div className="auth-card" style={{ maxWidth: '600px', margin: '40px auto' }}>
         <form onSubmit={handleSubmit} noValidate>
           <div className="form-group">
             <label htmlFor="name">Full Name</label>
@@ -158,7 +171,8 @@ const ContactPage = () => {
             {loading ? 'Sending...' : 'Send Message'}
           </button>
         </form>
-      </div>
+        </div>
+      )}
 
       <div className="contact-info-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginTop: '60px' }}>
         <div className="contact-info-card" style={{ textAlign: 'center', background: 'var(--bg-card)', padding: '30px 24px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', transition: 'transform 0.3s ease' }}>

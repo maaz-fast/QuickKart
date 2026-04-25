@@ -55,10 +55,23 @@ const createOrder = async (req, res, next) => {
 // @access  Private
 const getMyOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
+    const totalCount = await Order.countDocuments({ user: req.user._id });
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const orders = await Order.find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
     res.status(200).json({
       success: true,
-      count: orders.length,
+      totalCount,
+      totalPages,
+      currentPage: page,
       orders
     });
   } catch (error) {

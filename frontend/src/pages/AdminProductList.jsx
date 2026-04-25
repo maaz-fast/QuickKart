@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import Pagination from '../components/common/Pagination';
 import BrandedLoader from '../components/common/BrandedLoader';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 
 const AdminProductList = () => {
   const [products, setProducts] = useState([]);
@@ -11,6 +12,8 @@ const AdminProductList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
   const navigate = useNavigate();
 
   const fetchProducts = async () => {
@@ -31,12 +34,16 @@ const AdminProductList = () => {
     fetchProducts();
   }, [currentPage]);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
-    
+  const handleDeleteClick = (id) => {
+    setProductToDelete(id);
+    setIsModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      await api.delete(`/admin/products/${id}`);
-      setProducts(products.filter(p => p._id !== id));
+      await api.delete(`/admin/products/${productToDelete}`);
+      setProducts(products.filter(p => p._id !== productToDelete));
+      setIsModalOpen(false);
     } catch (err) {
       alert('Failed to delete product');
     }
@@ -96,7 +103,7 @@ const AdminProductList = () => {
                       </button>
                       <button 
                         className="btn btn-sm btn-error" 
-                        onClick={() => handleDelete(product._id)}
+                        onClick={() => handleDeleteClick(product._id)}
                         data-testid={`delete-product-${product._id}`}
                       >
                         Delete
@@ -114,6 +121,15 @@ const AdminProductList = () => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
+
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        title="Delete Product"
+        message="Are you sure you want to delete this product? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setIsModalOpen(false)}
+        confirmText="Delete Product"
+      />
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import BrandedLoader from '../components/common/BrandedLoader';
+import Pagination from '../components/common/Pagination';
 
 import { useAuth } from '../context/AuthContext';
 
@@ -10,6 +11,8 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,8 +23,9 @@ const OrdersPage = () => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const { data } = await api.get('/orders/my-orders');
+        const { data } = await api.get(`/orders/my-orders?page=${currentPage}&limit=5`);
         setOrders(data.orders);
+        setTotalPages(data.totalPages);
       } catch (err) {
         setError('Failed to load orders. Please try again.');
       } finally {
@@ -29,7 +33,7 @@ const OrdersPage = () => {
       }
     };
     fetchOrders();
-  }, [user, navigate]);
+  }, [user, navigate, currentPage]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -113,6 +117,12 @@ const OrdersPage = () => {
           </div>
         ))}
       </div>
+
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </div>
   );
 };

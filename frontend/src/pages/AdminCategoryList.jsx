@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../api/axiosConfig';
 import Pagination from '../components/common/Pagination';
 import BrandedLoader from '../components/common/BrandedLoader';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 
 const AdminCategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -12,6 +13,8 @@ const AdminCategoryList = () => {
   const [submitting, setSubmitting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   const fetchCategories = async () => {
     try {
@@ -51,11 +54,16 @@ const AdminCategoryList = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure? This may affect products in this category.')) return;
+  const handleDeleteClick = (id) => {
+    setCategoryToDelete(id);
+    setIsModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      await api.delete(`/admin/categories/${id}`);
-      setCategories(categories.filter(c => c._id !== id));
+      await api.delete(`/admin/categories/${categoryToDelete}`);
+      setCategories(categories.filter(c => c._id !== categoryToDelete));
+      setIsModalOpen(false);
     } catch (err) {
       alert('Failed to delete category');
     }
@@ -123,7 +131,7 @@ const AdminCategoryList = () => {
                     <div className="actions-cell" style={{ justifyContent: 'flex-end' }}>
                       <button 
                         className="btn btn-sm btn-error"
-                        onClick={() => handleDelete(cat._id)}
+                        onClick={() => handleDeleteClick(cat._id)}
                         data-testid={`delete-category-${cat._id}`}
                       >
                         Delete
@@ -141,6 +149,15 @@ const AdminCategoryList = () => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
+
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        title="Delete Category"
+        message="Are you sure you want to delete this category? This may affect products categorized under it."
+        onConfirm={confirmDelete}
+        onCancel={() => setIsModalOpen(false)}
+        confirmText="Delete Category"
+      />
     </div>
   );
 };

@@ -24,6 +24,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
   return (
     <aside className={`admin-sidebar ${isOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
+        <div className="sidebar-logo-icon">⚡</div>
         <h3>Admin Portal</h3>
       </div>
       <nav className="sidebar-nav">
@@ -85,12 +86,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             <circle cx="12" cy="11" r="3" />
             <path d="m9 17 2 2 4-4" />
           </svg>
-          Orders
-          {/* {counts.pendingOrders > 0 && (
-            <span className="sidebar-badge" style={{ marginLeft: 'auto', background: 'var(--primary)', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '0.7rem' }}>
-              {counts.pendingOrders}
-            </span>
-          )} */}
+          Global Orders
         </NavLink>
 
         <NavLink
@@ -121,7 +117,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           </svg>
           Support
           {counts.pendingSupport > 0 && (
-            <span className="sidebar-badge" style={{ marginLeft: 'auto', background: 'var(--warning)', color: '#000', fontWeight: '700', padding: '2px 8px', borderRadius: '10px', fontSize: '0.7rem' }}>
+            <span className="sidebar-badge" style={{ marginLeft: 'auto', background: 'var(--warning)', color: '#000', fontWeight: '700', padding: '2px 8px', borderRadius: 'var(--radius-xs)', fontSize: '0.7rem' }}>
               {counts.pendingSupport}
             </span>
           )}

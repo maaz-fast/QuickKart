@@ -128,7 +128,6 @@ const Navbar = () => {
                 className="btn btn-outline btn-sm"
                 onClick={handleLogout}
                 data-testid="logout-button"
-                style={{ borderRadius: '100px', padding: '6px 16px' }}
               >
                 Logout
               </button>
@@ -146,7 +145,7 @@ const Navbar = () => {
             <Link to="/login" onClick={closeMenu} data-testid="navbar-login-link" className="nav-link">
               Login
             </Link>
-            <Link to="/signup" onClick={closeMenu} data-testid="navbar-signup-link" className="btn btn-primary btn-sm" style={{ borderRadius: '100px', padding: '8px 20px' }}>
+            <Link to="/signup" onClick={closeMenu} data-testid="navbar-signup-link" className="btn btn-primary btn-sm">
               Sign Up
             </Link>
           </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../api/axiosConfig';
+import { useAuth } from '../context/AuthContext';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
@@ -7,6 +8,7 @@ import {
 import BrandedLoader from '../components/common/BrandedLoader';
 
 const AdminDashboard = () => {
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -90,6 +92,7 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard" data-testid="admin-dashboard">
       <div className="page-header">
+        <div className="welcome-badge">Welcome Back, {user?.name || 'Admin'}</div>
         <h1>Dashboard Overview</h1>
         <p>Real-time statistics and system performance</p>
       </div>
@@ -97,34 +100,59 @@ const AdminDashboard = () => {
       <div className="stats-grid">
         <div className="stat-card" data-testid="stat-revenue">
           <div className="stat-header">
-            <div className="stat-icon">💰</div>
             <div className="stat-label">Total Revenue</div>
+            <div className="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
+                <line x1="12" y1="1" x2="12" y2="23" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </div>
           </div>
-          <h2 className="stat-value">${stats.stats.totalRevenue.toFixed(2)}</h2>
+          <h2 className="stat-value">${stats.stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
         </div>
 
         <div className="stat-card" data-testid="stat-orders">
           <div className="stat-header">
-            <div className="stat-icon">📦</div>
             <div className="stat-label">Total Orders</div>
+            <div className="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
+                <path d="m7.5 4.27 9 5.15" />
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                <path d="m3.3 7 8.7 5 8.7-5" />
+                <path d="M12 22V12" />
+              </svg>
+            </div>
           </div>
-          <h2 className="stat-value">{stats.stats.totalOrders}</h2>
+          <h2 className="stat-value">{stats.stats.totalOrders.toLocaleString()}</h2>
         </div>
 
         <div className="stat-card" data-testid="stat-products">
           <div className="stat-header">
-            <div className="stat-icon">🛍️</div>
             <div className="stat-label">Total Products</div>
+            <div className="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                <path d="M3 6h18" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+            </div>
           </div>
-          <h2 className="stat-value">{stats.stats.totalProducts}</h2>
+          <h2 className="stat-value">{stats.stats.totalProducts.toLocaleString()}</h2>
         </div>
 
         <div className="stat-card" data-testid="stat-users">
           <div className="stat-header">
-            <div className="stat-icon">👤</div>
             <div className="stat-label">Total Users</div>
+            <div className="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
           </div>
-          <h2 className="stat-value">{stats.stats.totalUsers}</h2>
+          <h2 className="stat-value">{stats.stats.totalUsers.toLocaleString()}</h2>
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import api from '../api/axiosConfig';
 import BrandedLoader from '../components/common/BrandedLoader';
 import { toast } from 'react-toastify';
 import Pagination from '../components/common/Pagination';
+import { useRef } from 'react';
 
 const AdminSupport = () => {
   const [queries, setQueries] = useState([]);
@@ -10,6 +11,19 @@ const AdminSupport = () => {
   const [statusFilter, setStatusFilter] = useState('All');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowStatusDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const fetchQueries = async () => {
     try {
@@ -49,16 +63,35 @@ const AdminSupport = () => {
           <p>Manage user queries and feedback</p>
         </div>
         <div className="filter-group">
-          <select 
-            value={statusFilter} 
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="search-input"
-            style={{ width: '160px', padding: '0 35px 0 15px' }}
-          >
-            <option value="All">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Resolved">Resolved</option>
-          </select>
+          <div className="custom-select-wrapper" ref={dropdownRef} style={{ width: '180px' }}>
+            <div 
+              className={`custom-select-header sm ${showStatusDropdown ? 'open' : ''}`}
+              onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+            >
+              <span>{statusFilter === 'All' ? 'All Status' : statusFilter}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px', transform: showStatusDropdown ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </div>
+
+            {showStatusDropdown && (
+              <div className="custom-select-options">
+                {['All', 'Pending', 'Resolved'].map((status) => (
+                  <div 
+                    key={status}
+                    className={`custom-select-option ${statusFilter === status ? 'selected' : ''}`}
+                    onClick={() => { 
+                      setStatusFilter(status); 
+                      setPage(1);
+                      setShowStatusDropdown(false); 
+                    }}
+                  >
+                    {status === 'All' ? 'All Status' : status}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

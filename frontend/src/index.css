@@ -161,27 +161,26 @@ button { cursor: pointer; font-family: inherit; }
 }
 
 .nav-link:hover {
-  color: var(--text-primary);
+  color: var(--primary-light);
+  transform: translateY(-1px);
 }
 
-.nav-link::after {
+/* Specific styling for the regular links to have a very subtle indicator */
+.nav-link:not(.admin-nav-link):not(.cart-link)::after {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: 50%;
   width: 0;
   height: 2px;
   background: var(--primary);
-  transition: width 0.3s ease;
+  transition: all 0.3s ease;
   border-radius: 2px;
+  transform: translateX(-50%);
 }
 
-.nav-link:hover::after {
-  width: 100%;
-}
-
-.nav-link.active::after {
-  width: 100%;
+.nav-link:not(.admin-nav-link):not(.cart-link):hover::after {
+  width: 20px;
 }
 
 .cart-link {
@@ -223,9 +222,9 @@ button { cursor: pointer; font-family: inherit; }
 }
 
 .theme-toggle:hover {
-  transform: rotate(15deg) scale(1.1);
-  background: rgba(108, 99, 255, 0.2);
-  border-color: var(--primary);
+  transform: scale(1.1);
+  color: var(--primary);
+  background: rgba(108, 99, 255, 0.15);
 }
 
 .nav-user {

@@ -14,6 +14,8 @@ const AdminSupport = () => {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
+  const [selectedQuery, setSelectedQuery] = useState(null);
+
   // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -119,9 +121,30 @@ const AdminSupport = () => {
                     </div>
                   </td>
                   <td><strong style={{ fontSize: '0.9rem' }}>{q.subject}</strong></td>
-                  <td>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', maxWidth: '300px' }}>
-                      {q.message}
+                  <td style={{ maxWidth: '350px' }}>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.5' }}>
+                      {q.message.length > 120 ? (
+                        <>
+                          {q.message.substring(0, 120)}...
+                          <button 
+                            onClick={() => setSelectedQuery(q)}
+                            style={{ 
+                              background: 'none', 
+                              border: 'none', 
+                              color: 'var(--primary)', 
+                              padding: '0 6px', 
+                              cursor: 'pointer', 
+                              fontWeight: '700',
+                              fontSize: '0.8rem',
+                              textDecoration: 'underline'
+                            }}
+                          >
+                            View Full
+                          </button>
+                        </>
+                      ) : (
+                        q.message
+                      )}
                     </p>
                   </td>
                   <td>
@@ -165,13 +188,74 @@ const AdminSupport = () => {
         </div>
         
         {totalPages > 1 && (
-          <Pagination 
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
+          <div style={{ padding: '24px', borderTop: '1px solid var(--border)' }}>
+            <Pagination 
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </div>
         )}
       </div>
+
+      {/* Query Detail Modal */}
+      {selectedQuery && (
+        <div className="modal-overlay" onClick={() => setSelectedQuery(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px', width: '90%', borderRadius: '20px' }}>
+            <div className="modal-header" style={{ marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontWeight: '800' }}>Query Details</h3>
+              <button 
+                onClick={() => setSelectedQuery(null)}
+                style={{ background: 'var(--bg-input)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)' }}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="modal-body" style={{ textAlign: 'left' }}>
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Subject</label>
+                <p style={{ margin: 0, fontWeight: '700', fontSize: '1.2rem', color: 'var(--text-primary)' }}>{selectedQuery.subject}</p>
+              </div>
+              <div style={{ marginBottom: '20px', display: 'flex', gap: '30px' }}>
+                <div>
+                  <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>From</label>
+                  <p style={{ margin: 0, fontWeight: '600' }}>{selectedQuery.name}</p>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Email</label>
+                  <p style={{ margin: 0, color: 'var(--primary-light)', fontWeight: '600' }}>{selectedQuery.email}</p>
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Message Content</label>
+                <div style={{ 
+                  background: 'var(--bg-input)', 
+                  padding: '24px', 
+                  borderRadius: '16px', 
+                  fontSize: '0.95rem', 
+                  lineHeight: '1.8',
+                  maxHeight: '350px',
+                  overflowY: 'auto',
+                  whiteSpace: 'pre-wrap',
+                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--border)'
+                }}>
+                  {selectedQuery.message}
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer" style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => setSelectedQuery(null)}
+                style={{ padding: '12px 30px', borderRadius: '12px', fontWeight: '700' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

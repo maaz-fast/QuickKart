@@ -246,16 +246,16 @@ const HomePage = () => {
           >
             <span className="tab-icon">{getCategoryIcon('all')}</span> All
           </button>
-            return (
-              <button
-                key={cat._id}
-                className={`category-tab ${category === cat._id ? 'active' : ''}`}
-                onClick={() => { setCategory(cat._id); setPage(1); }}
-                data-testid={`category-tab-${cat.name.toLowerCase()}`}
-              >
-                <span className="tab-icon">{getCategoryIcon(cat.name)}</span> {cat.name}
-              </button>
-            );
+          {categories.map((cat) => (
+            <button
+              key={cat._id}
+              className={`category-tab ${category === cat._id ? 'active' : ''}`}
+              onClick={() => { setCategory(cat._id); setPage(1); }}
+              data-testid={`category-tab-${cat.name.toLowerCase()}`}
+            >
+              <span className="tab-icon">{getCategoryIcon(cat.name)}</span> {cat.name}
+            </button>
+          ))}
         </div>
       </div>
 

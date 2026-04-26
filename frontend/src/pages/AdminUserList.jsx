@@ -45,6 +45,7 @@ const AdminUserList = () => {
           <table className="admin-table" data-testid="admin-users-table">
             <thead>
               <tr>
+                <th>Avatar</th>
                 <th>Join Date</th>
                 <th>Name</th>
                 <th>Email</th>
@@ -55,6 +56,30 @@ const AdminUserList = () => {
             <tbody>
               {users.map((user) => (
                 <tr key={user._id} data-testid={`admin-user-row-${user._id}`}>
+                  <td>
+                    {user.profileImage ? (
+                      <img 
+                        src={user.profileImage} 
+                        alt={user.name} 
+                        className="avatar-sm" 
+                        data-testid="admin-user-avatar"
+                      />
+                    ) : (
+                      <div className="avatar-sm-placeholder" data-testid="admin-user-avatar" style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background: 'var(--bg-input)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.8rem',
+                        color: 'var(--text-muted)'
+                      }}>
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </td>
                   <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                   <td>
                     <strong>{user.name}</strong>

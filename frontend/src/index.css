@@ -252,6 +252,23 @@ button { cursor: pointer; font-family: inherit; }
   margin-left: 10px;
 }
 
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.avatar-lg {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
 /* =====================
    BUTTONS
    ===================== */

@@ -118,10 +118,19 @@ const Navbar = () => {
                 {theme === 'dark' ? '☀️' : '🌙'}
               </button>
               <Link to="/profile" onClick={closeMenu} className="nav-user" data-testid="navbar-username">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em' }}>
-                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
+                {user?.profileImage ? (
+                  <img 
+                    src={user.profileImage} 
+                    alt="Profile" 
+                    className="avatar-sm" 
+                    data-testid="profile-avatar"
+                  />
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em' }}>
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                )}
                 <span className="no-print" style={{ fontSize: '0.85rem' }}>{user?.name.split(' ')[0]}</span>
               </Link>
               <button

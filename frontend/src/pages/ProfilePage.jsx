@@ -42,6 +42,39 @@ const ProfilePage = () => {
     setErrors({ ...errors, [e.target.name]: '' });
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validation
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB');
+      return;
+    }
+
+    const formDataUpload = new FormData();
+    formDataUpload.append('image', file);
+
+    setSaving(true);
+    try {
+      const { data } = await api.put('/users/profile-image', formDataUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Update local storage and context
+      const token = localStorage.getItem('quickkart_token');
+      login(data.user, token);
+      
+      toast.success('Profile image updated!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to upload image');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const validate = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = 'Name is required';
@@ -98,6 +131,50 @@ const ProfilePage = () => {
       <div className="page-header">
         <h1 data-testid="profile-page-title">User Profile</h1>
         <p>Manage your account settings</p>
+      </div>
+
+      <div className="profile-image-section checkout-form-card" style={{ marginTop: '20px', textAlign: 'center' }}>
+        <h3>Profile Picture</h3>
+        <div className="profile-image-container" style={{ 
+          margin: '20px auto', 
+          display: 'flex', 
+          justifyContent: 'center',
+          alignItems: 'center' 
+        }}>
+          {user?.profileImage ? (
+            <img src={user.profileImage} alt="Profile" className="avatar-lg" />
+          ) : (
+            <div className="avatar-lg-placeholder" style={{ 
+              width: '120px', 
+              height: '120px', 
+              borderRadius: '50%', 
+              background: 'var(--bg-input)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              margin: '0 auto',
+              fontSize: '3rem',
+              color: 'var(--text-muted)',
+              border: '2px dashed var(--border)'
+            }}>
+              {user?.name.charAt(0).toUpperCase()}
+            </div>
+          )}
+        </div>
+        
+        <div className="upload-actions" style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
+          <label className="btn btn-outline" style={{ cursor: 'pointer' }}>
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handleImageUpload} 
+              style={{ display: 'none' }}
+              data-testid="profile-image-upload"
+            />
+            {saving ? 'Uploading...' : 'Choose New Photo'}
+          </label>
+          <small style={{ color: 'var(--text-secondary)' }}>JPG, PNG or JPEG. Max 5MB.</small>
+        </div>
       </div>
 
       <div className="checkout-form-card" style={{ marginTop: '20px' }}>

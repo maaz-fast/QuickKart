@@ -20,108 +20,46 @@ const CustomDropdown = ({ value, onChange, options, icon, label, placeholder }) 
   }, []);
 
   return (
-    <div className="custom-dropdown-container" ref={dropdownRef} style={{ position: 'relative', flex: '1', minWidth: '220px' }}>
-      <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', paddingLeft: '4px' }}>
+    <div className="custom-select-wrapper" ref={dropdownRef} style={{ width: '220px' }}>
+      <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', paddingLeft: '4px' }}>
         {label}
       </label>
       <div 
-        className={`custom-dropdown-trigger ${isOpen ? 'active' : ''}`}
+        className={`custom-select-header sm ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          height: '52px',
-          padding: '0 16px',
-          background: 'var(--bg-input)',
-          border: `1px solid ${isOpen ? 'var(--primary)' : 'var(--border)'}`,
-          borderRadius: '14px',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          boxShadow: isOpen ? '0 0 0 4px rgba(79, 70, 229, 0.1)' : 'none'
-        }}
+        style={{ height: '42px', minHeight: '42px', borderRadius: '12px' }}
       >
-        <span style={{ 
-          color: isOpen ? 'var(--primary)' : 'var(--text-muted)', 
-          transition: 'color 0.2s',
-          display: 'flex',
-          transform: 'translateY(1px)'
-        }}>
-          {icon}
-        </span>
-        <span style={{ flex: '1', fontSize: '0.95rem', color: 'var(--text-primary)', fontWeight: '500' }}>
-          {selectedOption.label}
-        </span>
-        <svg 
-          width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
-          style={{ 
-            color: 'var(--text-muted)', 
-            transition: 'transform 0.3s ease',
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-          }}
-        >
-          <polyline points="6 9 12 15 18 9" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ color: isOpen ? 'var(--primary)' : 'var(--text-muted)', display: 'flex', transform: 'translateY(0.5px)' }}>
+            {icon}
+          </span>
+          <span style={{ fontWeight: '600', fontSize: '0.85rem' }}>{selectedOption.label}</span>
+        </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '12px', height: '12px', transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', color: 'var(--text-muted)' }}>
+          <path d="m6 9 6 6 6-6" />
         </svg>
       </div>
 
       {isOpen && (
-        <div 
-          className="custom-dropdown-menu"
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
-            left: '0',
-            right: '0',
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: '16px',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-            zIndex: 100,
-            overflow: 'hidden',
-            animation: 'dropdownIn 0.2s ease-out forwards',
-            padding: '8px'
-          }}
-        >
+        <div className="custom-select-options" style={{ borderRadius: '0 0 12px 12px', border: '1px solid var(--primary)', borderTop: 'none' }}>
           {options.map((option) => (
             <div 
               key={option.value}
-              className={`custom-dropdown-item ${value === option.value ? 'selected' : ''}`}
+              className={`custom-select-option ${value === option.value ? 'selected' : ''}`}
               onClick={() => {
                 onChange(option.value);
                 setIsOpen(false);
               }}
-              style={{
-                padding: '12px 14px',
-                borderRadius: '10px',
-                fontSize: '0.9rem',
-                color: value === option.value ? 'var(--primary)' : 'var(--text-primary)',
-                background: value === option.value ? 'rgba(79, 70, 229, 0.08)' : 'transparent',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                fontWeight: value === option.value ? '600' : '400'
-              }}
-              onMouseOver={(e) => {
-                if (value !== option.value) {
-                  e.currentTarget.style.background = 'var(--bg-hover)';
-                  e.currentTarget.style.color = 'var(--primary-light)';
-                }
-              }}
-              onMouseOut={(e) => {
-                if (value !== option.value) {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = 'var(--text-primary)';
-                }
-              }}
+              style={{ padding: '10px 14px', fontSize: '0.85rem' }}
             >
-              {option.label}
-              {value === option.value && (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span>{option.label}</span>
+                {value === option.value && (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </div>
             </div>
           ))}
         </div>

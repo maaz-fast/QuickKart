@@ -58,7 +58,7 @@ const AdminSupport = () => {
   if (loading && page === 1) return <BrandedLoader fullPage message="Loading Queries..." />;
 
   return (
-    <div className="container admin-support-page">
+    <div className="container admin-support-page" style={{ padding: '40px 0' }}>
       <div className="admin-card-header">
         <div>
           <h1>Customer Support</h1>

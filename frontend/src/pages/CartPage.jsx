@@ -24,10 +24,19 @@ const CartPage = () => {
     return (
       <div className="container cart-page">
         <div className="page-header">
-          <h1 data-testid="cart-page-title">Your Cart 🛒</h1>
+          <h1 data-testid="cart-page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            Your Cart 
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.8em', height: '0.8em' }}>
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+          </h1>
         </div>
         <div className="empty-state" data-testid="empty-cart-state">
-          <span className="empty-state-icon">🛍️</span>
+          <span className="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '64px', height: '64px', opacity: 0.3 }}>
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+          </span>
           <h2>Your cart is empty</h2>
           <p>Looks like you haven&apos;t added anything yet!</p>
           <button
@@ -46,7 +55,12 @@ const CartPage = () => {
     <div className="container cart-page">
       {/* Header */}
       <div className="page-header">
-        <h1 data-testid="cart-page-title">Your Cart 🛒</h1>
+        <h1 data-testid="cart-page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          Your Cart 
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.8em', height: '0.8em' }}>
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+        </h1>
         <p>{cartCount} item{cartCount !== 1 ? 's' : ''} in your cart</p>
       </div>
 
@@ -97,15 +111,18 @@ const CartPage = () => {
                 </div>
 
                 {/* Remove Button */}
-                <button
-                  className="cart-item-remove"
-                  onClick={() => handleRemove(item._id)}
-                  data-testid={`remove-cart-item-${item._id}`}
-                  aria-label={`Remove ${product.name} from cart`}
-                  title="Remove item"
-                >
-                  🗑
-                </button>
+                  <button
+                    className="cart-item-remove"
+                    onClick={() => handleRemove(item._id)}
+                    data-testid={`remove-cart-item-${item._id}`}
+                    aria-label={`Remove ${product.name} from cart`}
+                    title="Remove item"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
+                      <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    </svg>
+                  </button>
               </div>
             );
           })}
@@ -139,17 +156,24 @@ const CartPage = () => {
             className="btn btn-primary btn-full"
             onClick={() => navigate('/checkout')}
             data-testid="checkout-button"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
           >
-            Proceed to Checkout →
+            Proceed to Checkout
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
+              <path d="M5 12h14m-7-7 7 7-7 7" />
+            </svg>
           </button>
 
           <button
             className="btn btn-outline btn-full"
             onClick={() => navigate('/')}
             data-testid="continue-shopping-button"
-            style={{ marginTop: '12px' }}
+            style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
           >
-            ← Continue Shopping
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
+              <path d="M19 12H5m7-7-7 7 7 7" />
+            </svg>
+            Continue Shopping
           </button>
         </div>
       </div>

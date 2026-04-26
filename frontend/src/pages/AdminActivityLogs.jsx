@@ -390,7 +390,11 @@ const AdminActivityLogs = () => {
               ) : (
                 <tr>
                   <td colSpan="5" style={{ textAlign: 'center', padding: '100px 40px', color: 'var(--text-muted)' }}>
-                    <div style={{ fontSize: '4rem', marginBottom: '24px', opacity: 0.3 }}>🔭</div>
+                    <div style={{ marginBottom: '24px', opacity: 0.3, display: 'flex', justifyContent: 'center' }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '64px', height: '64px' }}>
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                      </svg>
+                    </div>
                     <h3 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '12px', color: 'var(--text-primary)' }}>No Matching Records</h3>
                     <p style={{ maxWidth: '350px', margin: '0 auto', fontSize: '1rem' }}>We couldn't find any activity logs matching your current filters. Try resetting to see all events.</p>
                   </td>

@@ -33,6 +33,49 @@ const HomePage = () => {
   const [addingId, setAddingId] = useState(null);
   const [successId, setSuccessId] = useState(null);
   const [addingWishlistId, setAddingWishlistId] = useState(null);
+
+  const getCategoryIcon = (name, size = "1.2em", color = "currentColor") => {
+    const n = name.toLowerCase();
+    const props = { 
+      width: size, 
+      height: size, 
+      viewBox: "0 0 24 24", 
+      fill: "none", 
+      stroke: color, 
+      strokeWidth: "2", 
+      strokeLinecap: "round", 
+      strokeLinejoin: "round",
+      style: { verticalAlign: 'middle' }
+    };
+
+    if (n === 'all') return (
+      <svg {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    );
+    if (n.includes('elect')) return (
+      <svg {...props}><rect width="20" height="14" x="2" y="3" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    );
+    if (n.includes('fash') || n.includes('cloth')) return (
+      <svg {...props}><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+    );
+    if (n.includes('home')) return (
+      <svg {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    );
+    if (n.includes('sport')) return (
+      <svg {...props}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    );
+    if (n.includes('beaut') || n.includes('care')) return (
+      <svg {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M3 5h4"/><path d="M19 17v4"/><path d="M17 19h4"/></svg>
+    );
+    if (n.includes('food') || n.includes('grocer')) return (
+      <svg {...props}><circle cx="12" cy="5" r="3"/><path d="M6.5 8a.5.5 0 0 0-.5.5V15a6 6 0 0 0 12 0V8.5a.5.5 0 0 0-.5-.5h-11Z"/><path d="M12 13V21"/><path d="M18 13v2a6 6 0 0 1-6 6 6 6 0 0 1-6-6v-2"/></svg>
+    );
+    if (n.includes('toy') || n.includes('kid')) return (
+      <svg {...props}><path d="M10 10 5 7V3l5 3 5-3v4l-5 3Z"/><path d="M14 17h.01"/><path d="M10 17h.01"/><path d="M10 13h4v4h-4z"/><path d="M5 7v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7"/></svg>
+    );
+    return (
+      <svg {...props}><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+    );
+  };
   
   // Debounced values
   const debouncedSearch = useDebounce(search, 500);
@@ -201,20 +244,8 @@ const HomePage = () => {
             onClick={() => { setCategory('All'); setPage(1); }}
             data-testid="category-tab-all"
           >
-            <span>🏠</span> All
+            <span className="tab-icon">{getCategoryIcon('all')}</span> All
           </button>
-          {categories.map((cat) => {
-            const getIcon = (name) => {
-              const n = name.toLowerCase();
-              if (n.includes('elect')) return '💻';
-              if (n.includes('fash') || n.includes('cloth')) return '👕';
-              if (n.includes('home')) return '🏠';
-              if (n.includes('sport')) return '⚽';
-              if (n.includes('beaut') || n.includes('care')) return '✨';
-              if (n.includes('food') || n.includes('grocer')) return '🍎';
-              if (n.includes('toy') || n.includes('kid')) return '🧸';
-              return '📦';
-            };
             return (
               <button
                 key={cat._id}
@@ -222,17 +253,21 @@ const HomePage = () => {
                 onClick={() => { setCategory(cat._id); setPage(1); }}
                 data-testid={`category-tab-${cat.name.toLowerCase()}`}
               >
-                <span>{getIcon(cat.name)}</span> {cat.name}
+                <span className="tab-icon">{getCategoryIcon(cat.name)}</span> {cat.name}
               </button>
             );
-          })}
         </div>
       </div>
 
       {/* Error */}
       {error && (
         <div className="alert alert-error" data-testid="products-error-message">
-          ⚠️ {error}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px', marginRight: '10px', verticalAlign: 'middle' }}>
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          {error}
         </div>
       )}
 
@@ -248,7 +283,11 @@ const HomePage = () => {
       {/* Empty state */}
       {!loading && !error && products.length === 0 && (
         <div className="empty-state" data-testid="products-empty-state">
-          <span className="empty-state-icon">🔎</span>
+          <span className="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '64px', height: '64px' }}>
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </span>
           <h2>No products found</h2>
           <p>Try matching your search or adjusting filters.</p>
           <button
@@ -290,17 +329,9 @@ const HomePage = () => {
 
                 <div className="product-card-body">
                   <p className="product-card-category">
-                    {(() => {
-                      const n = (product.category?.name || '').toLowerCase();
-                      if (n.includes('elect')) return '💻 ';
-                      if (n.includes('fash') || n.includes('cloth')) return '👕 ';
-                      if (n.includes('home')) return '🏠 ';
-                      if (n.includes('sport')) return '⚽ ';
-                      if (n.includes('beaut') || n.includes('care')) return '✨ ';
-                      if (n.includes('food') || n.includes('grocer')) return '🍎 ';
-                      if (n.includes('toy') || n.includes('kid')) return '🧸 ';
-                      return '📦 ';
-                    })()}
+                    <span style={{ marginRight: '6px', opacity: 0.7 }}>
+                      {getCategoryIcon(product.category?.name || '', '1em')}
+                    </span>
                     {product.category?.name || 'Uncategorized'}
                   </p>
                   <h3 className="product-card-name" data-testid={`product-name-${product._id}`}>

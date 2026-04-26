@@ -44,7 +44,7 @@ export const WishlistProvider = ({ children }) => {
         // The API returns the newly populated wishlist item in data.wishlistItem
         // We append it to the local state
         setWishlistItems(prev => [...prev, data.wishlistItem]);
-        toast.success('Added to wishlist ❤️');
+        toast.success('Added to wishlist');
       }
       return { success: true };
     } catch (error) {

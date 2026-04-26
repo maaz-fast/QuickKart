@@ -34,10 +34,19 @@ const WishlistPage = () => {
     return (
       <div className="container cart-page">
         <div className="page-header">
-          <h1 data-testid="wishlist-page-title">Your Wishlist ❤️</h1>
+          <h1 data-testid="wishlist-page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            Your Wishlist 
+            <svg viewBox="0 0 24 24" fill="var(--error)" stroke="var(--error)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.8em', height: '0.8em' }}>
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+            </svg>
+          </h1>
         </div>
         <div className="empty-state" data-testid="empty-wishlist-state">
-          <span className="empty-state-icon">🤍</span>
+          <span className="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '64px', height: '64px', opacity: 0.3 }}>
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+            </svg>
+          </span>
           <h2>Your wishlist is empty</h2>
           <p>Save items you love here to buy them later!</p>
           <button
@@ -55,7 +64,12 @@ const WishlistPage = () => {
   return (
     <div className="container cart-page">
       <div className="page-header">
-        <h1 data-testid="wishlist-page-title">Your Wishlist ❤️</h1>
+        <h1 data-testid="wishlist-page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          Your Wishlist 
+          <svg viewBox="0 0 24 24" fill="var(--error)" stroke="var(--error)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.8em', height: '0.8em' }}>
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+          </svg>
+        </h1>
         <p>{wishlistItems.length} item{wishlistItems.length !== 1 ? 's' : ''} saved</p>
       </div>
 
@@ -107,9 +121,11 @@ const WishlistPage = () => {
                     onClick={() => handleRemove(item._id)}
                     data-testid={`wishlist-remove-${item._id}`}
                     title="Remove from wishlist"
-                    style={{ position: 'static' }}
+                    style={{ position: 'static', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
-                    🗑
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
+                      <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    </svg>
                   </button>
                 </div>
               </div>

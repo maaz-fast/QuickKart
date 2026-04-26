@@ -72,7 +72,11 @@ const ProductDetailPage = () => {
     return (
       <div className="container">
         <div className="empty-state" data-testid="product-detail-error">
-          <span className="empty-state-icon">😕</span>
+          <span className="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '64px', height: '64px', opacity: 0.3 }}>
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </span>
           <h2>{error}</h2>
           <button
             className="btn btn-primary"
@@ -132,8 +136,18 @@ const ProductDetailPage = () => {
           </p>
 
           {/* Stock badge */}
-          <div className={`product-detail-stock ${product.stock === 0 ? 'out-of-stock' : ''}`} data-testid="product-detail-stock">
-            {product.stock === 0 ? '❌ Out of Stock' : `✅ ${product.stock} in stock`}
+          <div className={`product-detail-stock ${product.stock === 0 ? 'out-of-stock' : ''}`} data-testid="product-detail-stock" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {product.stock === 0 ? (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+                Out of Stock
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                {product.stock} in stock
+              </>
+            )}
           </div>
 
           {/* Quantity selector */}
@@ -180,11 +194,17 @@ const ProductDetailPage = () => {
                   {adding ? (
                     <><span className="btn-spinner" style={{ width: '16px', height: '16px', display: 'inline-block', borderWidth: '2px', marginRight: '8px', verticalAlign: 'middle' }} /> Adding...</>
                   ) : added ? (
-                    '✓ Added to Cart!'
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}><polyline points="20 6 9 17 4 12" /></svg>
+                      Added to Cart!
+                    </span>
                   ) : product.stock === 0 ? (
                     'Sold Out'
                   ) : (
-                    '🛒 Add to Cart'
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+                      Add to Cart
+                    </span>
                   )}
                 </button>
 

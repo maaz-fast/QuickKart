@@ -99,7 +99,11 @@ const OrderDetailsPage = () => {
         <div className="invoice-header">
           {user?.role !== 'admin' ? (
             <div className="invoice-brand">
-              <div className="invoice-logo-gradient">⚡</div>
+              <div className="invoice-logo-gradient">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
+                  <path d="m13 2-2 10h3L11 22l2-10h-3l2-10z" />
+                </svg>
+              </div>
               <div>
                 <h1 className="invoice-brand-name">QuickKart</h1>
                 <p className="invoice-brand-tagline">Your Smart Shopping Destination</p>
@@ -150,7 +154,12 @@ const OrderDetailsPage = () => {
             <p className="invoice-address-text">{order.shippingAddress.address}</p>
             <p className="invoice-address-text">{order.shippingAddress.city}, {order.shippingAddress.zipCode}</p>
             <p className="invoice-address-text">{order.shippingAddress.country}</p>
-            <p className="invoice-address-text">📞 {order.shippingAddress.phone}</p>
+            <p className="invoice-address-text" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}>
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+              {order.shippingAddress.phone}
+            </p>
           </div>
           <div className="invoice-address-block">
             <p className="invoice-section-label">ORDER INFO</p>
@@ -217,7 +226,12 @@ const OrderDetailsPage = () => {
         {user?.role !== 'admin' ? (
           <div className="invoice-footer">
             <div className="invoice-footer-gradient" />
-            <p className="invoice-footer-text">Thank you for shopping with <strong>QuickKart</strong>! 🛒</p>
+            <p className="invoice-footer-text" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              Thank you for shopping with <strong>QuickKart</strong>!
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+            </p>
             <p className="invoice-footer-subtext">For support, contact us at support@quickkart.com</p>
           </div>
         ) : (

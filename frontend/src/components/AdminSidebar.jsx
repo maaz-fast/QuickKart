@@ -24,7 +24,11 @@ const AdminSidebar = ({ isOpen, onClose }) => {
   return (
     <aside className={`admin-sidebar ${isOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
-        <div className="sidebar-logo-icon">⚡</div>
+        <div className="sidebar-logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
+            <path d="m13 2-2 10h3L11 22l2-10h-3l2-10z" />
+          </svg>
+        </div>
         <h3>Admin Portal</h3>
       </div>
       <nav className="sidebar-nav">

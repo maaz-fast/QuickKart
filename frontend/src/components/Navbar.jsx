@@ -25,8 +25,11 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/" onClick={closeMenu} data-testid="navbar-logo">
-          <span style={{ fontSize: '1.4rem' }}>⚡</span> QuickKart
+        <Link to="/" onClick={closeMenu} data-testid="navbar-logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '22px', height: '22px' }}>
+            <path d="m13 2-2 10h3L11 22l2-10h-3l2-10z" />
+          </svg>
+          QuickKart
         </Link>
       </div>
 
@@ -115,7 +118,11 @@ const Navbar = () => {
                 onClick={() => { toggleTheme(); closeMenu(); }} 
                 data-testid="theme-toggle-button"
               >
-                {theme === 'dark' ? '☀️' : '🌙'}
+                {theme === 'dark' ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em' }}><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em' }}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
               </button>
               <Link to="/profile" onClick={closeMenu} className="nav-user" data-testid="navbar-username">
                 {user?.profileImage ? (
@@ -149,7 +156,11 @@ const Navbar = () => {
               onClick={() => { toggleTheme(); closeMenu(); }} 
               data-testid="theme-toggle-button"
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              {theme === 'dark' ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em' }}><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em' }}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              )}
             </button>
             <Link to="/login" onClick={closeMenu} data-testid="navbar-login-link" className="nav-link">
               Login

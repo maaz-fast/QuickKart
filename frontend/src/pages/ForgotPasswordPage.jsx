@@ -46,7 +46,12 @@ const ForgotPasswordPage = () => {
     <div className="auth-page">
       <div className="auth-card">
         {/* Header */}
-        <h1>Forgot password? 🔑</h1>
+        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+          Forgot password? 
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.8em', height: '0.8em' }}>
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3L15.5 7.5z" />
+          </svg>
+        </h1>
         <p className="subtitle">
           Enter your registered email and we&apos;ll allow you to reset your password
         </p>

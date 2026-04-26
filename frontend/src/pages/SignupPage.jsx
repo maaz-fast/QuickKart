@@ -46,7 +46,7 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
-    
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -74,9 +74,6 @@ const SignupPage = () => {
         {/* Header */}
         <h1>Create account ✨</h1>
         <p className="subtitle">Join QuickKart and start shopping today</p>
-
-        <p className="subtitle">Join QuickKart and start shopping today</p>
-
         {/* Form */}
         <form onSubmit={handleSubmit} data-testid="signup-form" noValidate>
           <div className="form-group">

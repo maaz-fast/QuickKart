@@ -13,10 +13,10 @@ const ForgotPasswordPage = () => {
   const validate = () => {
     const newErrors = {};
     const emailRegex = /^\S+@\S+\.\S+$/;
-    
+
     if (!email.trim()) newErrors.email = 'Please enter your email address';
     else if (!emailRegex.test(email)) newErrors.email = 'Please enter a valid email address';
-    
+
     return newErrors;
   };
 
@@ -50,11 +50,6 @@ const ForgotPasswordPage = () => {
         <p className="subtitle">
           Enter your registered email and we&apos;ll allow you to reset your password
         </p>
-
-        <p className="subtitle">
-          Enter your registered email and we&apos;ll allow you to reset your password
-        </p>
-
         {/* Form */}
         <form onSubmit={handleSubmit} data-testid="forgot-password-form" noValidate>
           <div className="form-group">

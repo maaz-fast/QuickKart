@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { notifyAdmins } = require('../utils/notificationService');
+const { logActivity } = require('../utils/activityLogger');
 
 // Generate JWT token
 const generateToken = (id) => {
@@ -32,6 +33,9 @@ const signup = async (req, res, next) => {
 
     // Notify Admins
     await notifyAdmins(`New user registered: ${email}`, 'user');
+
+    // Log Activity
+    await logActivity(user, 'USER_SIGNUP', 'New user registered');
 
     res.status(201).json({
       success: true,
@@ -75,6 +79,9 @@ const login = async (req, res, next) => {
       res.status(401);
       throw new Error('Invalid email or password');
     }
+
+    // Log Activity
+    await logActivity(user, 'USER_LOGIN', 'User logged in');
 
     res.status(200).json({
       success: true,
@@ -161,4 +168,18 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
-module.exports = { signup, login, forgotPassword, resetPassword };
+// @desc    Logout user
+// @route   POST /api/auth/logout
+// @access  Private
+const logout = async (req, res, next) => {
+  try {
+    if (req.user) {
+      await logActivity(req.user, 'LOGOUT', 'User logged out');
+    }
+    res.status(200).json({ success: true, message: 'Logged out successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { signup, login, forgotPassword, resetPassword, logout };

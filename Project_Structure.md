@@ -6,6 +6,9 @@ Detailed breakdown of the QuickKart monolithic codebase structure, organized by 
 - `package.json` — Master configuration and root scripts (e.g., `npm run dev`)
 - `README.md` — Platform documentation and setup guide
 - `Project_Structure.md` — This file
+- `test-cases.md` — Manual test case documentation
+- `test_suites.md` — High-level test suite organization
+- `vercel.json` — Deployment configuration for Vercel
 - `.gitignore` — Global git exclusions
 
 ---
@@ -70,7 +73,7 @@ Detailed breakdown of the QuickKart monolithic codebase structure, organized by 
 - `controllers/orderController.js` — Order processing and user retrieval
 - `controllers/adminController.js` — Elevated actions (dashboard metrics, global edits)
 - `routes/orderRoutes.js` & `routes/adminRoutes.js` — Restricted route definitions
-- `utils/promoteAdmin.js` — CLI tool to manually elevate user privileges
+- `scripts/promoteAdmin.js` — CLI tool to manually elevate user privileges
 
 ---
 
@@ -105,143 +108,29 @@ Detailed breakdown of the QuickKart monolithic codebase structure, organized by 
 - `controllers/notificationController.js` — Notification retrieval and mark-as-read logic
 - `routes/notificationRoutes.js` — Endpoints for the notification system
 
-Phase 6
-You are a senior full-stack MERN developer. Enhance the existing QuickKart e-commerce application by adding the following features: Invoice/Receipt system, Admin Analytics Dashboard, Test Suites (documentation only), API Rate Limiting, and UI Polish improvements.
+---
 
-The implementation must be simple, clean, and consistent with the existing architecture.
+## 📊 Phase 6: Analytics & Performance
+*Enhanced dashboard insights, security rate-limiting, and UI polish.*
 
-========================
-1. INVOICE / ORDER RECEIPT
-========================
+### Frontend Client
+- `src/pages/AdminDashboard.jsx` — Enhanced with Recharts integration and Advanced Analytics section.
+- `src/pages/OrderDetailsPage.jsx` — Implemented branded invoice receipt with print functionality.
 
-Generate an invoice/receipt after order placement.
+### Backend Server
+- `server.js` — Integrated `express-rate-limit` for security.
+- `controllers/adminController.js` — Added analytics aggregation logic.
 
-Frontend:
-* Create Order Receipt Page (/orders/:id)
-* Display:
-  - Order ID
-  - User details
-  - Product list (name, quantity, price)
-  - Total amount
-  - Order date
-  - Order status
+---
 
-Optional:
-* Add “Download Invoice” button (simple print/download)
+## 📜 Phase 7: Activity Logging System (Current)
+*Comprehensive audit trail for tracking critical business events and administrative actions.*
 
-Backend:
-* Use existing order data
-* No separate API required (use GET /api/orders/:id)
+### Frontend Client
+- `src/pages/AdminActivityLogs.jsx` — Premium explorer interface with custom dropdown filters and SVG icons.
+- `src/components/AdminSidebar.jsx` — Integrated navigation link for Activity Logs.
 
-Rules:
-* Only logged-in user can view their order
-* Admin can view all orders
-
-========================
-2. ADMIN ANALYTICS DASHBOARD
-========================
-
-Enhance admin dashboard with basic analytics.
-
-Metrics:
-* Total Users
-* Total Products
-* Total Orders
-* Total Revenue
-
-Analytics:
-* Orders per day (basic count)
-* Most ordered products (top 5)
-
-Backend:
-* Create analytics endpoint:
-  - GET /api/admin/analytics
-
-Frontend:
-* Show analytics using:
-  - Cards (for totals)
-  - Simple charts (optional)
-
-Rules:
-* Only admin can access analytics
-* Use aggregation queries in MongoDB
-
-========================
-3. TEST SUITES (DOCUMENTATION ONLY - NO CODE)
-========================
-
-Create structured test cases for the application.
-
-Coverage:
-* Authentication (signup/login/logout)
-* Product listing & filtering
-* Cart functionality
-* Checkout & order placement
-* Admin panel (product CRUD, order updates)
-* Notifications system
-
-Format:
-* Test Case ID
-* Scenario
-* Steps
-* Expected Result
-
-Rules:
-* No automation scripts required
-* Focus on manual test scenarios
-* Keep test cases clear and structured
-
-========================
-4. API RATE LIMITING (SECURITY)
-========================
-
-Protect backend APIs from abuse.
-
-Implementation:
-* Use express-rate-limit
-
-Apply on:
-* Auth routes (login/signup)
-* Global API (optional)
-
-Example:
-* Limit: 100 requests per 15 minutes
-* Login: stricter limit (e.g., 10 attempts)
-
-Rules:
-* Return proper error message when limit exceeded
-* Do not break existing APIs
-
-========================
-5. UI POLISH IMPROVEMENTS
-========================
-
-Enhance frontend appearance and usability.
-
-Improvements:
-* Better product card design (spacing, alignment)
-* Add category icons or labels
-* Improve buttons (hover effects, consistent style)
-* Improve typography and spacing
-* Add empty states:
-  - No products found
-  - Empty cart
-  - No orders
-
-Optional:
-* Add dark mode toggle
-
-Rules:
-* Keep UI clean and minimal
-* Maintain consistency across pages
-
-========================
-IMPORTANT RULES
-========================
-
-* Do NOT break existing features (auth, cart, admin, notifications)
-* Keep code modular and clean
-* Follow MVC architecture
-* Use async/await
-* Ensure all features are working end-to-end
-* Maintain automation-friendly data-testid attributes
+### Backend Server
+- `models/ActivityLog.js` — Immutable log schema with actor tracking and metadata.
+- `utils/activityLogger.js` — Asynchronous logging utility integrated across all core controllers.
+- `routes/adminRoutes.js` — Paginated and filterable endpoint for audit logs.

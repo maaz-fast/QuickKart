@@ -37,6 +37,7 @@ import AdminCategoryList from './pages/AdminCategoryList';
 import AdminOrderList from './pages/AdminOrderList';
 import AdminUserList from './pages/AdminUserList';
 import AdminSupport from './pages/AdminSupport';
+import AdminActivityLogs from './pages/AdminActivityLogs';
 
 function App() {
   return (
@@ -143,6 +144,7 @@ function App() {
                     <Route path="/admin/orders" element={<AdminOrderList />} />
                     <Route path="/admin/users" element={<AdminUserList />} />
                     <Route path="/admin/support" element={<AdminSupport />} />
+                    <Route path="/admin/activity-logs" element={<AdminActivityLogs />} />
                   </Route>
                 </Route>
 

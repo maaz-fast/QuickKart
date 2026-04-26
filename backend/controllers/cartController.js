@@ -1,5 +1,6 @@
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const { logActivity } = require('../utils/activityLogger');
 
 // @desc    Add item to cart (or update quantity if exists)
 // @route   POST /api/cart
@@ -31,6 +32,9 @@ const addToCart = async (req, res, next) => {
       await existingItem.save();
 
       const populated = await existingItem.populate('productId');
+      // Log Activity
+      await logActivity(req.user, 'ADD_TO_CART', `Updated cart quantity for: ${populated.productId.name}`, { productId: populated.productId._id, quantity: populated.quantity });
+
       return res.status(200).json({
         success: true,
         message: 'Cart quantity updated',
@@ -52,6 +56,9 @@ const addToCart = async (req, res, next) => {
       message: 'Item added to cart',
       cartItem: populated,
     });
+
+    // Log Activity
+    await logActivity(req.user, 'ADD_TO_CART', `Added to cart: ${populated.productId.name}`, { productId: populated.productId._id, quantity: populated.quantity });
   } catch (error) {
     if (error.name === 'CastError') {
       res.status(400);
@@ -111,6 +118,9 @@ const removeFromCart = async (req, res, next) => {
       success: true,
       message: 'Item removed from cart',
     });
+
+    // Log Activity
+    await logActivity(req.user, 'REMOVE_FROM_CART', 'User removed item from cart', { cartId: req.params.id });
   } catch (error) {
     if (error.name === 'CastError') {
       res.status(400);

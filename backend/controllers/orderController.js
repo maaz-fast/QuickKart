@@ -2,6 +2,7 @@ const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const { createNotification, notifyAdmins } = require('../utils/notificationService');
+const { logActivity } = require('../utils/activityLogger');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -66,6 +67,9 @@ const createOrder = async (req, res, next) => {
       success: true,
       order: createdOrder
     });
+
+    // Log Activity
+    await logActivity(req.user, 'PLACE_ORDER', `Order placed: ${createdOrder._id}`, { orderId: createdOrder._id, amount: createdOrder.totalAmount });
   } catch (error) {
     next(error);
   }

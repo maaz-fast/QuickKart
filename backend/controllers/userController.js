@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { logActivity } = require('../utils/activityLogger');
 
 // @desc    Get user profile
 // @route   GET /api/users/profile
@@ -53,6 +54,9 @@ const updateUserProfile = async (req, res, next) => {
           profileImage: updatedUser.profileImage,
         },
       });
+
+      // Log Activity
+      await logActivity(req.user, 'PROFILE_UPDATE', 'User updated their profile');
     } else {
       res.status(404);
       throw new Error('User not found');

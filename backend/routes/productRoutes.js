@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getProducts, getProductById } = require('../controllers/productController');
 const { getCategories } = require('../controllers/categoryController');
+const { optionalProtect } = require('../middleware/authMiddleware');
 
 /**
  * @swagger
@@ -78,6 +79,6 @@ router.get('/categories', getCategories);
  *       404:
  *         description: Product not found
  */
-router.get('/:id', getProductById);
+router.get('/:id', optionalProtect, getProductById);
 
 module.exports = router;

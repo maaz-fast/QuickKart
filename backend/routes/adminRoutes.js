@@ -10,6 +10,7 @@ const {
   deleteProduct,
   getAnalytics,
   getAdminCounts,
+  getActivityLogs,
 } = require('../controllers/adminController');
 const {
   getQueries,
@@ -341,5 +342,72 @@ router.get('/support', getQueries);
  *         description: Status updated successfully
  */
 router.put('/support/:id', updateQueryStatus);
+/**
+ * @swagger
+ * /api/admin/activity-logs:
+ *   get:
+ *     summary: Get system activity logs (Admin only)
+ *     description: Returns a paginated list of all recorded business activities across the application. Supports filtering by role, action type, and date range.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *         description: Number of records per page
+ *       - in: query
+ *         name: role
+ *         schema: { type: string, enum: [user, admin] }
+ *         description: Filter by user role
+ *       - in: query
+ *         name: action
+ *         schema: { type: string }
+ *         description: Filter by action code (supports partial matches via regex)
+ *       - in: query
+ *         name: startDate
+ *         schema: { type: string, format: date }
+ *         description: Filter logs after this date (YYYY-MM-DD)
+ *       - in: query
+ *         name: endDate
+ *         schema: { type: string, format: date }
+ *         description: Filter logs before this date (YYYY-MM-DD)
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved activity logs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 totalCount: { type: integer }
+ *                 totalPages: { type: integer }
+ *                 currentPage: { type: integer }
+ *                 logs:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id: { type: string }
+ *                       userId: 
+ *                         type: object
+ *                         properties:
+ *                           name: { type: string }
+ *                           email: { type: string }
+ *                       action: { type: string }
+ *                       role: { type: string }
+ *                       description: { type: string }
+ *                       createdAt: { type: string, format: date-time }
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not authorized (Admin role required)
+ */
+router.get('/activity-logs', getActivityLogs);
 
 module.exports = router;

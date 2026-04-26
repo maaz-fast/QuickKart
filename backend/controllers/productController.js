@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const { logActivity } = require('../utils/activityLogger');
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -85,6 +86,11 @@ const getProductById = async (req, res, next) => {
       success: true,
       product: await product.populate('category'),
     });
+
+    // Log Activity (only if user is logged in)
+    if (req.user) {
+      await logActivity(req.user, 'PRODUCT_VIEW', `Viewed: ${product.name}`, { productId: product._id });
+    }
   } catch (error) {
     // Handle invalid ObjectId
     if (error.name === 'CastError') {

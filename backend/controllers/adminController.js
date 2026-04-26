@@ -2,7 +2,9 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const User = require('../models/User');
 const Support = require('../models/Support');
+const ActivityLog = require('../models/ActivityLog');
 const { createNotification } = require('../utils/notificationService');
+const { logActivity } = require('../utils/activityLogger');
 
 // @desc    Get dashboard metrics and chart data
 // @route   GET /api/admin/dashboard
@@ -142,6 +144,9 @@ const updateOrderStatus = async (req, res, next) => {
     );
 
     res.status(200).json({ success: true, order: updatedOrder });
+
+    // Log Activity
+    await logActivity(req.user, 'ADMIN_UPDATE_ORDER_STATUS', `Order ${order._id} status updated to ${status}`, { orderId: order._id, status });
   } catch (error) {
     next(error);
   }
@@ -172,6 +177,9 @@ const getAllUsers = async (req, res, next) => {
       currentPage: Number(page),
       users 
     });
+
+    // Log Activity
+    await logActivity(req.user, 'ADMIN_VIEW_USERS', 'Admin viewed user directory');
   } catch (error) {
     next(error);
   }
@@ -185,6 +193,9 @@ const createProduct = async (req, res, next) => {
     const product = new Product(req.body);
     const createdProduct = await product.save();
     res.status(201).json({ success: true, product: createdProduct });
+
+    // Log Activity
+    await logActivity(req.user, 'ADMIN_ADD_PRODUCT', `Admin created product: ${createdProduct.name}`, { productId: createdProduct._id });
   } catch (error) {
     next(error);
   }
@@ -205,6 +216,9 @@ const updateProduct = async (req, res, next) => {
     const updatedProduct = await product.save();
 
     res.status(200).json({ success: true, product: updatedProduct });
+
+    // Log Activity
+    await logActivity(req.user, 'ADMIN_UPDATE_PRODUCT', `Admin updated product: ${updatedProduct.name}`, { productId: updatedProduct._id });
   } catch (error) {
     next(error);
   }
@@ -223,6 +237,9 @@ const deleteProduct = async (req, res, next) => {
 
     await product.deleteOne();
     res.status(200).json({ success: true, message: 'Product deleted' });
+
+    // Log Activity
+    await logActivity(req.user, 'ADMIN_DELETE_PRODUCT', `Admin deleted product: ${product.name}`, { productId: product._id });
   } catch (error) {
     next(error);
   }
@@ -291,6 +308,55 @@ const getAdminCounts = async (req, res, next) => {
   }
 };
 
+// @desc    Get all activity logs (Admin)
+// @route   GET /api/admin/activity-logs
+// @access  Private/Admin
+const getActivityLogs = async (req, res, next) => {
+  try {
+    const { 
+      page = 1, 
+      limit = 20, 
+      role, 
+      action,
+      startDate,
+      endDate
+    } = req.query;
+
+    const skip = (Number(page) - 1) * Number(limit);
+    
+    // Build query
+    const query = {};
+    if (role) query.role = role;
+    if (action) query.action = { $regex: action.toUpperCase(), $options: 'i' };
+    
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$lte = new Date(endDate);
+    }
+
+    const totalCount = await ActivityLog.countDocuments(query);
+    const totalPages = Math.ceil(totalCount / Number(limit));
+
+    const logs = await ActivityLog.find(query)
+      .populate('userId', 'name email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit));
+
+    res.status(200).json({
+      success: true,
+      count: logs.length,
+      totalCount,
+      totalPages,
+      currentPage: Number(page),
+      logs,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllOrders,
@@ -300,5 +366,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getAnalytics,
-  getAdminCounts
+  getAdminCounts,
+  getActivityLogs
 };

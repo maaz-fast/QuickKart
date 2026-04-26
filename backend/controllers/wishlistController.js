@@ -1,6 +1,7 @@
 const Wishlist = require('../models/Wishlist');
 const Product = require('../models/Product');
 const { createNotification } = require('../utils/notificationService');
+const { logActivity } = require('../utils/activityLogger');
 
 // @desc    Add product to wishlist
 // @route   POST /api/wishlist
@@ -47,6 +48,9 @@ const addToWishlist = async (req, res, next) => {
       success: true,
       wishlistItem: populatedItem,
     });
+
+    // Log Activity
+    await logActivity(req.user, 'WISHLIST_ADD', `Added to wishlist: ${populatedItem.product.name}`, { productId: populatedItem.product._id });
   } catch (error) {
     next(error);
   }

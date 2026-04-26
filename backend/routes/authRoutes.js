@@ -6,7 +6,9 @@ const {
   login,
   forgotPassword,
   resetPassword,
+  logout,
 } = require('../controllers/authController');
+const { protect } = require('../middleware/authMiddleware');
 
 // Strict rate limiter for auth endpoints (login & signup)
 const authLimiter = rateLimit({
@@ -163,5 +165,6 @@ router.post('/forgot-password', forgotPassword);
  *         description: Email not found
  */
 router.post('/reset-password', resetPassword);
+router.post('/logout', protect, logout);
 
 module.exports = router;

@@ -108,7 +108,9 @@ const AdminDashboard = () => {
               </svg>
             </div>
           </div>
-          <h2 className="stat-value">${stats.stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
+          <h2 className="stat-value" style={{ fontWeight: '900', letterSpacing: '-0.04em', fontSize: '2.4rem', color: 'var(--text-primary)', fontFamily: 'monospace' }}>
+            ${stats.stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </h2>
         </div>
 
         <div className="stat-card" data-testid="stat-orders">
@@ -123,7 +125,9 @@ const AdminDashboard = () => {
               </svg>
             </div>
           </div>
-          <h2 className="stat-value">{stats.stats.totalOrders.toLocaleString()}</h2>
+          <h2 className="stat-value" style={{ fontWeight: '900', letterSpacing: '-0.04em', fontSize: '2.4rem', color: 'var(--text-primary)', fontFamily: 'monospace' }}>
+            {stats.stats.totalOrders.toLocaleString()}
+          </h2>
         </div>
 
         <div className="stat-card" data-testid="stat-products">
@@ -137,7 +141,9 @@ const AdminDashboard = () => {
               </svg>
             </div>
           </div>
-          <h2 className="stat-value">{stats.stats.totalProducts.toLocaleString()}</h2>
+          <h2 className="stat-value" style={{ fontWeight: '900', letterSpacing: '-0.04em', fontSize: '2.4rem', color: 'var(--text-primary)', fontFamily: 'monospace' }}>
+            {stats.stats.totalProducts.toLocaleString()}
+          </h2>
         </div>
 
         <div className="stat-card" data-testid="stat-users">
@@ -152,7 +158,9 @@ const AdminDashboard = () => {
               </svg>
             </div>
           </div>
-          <h2 className="stat-value">{stats.stats.totalUsers.toLocaleString()}</h2>
+          <h2 className="stat-value" style={{ fontWeight: '900', letterSpacing: '-0.04em', fontSize: '2.4rem', color: 'var(--text-primary)', fontFamily: 'monospace' }}>
+            {stats.stats.totalUsers.toLocaleString()}
+          </h2>
         </div>
       </div>
 

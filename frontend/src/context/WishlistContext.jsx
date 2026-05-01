@@ -8,15 +8,16 @@ const WishlistContext = createContext();
 export const WishlistProvider = ({ children }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
+      setWishlistItems([]); // Clear before fetch to prevent flash of previous user data
       fetchWishlist();
     } else {
       setWishlistItems([]);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?._id]);
 
   const fetchWishlist = async () => {
     try {

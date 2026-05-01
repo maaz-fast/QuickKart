@@ -4,6 +4,10 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosConfig';
 import { toast } from 'react-toastify';
+import PhoneInputPkg from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+
+const PhoneInput = PhoneInputPkg.default ? PhoneInputPkg.default : PhoneInputPkg;
 
 const CheckoutPage = () => {
   const { cartItems, cartTotal, fetchCart } = useCart();
@@ -43,6 +47,7 @@ const CheckoutPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     // Format card number with spaces
     if (name === 'cardNumber') {
       const cleaned = value.replace(/\D/g, '').slice(0, 16);
@@ -68,7 +73,9 @@ const CheckoutPage = () => {
     if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
     if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
-    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
+    if (!formData.phone || formData.phone.trim().length < 7) {
+      newErrors.phone = 'Enter a valid phone number';
+    }
     if (!formData.address.trim()) newErrors.address = 'Address is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.zipCode.trim()) newErrors.zipCode = 'ZIP code is required';
@@ -211,12 +218,12 @@ const CheckoutPage = () => {
               <div className="form-grid-2">
                 <div className="form-group">
                   <label htmlFor="firstName">First Name</label>
-                  <input id="firstName" type="text" name="firstName" placeholder="John" value={formData.firstName} onChange={handleChange} data-testid="checkout-first-name" className={errors.firstName ? 'input-error' : ''} />
+                  <input id="firstName" type="text" name="firstName" placeholder="Maaz" value={formData.firstName} onChange={handleChange} data-testid="checkout-first-name" className={errors.firstName ? 'input-error' : ''} />
                   {errors.firstName && <span className="field-error">{errors.firstName}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="lastName">Last Name</label>
-                  <input id="lastName" type="text" name="lastName" placeholder="Doe" value={formData.lastName} onChange={handleChange} data-testid="checkout-last-name" className={errors.lastName ? 'input-error' : ''} />
+                  <input id="lastName" type="text" name="lastName" placeholder="Imtiaz" value={formData.lastName} onChange={handleChange} data-testid="checkout-last-name" className={errors.lastName ? 'input-error' : ''} />
                   {errors.lastName && <span className="field-error">{errors.lastName}</span>}
                 </div>
               </div>
@@ -228,7 +235,37 @@ const CheckoutPage = () => {
                 </div>
                 <div className="form-group">
                   <label htmlFor="phone">Phone</label>
-                  <input id="phone" type="tel" name="phone" placeholder="+92 300 1234567" value={formData.phone} onChange={handleChange} data-testid="checkout-phone" className={errors.phone ? 'input-error' : ''} />
+                  <PhoneInput
+                    country={'pk'}
+                    value={formData.phone}
+                    onChange={(phone, countryData) => {
+                      setFormData({ ...formData, phone, country: countryData?.name || formData.country });
+                      if (errors.phone) setErrors({ ...errors, phone: '' });
+                    }}
+                    inputStyle={{
+                      width: '100%',
+                      padding: '10px 14px 10px 48px',
+                      background: 'var(--bg-input)',
+                      border: errors.phone ? '1px solid var(--error)' : '1px solid var(--border)',
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.9rem',
+                      fontFamily: 'inherit',
+                      outline: 'none',
+                      height: '43px',
+                    }}
+                    buttonStyle={{
+                      background: 'var(--bg-input)',
+                      border: errors.phone ? '1px solid var(--error)' : '1px solid var(--border)',
+                      borderRight: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-sm) 0 0 var(--radius-sm)',
+                      padding: '0 4px',
+                    }}
+                    dropdownStyle={{
+                      background: 'var(--bg-card)',
+                      color: 'var(--text-primary)',
+                    }}
+                  />
                   {errors.phone && <span className="field-error">{errors.phone}</span>}
                 </div>
               </div>
@@ -240,7 +277,7 @@ const CheckoutPage = () => {
               <div className="form-grid-2">
                 <div className="form-group">
                   <label htmlFor="city">City</label>
-                  <input id="city" type="text" name="city" placeholder="Lahore" value={formData.city} onChange={handleChange} data-testid="checkout-city" className={errors.city ? 'input-error' : ''} />
+                  <input id="city" type="text" name="city" placeholder="Karachi" value={formData.city} onChange={handleChange} data-testid="checkout-city" className={errors.city ? 'input-error' : ''} />
                   {errors.city && <span className="field-error">{errors.city}</span>}
                 </div>
                 <div className="form-group">

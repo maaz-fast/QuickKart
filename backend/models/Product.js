@@ -29,7 +29,12 @@ const productSchema = new mongoose.Schema(
     stock: {
       type: Number,
       default: 100,
-      min: 0,
+      min: [0, 'Stock cannot be negative'],
+      max: [100000, 'Stock cannot exceed 100,000'],
+      validate: {
+        validator: Number.isInteger,
+        message: '{VALUE} is not a valid integer for stock'
+      }
     },
   },
   { timestamps: true }

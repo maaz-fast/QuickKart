@@ -9,18 +9,19 @@ export const CartProvider = ({ children }) => {
   const [cartTotal, setCartTotal] = useState(0);
   const [cartCount, setCartCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   // Fetch cart whenever auth state changes
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
+      setCartItems([]); // Clear before fetch to prevent flash of previous user data
       fetchCart();
     } else {
       setCartItems([]);
       setCartTotal(0);
       setCartCount(0);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?._id]);
 
   const fetchCart = async () => {
     try {

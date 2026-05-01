@@ -59,7 +59,7 @@ const AdminProductForm = () => {
     if (!formData.description.trim()) newErrors.description = 'Enter product description';
     if (!formData.category.trim()) newErrors.category = 'Enter product category';
     if (!formData.image.trim()) newErrors.image = 'Provide a product image URL';
-    if (!formData.stock || formData.stock < 0) newErrors.stock = 'Stock cannot be negative';
+    if (formData.stock === '' || formData.stock < 0 || !Number.isInteger(Number(formData.stock)) || formData.stock > 100000) newErrors.stock = 'Enter a valid stock quantity (0 - 100,000)';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -179,6 +179,9 @@ const AdminProductForm = () => {
                 id="stock" 
                 name="stock" 
                 type="number" 
+                step="1"
+                min="0"
+                max="100000"
                 value={formData.stock} 
                 onChange={(e) => {
                   setFormData({...formData, stock: e.target.value});

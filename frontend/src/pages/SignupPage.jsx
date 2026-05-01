@@ -26,7 +26,7 @@ const SignupPage = () => {
 
   const validate = () => {
     const newErrors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     else if (formData.name.trim().length < 2) newErrors.name = 'Name must be at least 2 characters';

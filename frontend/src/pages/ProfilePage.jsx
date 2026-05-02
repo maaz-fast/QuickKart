@@ -124,7 +124,7 @@ const ProfilePage = () => {
     }
   };
 
-  if (loading) return <BrandedLoader fullPage message="Loading Profile..." />;
+  if (loading) return <BrandedLoader fullPage message="Loading Profile..." testId="loading-skeleton" />;
 
   return (
     <div className="container" style={{ maxWidth: '600px', margin: '0 auto', padding: '40px 20px' }}>
@@ -190,7 +190,7 @@ const ProfilePage = () => {
               className={errors.name ? 'input-error' : ''}
               data-testid="profile-name-input"
             />
-            {errors.name && <span className="field-error">{errors.name}</span>}
+            {errors.name && <span className="field-error" data-testid="name-error">{errors.name}</span>}
           </div>
 
           <div className="form-group">
@@ -224,7 +224,7 @@ const ProfilePage = () => {
               className={errors.password ? 'input-error' : ''}
               data-testid="profile-password-input"
             />
-            {errors.password && <span className="field-error">{errors.password}</span>}
+            {errors.password && <span className="field-error" data-testid="password-error">{errors.password}</span>}
           </div>
 
           <div className="form-group">
@@ -239,7 +239,7 @@ const ProfilePage = () => {
               className={errors.confirmPassword ? 'input-error' : ''}
               data-testid="profile-confirm-password-input"
             />
-            {errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
+            {errors.confirmPassword && <span className="field-error" data-testid="confirmPassword-error">{errors.confirmPassword}</span>}
           </div>
 
           <button

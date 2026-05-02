@@ -9,7 +9,7 @@ import useDebounce from '../hooks/useDebounce';
 
 // Skeleton card shown while loading
 const SkeletonCard = () => (
-  <div className="skeleton-card">
+  <div className="skeleton-card" data-testid="loading-spinner">
     <div className="skeleton skeleton-img" />
     <div className="skeleton skeleton-text" />
     <div className="skeleton skeleton-text" />

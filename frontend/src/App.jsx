@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
+import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { CartProvider, useCart } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -39,6 +40,19 @@ import AdminUserList from './pages/AdminUserList';
 import AdminSupport from './pages/AdminSupport';
 import AdminActivityLogs from './pages/AdminActivityLogs';
 
+// Observer to set global ready flag for automation
+const GlobalReadyObserver = ({ children }) => {
+  const { loading: authLoading } = useAuth();
+  const { loading: cartLoading } = useCart();
+
+  useEffect(() => {
+    const isReady = !authLoading && !cartLoading;
+    document.body.setAttribute('data-app-ready', isReady.toString());
+  }, [authLoading, cartLoading]);
+
+  return children;
+};
+
 function App() {
   return (
     <Router>
@@ -47,119 +61,121 @@ function App() {
           <CartProvider>
             <WishlistProvider>
               <NotificationProvider>
-                <div className="app-wrapper">
-            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
-            <Navbar />
-            <main className="main-content">
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/reset-password" element={<ResetPasswordPage />} />
-                <Route path="/contact" element={<ContactPage />} />
+                <GlobalReadyObserver>
+                  <div className="app-wrapper">
+                    <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+                    <Navbar />
+                    <main className="main-content">
+                      <Routes>
+                        {/* Public Routes */}
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/signup" element={<SignupPage />} />
+                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                        <Route path="/reset-password" element={<ResetPasswordPage />} />
+                        <Route path="/contact" element={<ContactPage />} />
 
-                {/* Protected Routes */}
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <HomePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/products/:id"
-                  element={
-                    <ProtectedRoute>
-                      <ProductDetailPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/cart"
-                  element={
-                    <ProtectedRoute>
-                      <CartPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/checkout"
-                  element={
-                    <ProtectedRoute>
-                      <CheckoutPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/orders"
-                  element={
-                    <ProtectedRoute>
-                      <OrdersPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/orders/:id"
-                  element={
-                    <ProtectedRoute>
-                      <OrderDetailsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <ProfilePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/wishlist"
-                  element={
-                    <ProtectedRoute>
-                      <WishlistPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/notifications"
-                  element={
-                    <ProtectedRoute>
-                      <NotificationsPage />
-                    </ProtectedRoute>
-                  }
-                />
+                        {/* Protected Routes */}
+                        <Route
+                          path="/"
+                          element={
+                            <ProtectedRoute>
+                              <HomePage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/products/:id"
+                          element={
+                            <ProtectedRoute>
+                              <ProductDetailPage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/cart"
+                          element={
+                            <ProtectedRoute>
+                              <CartPage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/checkout"
+                          element={
+                            <ProtectedRoute>
+                              <CheckoutPage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/orders"
+                          element={
+                            <ProtectedRoute>
+                              <OrdersPage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/orders/:id"
+                          element={
+                            <ProtectedRoute>
+                              <OrderDetailsPage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/profile"
+                          element={
+                            <ProtectedRoute>
+                              <ProfilePage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/wishlist"
+                          element={
+                            <ProtectedRoute>
+                              <WishlistPage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/notifications"
+                          element={
+                            <ProtectedRoute>
+                              <NotificationsPage />
+                            </ProtectedRoute>
+                          }
+                        />
 
-                {/* Admin Routes */}
-                <Route element={<AdminRoute />}>
-                  <Route element={<AdminLayout />}>
-                    <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                    <Route path="/admin/products" element={<AdminProductList />} />
-                    <Route path="/admin/products/add" element={<AdminProductForm />} />
-                    <Route path="/admin/products/edit/:id" element={<AdminProductForm />} />
-                    <Route path="/admin/categories" element={<AdminCategoryList />} />
-                    <Route path="/admin/orders" element={<AdminOrderList />} />
-                    <Route path="/admin/users" element={<AdminUserList />} />
-                    <Route path="/admin/support" element={<AdminSupport />} />
-                    <Route path="/admin/activity-logs" element={<AdminActivityLogs />} />
-                  </Route>
-                </Route>
+                        {/* Admin Routes */}
+                        <Route element={<AdminRoute />}>
+                          <Route element={<AdminLayout />}>
+                            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                            <Route path="/admin/products" element={<AdminProductList />} />
+                            <Route path="/admin/products/add" element={<AdminProductForm />} />
+                            <Route path="/admin/products/edit/:id" element={<AdminProductForm />} />
+                            <Route path="/admin/categories" element={<AdminCategoryList />} />
+                            <Route path="/admin/orders" element={<AdminOrderList />} />
+                            <Route path="/admin/users" element={<AdminUserList />} />
+                            <Route path="/admin/support" element={<AdminSupport />} />
+                            <Route path="/admin/activity-logs" element={<AdminActivityLogs />} />
+                          </Route>
+                        </Route>
 
-                {/* Fallback */}
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </main>
-          </div>
+                        {/* Fallback */}
+                        <Route path="*" element={<NotFoundPage />} />
+                      </Routes>
+                    </main>
+                  </div>
+                </GlobalReadyObserver>
               </NotificationProvider>
             </WishlistProvider>
-        </CartProvider>
-      </AuthProvider>
-    </ThemeProvider>
-  </Router>
-);
+          </CartProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </Router>
+  );
 }
 
 export default App;

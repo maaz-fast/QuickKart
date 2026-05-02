@@ -1,6 +1,6 @@
-const BrandedLoader = ({ size = 'md', fullPage = false, message = 'QuickKart' }) => {
+const BrandedLoader = ({ size = 'md', fullPage = false, message = 'QuickKart', testId = 'loading-spinner' }) => {
   return (
-    <div className={`branded-loader-container ${size} ${fullPage ? 'full-page' : ''}`} data-testid="branded-loader">
+    <div className={`branded-loader-container ${size} ${fullPage ? 'full-page' : ''}`} data-testid={testId}>
       <div className="loader-visual">
         <div className="loader-bolt">
           <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '100%', height: '100%' }}>

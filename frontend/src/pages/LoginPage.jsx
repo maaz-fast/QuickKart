@@ -84,7 +84,7 @@ const LoginPage = () => {
               autoComplete="email"
               autoFocus
             />
-            {errors.email && <span className="field-error">{errors.email}</span>}
+            {errors.email && <span className="field-error" data-testid="email-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
@@ -115,7 +115,7 @@ const LoginPage = () => {
                 )}
               </button>
             </div>
-            {errors.password && <span className="field-error">{errors.password}</span>}
+            {errors.password && <span className="field-error" data-testid="password-error">{errors.password}</span>}
           </div>
 
           <div className="auth-extras">

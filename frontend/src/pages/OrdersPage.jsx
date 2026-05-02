@@ -46,7 +46,7 @@ const OrdersPage = () => {
     }
   };
 
-  if (loading) return <BrandedLoader fullPage message="Retrieving Purchase History..." />;
+  if (loading) return <BrandedLoader fullPage message="Retrieving Purchase History..." testId="loading-skeleton" />;
 
   if (orders.length === 0) {
     return (

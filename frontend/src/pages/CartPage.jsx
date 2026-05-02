@@ -114,7 +114,7 @@ const CartPage = () => {
                   <button
                     className="cart-item-remove"
                     onClick={() => handleRemove(item._id)}
-                    data-testid={`remove-cart-item-${item._id}`}
+                    data-testid={`remove-item-${item._id}`}
                     aria-label={`Remove ${product.name} from cart`}
                     title="Remove item"
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}

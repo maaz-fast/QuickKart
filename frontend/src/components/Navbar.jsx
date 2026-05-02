@@ -11,6 +11,9 @@ const Navbar = () => {
   const { cartCount } = useCart();
   const { wishlistItems } = useWishlist();
   const { theme, toggleTheme } = useTheme();
+  const { loading: authLoading } = useAuth();
+  const { loading: cartLoading } = useCart();
+  const isGlobalLoading = authLoading || cartLoading;
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -124,6 +127,14 @@ const Navbar = () => {
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em' }}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                 )}
               </button>
+
+              {/* Global Loading Indicator */}
+              {isGlobalLoading && (
+                <div className="global-nav-loader" data-testid="global-loading-indicator" title="Synchronizing data...">
+                  <span className="btn-spinner" style={{ width: '16px', height: '16px', borderWidth: '2px', borderColor: 'var(--primary) transparent' }} />
+                </div>
+              )}
+
               <Link to="/profile" onClick={closeMenu} className="nav-user" data-testid="navbar-username">
                 {user?.profileImage ? (
                   <img 

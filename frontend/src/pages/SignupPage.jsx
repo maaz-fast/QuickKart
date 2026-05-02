@@ -95,7 +95,7 @@ const SignupPage = () => {
               autoComplete="name"
               autoFocus
             />
-            {errors.name && <span className="field-error">{errors.name}</span>}
+            {errors.name && <span className="field-error" data-testid="name-error">{errors.name}</span>}
           </div>
 
           <div className="form-group">
@@ -111,7 +111,7 @@ const SignupPage = () => {
               data-testid="email-input"
               autoComplete="email"
             />
-            {errors.email && <span className="field-error">{errors.email}</span>}
+            {errors.email && <span className="field-error" data-testid="email-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
@@ -142,7 +142,7 @@ const SignupPage = () => {
                 )}
               </button>
             </div>
-            {errors.password && <span className="field-error">{errors.password}</span>}
+            {errors.password && <span className="field-error" data-testid="password-error">{errors.password}</span>}
           </div>
 
           <div className="form-group">
@@ -173,7 +173,7 @@ const SignupPage = () => {
                 )}
               </button>
             </div>
-            {errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
+            {errors.confirmPassword && <span className="field-error" data-testid="confirmPassword-error">{errors.confirmPassword}</span>}
           </div>
 
           <button

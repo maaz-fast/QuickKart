@@ -65,7 +65,7 @@ const ProductDetailPage = () => {
   };
 
   // Loading state
-  if (loading) return <BrandedLoader fullPage message="Analyzing Product Details..." />;
+  if (loading) return <BrandedLoader fullPage message="Analyzing Product Details..." testId="page-loader" />;
 
   // Error state
   if (error) {
@@ -91,7 +91,11 @@ const ProductDetailPage = () => {
   }
 
   return (
-    <div className="container product-detail-page">
+    <div
+      className="container product-detail-page"
+      data-testid="product-detail-page"
+      data-loading="false"
+    >
       {/* Breadcrumb */}
       <nav className="breadcrumb" data-testid="breadcrumb">
         <button

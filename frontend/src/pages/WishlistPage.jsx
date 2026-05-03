@@ -28,7 +28,7 @@ const WishlistPage = () => {
     }
   };
 
-  if (loading) return <BrandedLoader fullPage message="Loading your wishlist..." />;
+  if (loading) return <BrandedLoader fullPage message="Loading your wishlist..." testId="page-loader" />;
 
   if (wishlistItems.length === 0) {
     return (

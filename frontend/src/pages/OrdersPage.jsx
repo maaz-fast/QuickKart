@@ -46,11 +46,21 @@ const OrdersPage = () => {
     }
   };
 
-  if (loading) return <BrandedLoader fullPage message="Retrieving Purchase History..." testId="loading-skeleton" />;
+  if (loading) return <BrandedLoader fullPage message="Retrieving Purchase History..." testId="page-loader" />;
 
   if (orders.length === 0) {
     return (
-      <div className="container">
+      <div className="container orders-page">
+        <div className="page-header">
+          <h1 data-testid="orders-page-title">
+            My Orders
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.9em', height: '0.9em', verticalAlign: 'middle', marginLeft: '12px', color: 'var(--primary-light)' }}>
+              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+              <path d="m3.3 7 8.7 5 8.7-5" />
+              <path d="M12 22V12" />
+            </svg>
+          </h1>
+        </div>
         <div className="empty-state" data-testid="orders-empty-state">
           <span className="empty-state-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '60px', height: '60px' }}>

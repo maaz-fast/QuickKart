@@ -17,7 +17,7 @@ const CartPage = () => {
   };
 
   // Loading state
-  if (loading) return <BrandedLoader fullPage message="Synchronizing Your Cart..." />;
+  if (loading) return <BrandedLoader fullPage message="Synchronizing Your Cart..." testId="page-loader" />;
 
   // Empty cart
   if (!loading && cartItems.length === 0) {
@@ -52,7 +52,11 @@ const CartPage = () => {
   }
 
   return (
-    <div className="container cart-page">
+    <div
+      className="container cart-page"
+      data-testid="cart-page-container"
+      data-loading={loading ? "true" : "false"}
+    >
       {/* Header */}
       <div className="page-header">
         <h1 data-testid="cart-page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

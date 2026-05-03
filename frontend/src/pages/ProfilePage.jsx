@@ -124,7 +124,7 @@ const ProfilePage = () => {
     }
   };
 
-  if (loading) return <BrandedLoader fullPage message="Loading Profile..." testId="loading-skeleton" />;
+  if (loading) return <BrandedLoader fullPage message="Loading Profile..." testId="page-loader" />;
 
   return (
     <div className="container" style={{ maxWidth: '600px', margin: '0 auto', padding: '40px 20px' }}>
@@ -178,6 +178,10 @@ const ProfilePage = () => {
       </div>
 
       <div className="checkout-form-card" style={{ marginTop: '20px' }}>
+        <div data-testid="profile-info-section">
+          <p data-testid="profile-user-name">{formData.name}</p>
+          <p data-testid="profile-user-email">{formData.email}</p>
+        </div>
         <form onSubmit={handleSubmit} data-testid="profile-form" noValidate>
           <div className="form-group">
             <label htmlFor="name">Full Name</label>

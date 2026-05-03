@@ -303,7 +303,7 @@ const HomePage = () => {
       {/* Products Grid */}
       {!loading && !error && products.length > 0 && (
         <>
-          <div className="products-grid" data-testid="products-grid">
+          <div className="products-grid" data-testid="products-grid" data-loading={loading ? "true" : "false"}>
             {products.map((product, index) => (
               <div
                 key={product._id}

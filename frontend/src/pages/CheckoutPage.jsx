@@ -104,7 +104,9 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('[CHECKOUT] handleSubmit called');
     const validationErrors = validate();
+    console.log('[CHECKOUT] validationErrors:', validationErrors);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -139,7 +141,9 @@ const CheckoutPage = () => {
         shippingPrice: Number(shippingPrice)
       };
 
+      console.log('[CHECKOUT] Sending order to backend:', orderData);
       const { data } = await api.post('/orders', orderData);
+      console.log('[CHECKOUT] Order response:', data);
 
       setCreatedOrderId(data.order._id);
       setOrderPlaced(true);
@@ -248,6 +252,11 @@ const CheckoutPage = () => {
                   <label htmlFor="phone">Phone</label>
                   <PhoneInput
                     country={'pk'}
+                    inputProps={{
+                      'data-testid': 'checkout-phone',
+                      name: 'phone',
+                      id: 'phone'
+                    }}
                     value={formData.phone}
                     onChange={(phone, countryData) => {
                       setFormData({ ...formData, phone, country: countryData?.name || formData.country });
@@ -354,7 +363,13 @@ const CheckoutPage = () => {
               ))}
             </div>
             <div className="summary-total">Grand Total <span>${grandTotal}</span></div>
-            <button type="submit" className="btn btn-success btn-full" disabled={submitting} data-testid="place-order-button">
+            <button
+              type="button"
+              className="btn btn-success btn-full"
+              disabled={submitting}
+              data-testid="place-order-button"
+              onClick={handleSubmit}
+            >
               {submitting ? 'Processing...' : `Place Order • $${grandTotal}`}
             </button>
           </div>

@@ -233,19 +233,19 @@ const CheckoutPage = () => {
               <div className="form-grid-2">
                 <div className="form-group">
                   <label htmlFor="firstName">First Name</label>
-                  <input id="firstName" type="text" name="firstName" placeholder="Maaz" value={formData.firstName} onChange={handleChange} data-testid="checkout-first-name" className={errors.firstName ? 'input-error' : ''} />
+                  <input id="firstName" type="text" name="firstName" placeholder="Maaz" value={formData.firstName} onChange={handleChange} data-testid="firstName-input" className={errors.firstName ? 'input-error' : ''} />
                   {errors.firstName && <span className="field-error" data-testid="firstName-error">{errors.firstName}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="lastName">Last Name</label>
-                  <input id="lastName" type="text" name="lastName" placeholder="Imtiaz" value={formData.lastName} onChange={handleChange} data-testid="checkout-last-name" className={errors.lastName ? 'input-error' : ''} />
+                  <input id="lastName" type="text" name="lastName" placeholder="Imtiaz" value={formData.lastName} onChange={handleChange} data-testid="lastName-input" className={errors.lastName ? 'input-error' : ''} />
                   {errors.lastName && <span className="field-error" data-testid="lastName-error">{errors.lastName}</span>}
                 </div>
               </div>
               <div className="form-grid-2">
                 <div className="form-group">
                   <label htmlFor="email">Email</label>
-                  <input id="email" type="email" name="email" placeholder="john@example.com" value={formData.email} onChange={handleChange} data-testid="checkout-email" className={errors.email ? 'input-error' : ''} />
+                  <input id="email" type="email" name="email" placeholder="john@example.com" value={formData.email} onChange={handleChange} data-testid="email-input" className={errors.email ? 'input-error' : ''} />
                   {errors.email && <span className="field-error" data-testid="email-error">{errors.email}</span>}
                 </div>
                 <div className="form-group">
@@ -253,7 +253,7 @@ const CheckoutPage = () => {
                   <PhoneInput
                     country={'pk'}
                     inputProps={{
-                      'data-testid': 'checkout-phone',
+                      'data-testid': 'phone-input',
                       name: 'phone',
                       id: 'phone'
                     }}
@@ -291,18 +291,18 @@ const CheckoutPage = () => {
               </div>
               <div className="form-group">
                 <label htmlFor="address">Street Address</label>
-                <input id="address" type="text" name="address" placeholder="123 Street, Area" value={formData.address} onChange={handleChange} data-testid="checkout-address" className={errors.address ? 'input-error' : ''} />
+                <input id="address" type="text" name="address" placeholder="123 Street, Area" value={formData.address} onChange={handleChange} data-testid="address-input" className={errors.address ? 'input-error' : ''} />
                 {errors.address && <span className="field-error" data-testid="address-error">{errors.address}</span>}
               </div>
               <div className="form-grid-2">
                 <div className="form-group">
                   <label htmlFor="city">City</label>
-                  <input id="city" type="text" name="city" placeholder="Karachi" value={formData.city} onChange={handleChange} data-testid="checkout-city" className={errors.city ? 'input-error' : ''} />
+                  <input id="city" type="text" name="city" placeholder="Karachi" value={formData.city} onChange={handleChange} data-testid="city-input" className={errors.city ? 'input-error' : ''} />
                   {errors.city && <span className="field-error" data-testid="city-error">{errors.city}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="zipCode">ZIP Code</label>
-                  <input id="zipCode" type="text" name="zipCode" placeholder="54000" value={formData.zipCode} onChange={handleChange} data-testid="checkout-zip" className={errors.zipCode ? 'input-error' : ''} />
+                  <input id="zipCode" type="text" name="zipCode" placeholder="54000" value={formData.zipCode} onChange={handleChange} data-testid="zipCode-input" className={errors.zipCode ? 'input-error' : ''} />
                   {errors.zipCode && <span className="field-error" data-testid="zipCode-error">{errors.zipCode}</span>}
                 </div>
               </div>
@@ -318,23 +318,23 @@ const CheckoutPage = () => {
               </h2>
               <div className="form-group">
                 <label htmlFor="cardName">Cardholder Name</label>
-                <input id="cardName" type="text" name="cardName" placeholder="Muhammad Maaz" value={formData.cardName} onChange={handleChange} data-testid="checkout-card-name" className={errors.cardName ? 'input-error' : ''} />
+                <input id="cardName" type="text" name="cardName" placeholder="Muhammad Maaz" value={formData.cardName} onChange={handleChange} data-testid="cardName-input" className={errors.cardName ? 'input-error' : ''} />
                 {errors.cardName && <span className="field-error" data-testid="cardName-error">{errors.cardName}</span>}
               </div>
               <div className="form-group">
                 <label htmlFor="cardNumber">Card Number</label>
-                <input id="cardNumber" type="text" name="cardNumber" placeholder="0000 0000 0000 0000" value={formData.cardNumber} onChange={handleChange} data-testid="checkout-card-number" maxLength={19} className={errors.cardNumber ? 'input-error' : ''} />
+                <input id="cardNumber" type="text" name="cardNumber" placeholder="0000 0000 0000 0000" value={formData.cardNumber} onChange={handleChange} data-testid="cardNumber-input" maxLength={19} className={errors.cardNumber ? 'input-error' : ''} />
                 {errors.cardNumber && <span className="field-error" data-testid="cardNumber-error">{errors.cardNumber}</span>}
               </div>
               <div className="form-grid-2">
                 <div className="form-group">
                   <label htmlFor="expiry">Expiry (MM/YY)</label>
-                  <input id="expiry" type="text" name="expiry" placeholder="MM/YY" value={formData.expiry} onChange={handleChange} data-testid="checkout-expiry" maxLength={5} className={errors.expiry ? 'input-error' : ''} />
+                  <input id="expiry" type="text" name="expiry" placeholder="MM/YY" value={formData.expiry} onChange={handleChange} data-testid="expiry-input" maxLength={5} className={errors.expiry ? 'input-error' : ''} />
                   {errors.expiry && <span className="field-error" data-testid="expiry-error">{errors.expiry}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="cvv">CVV</label>
-                  <input id="cvv" type="password" name="cvv" placeholder="123" value={formData.cvv} onChange={handleChange} data-testid="checkout-cvv" maxLength={4} className={errors.cvv ? 'input-error' : ''} />
+                  <input id="cvv" type="password" name="cvv" placeholder="123" value={formData.cvv} onChange={handleChange} data-testid="cvv-input" maxLength={4} className={errors.cvv ? 'input-error' : ''} />
                   {errors.cvv && <span className="field-error" data-testid="cvv-error">{errors.cvv}</span>}
                 </div>
               </div>
@@ -367,7 +367,7 @@ const CheckoutPage = () => {
               type="button"
               className="btn btn-success btn-full"
               disabled={submitting}
-              data-testid="place-order-button"
+              data-testid="submit-button"
               onClick={handleSubmit}
             >
               {submitting ? 'Processing...' : `Place Order • $${grandTotal}`}

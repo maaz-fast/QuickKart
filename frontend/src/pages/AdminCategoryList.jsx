@@ -117,16 +117,16 @@ const AdminCategoryList = () => {
           <table className="admin-table" data-testid="admin-categories-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Created At</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th data-testid="column-name">Name</th>
+                <th data-testid="column-created-at">Created At</th>
+                <th style={{ textAlign: 'right' }} data-testid="column-actions">Actions</th>
               </tr>
             </thead>
             <tbody>
               {categories.map((cat) => (
                 <tr key={cat._id} data-testid={`category-row-${cat._id}`}>
-                  <td><strong>{cat.name}</strong></td>
-                  <td>{new Date(cat.createdAt).toLocaleDateString()}</td>
+                  <td data-testid="category-name"><strong>{cat.name}</strong></td>
+                  <td data-testid="category-created-at">{new Date(cat.createdAt).toLocaleDateString()}</td>
                   <td>
                     <div className="actions-cell" style={{ justifyContent: 'flex-end' }}>
                       <button 

@@ -1,4 +1,4 @@
-const BrandedLoader = ({ size = 'md', fullPage = false, message = 'QuickKart', testId = 'loading-spinner' }) => {
+const BrandedLoader = ({ size = 'md', fullPage = false, message = 'QuickKart', testId = 'page-loader' }) => {
   return (
     <div className={`branded-loader-container ${size} ${fullPage ? 'full-page' : ''}`} data-testid={testId}>
       <div className="loader-visual">

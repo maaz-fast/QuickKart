@@ -250,7 +250,7 @@ const ProfilePage = () => {
             type="submit"
             className="btn btn-primary btn-full"
             disabled={saving}
-            data-testid="profile-save-button"
+            data-testid="save-button"
             style={{ marginTop: '20px' }}
           >
             {saving ? 'Saving Changes...' : 'Save Profile'}

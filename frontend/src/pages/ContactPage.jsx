@@ -121,6 +121,7 @@ const ContactPage = () => {
               value={formData.name}
               onChange={handleChange}
               placeholder="Your name"
+              data-testid="contact-name-input"
               className={errors.name ? 'input-error' : ''}
             />
             {errors.name && <span className="field-error">{errors.name}</span>}
@@ -135,6 +136,7 @@ const ContactPage = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Your email"
+              data-testid="contact-email-input"
               className={errors.email ? 'input-error' : ''}
             />
             {errors.email && <span className="field-error">{errors.email}</span>}
@@ -149,6 +151,7 @@ const ContactPage = () => {
               value={formData.subject}
               onChange={handleChange}
               placeholder="What can we help with?"
+              data-testid="contact-subject-input"
               className={errors.subject ? 'input-error' : ''}
             />
             {errors.subject && <span className="field-error">{errors.subject}</span>}
@@ -175,12 +178,13 @@ const ContactPage = () => {
                 resize: 'vertical',
                 minHeight: '120px'
               }}
+              data-testid="contact-message-input"
               className={errors.message ? 'input-error' : ''}
             ></textarea>
             {errors.message && <span className="field-error">{errors.message}</span>}
           </div>
 
-          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+          <button type="submit" className="btn btn-primary btn-full" disabled={loading} data-testid="send-button">
             {loading ? 'Sending...' : 'Send Message'}
           </button>
         </form>

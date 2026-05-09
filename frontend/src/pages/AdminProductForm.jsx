@@ -283,7 +283,7 @@ const AdminProductForm = () => {
               type="submit" 
               className="btn btn-primary" 
               disabled={loading}
-              data-testid="submit-product-button"
+              data-testid="submit-button"
               style={{ padding: '12px 32px' }}
             >
               {loading ? 'Saving...' : isEditMode ? 'Update Product' : 'Create Product'}

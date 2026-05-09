@@ -45,18 +45,18 @@ const AdminUserList = () => {
           <table className="admin-table" data-testid="admin-users-table">
             <thead>
               <tr>
-                <th>Avatar</th>
-                <th>Join Date</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
+                <th data-testid="column-avatar">Avatar</th>
+                <th data-testid="column-join-date">Join Date</th>
+                <th data-testid="column-name">Name</th>
+                <th data-testid="column-email">Email</th>
+                <th data-testid="column-role">Role</th>
+                <th data-testid="column-status">Status</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
                 <tr key={user._id} data-testid={`admin-user-row-${user._id}`}>
-                  <td>
+                  <td data-testid="user-avatar-cell">
                     {user.profileImage ? (
                       <img 
                         src={user.profileImage} 
@@ -80,24 +80,29 @@ const AdminUserList = () => {
                       </div>
                     )}
                   </td>
-                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                  <td>
+                  <td data-testid="user-join-date">{new Date(user.createdAt).toLocaleDateString()}</td>
+                  <td data-testid="user-name">
                     <strong>{user.name}</strong>
                   </td>
-                  <td>{user.email}</td>
-                  <td>
-                    <span className={`badge ${user.role === 'admin' ? 'badge-primary' : 'badge-outline'}`} style={{ 
-                      padding: '4px 10px', 
-                      borderRadius: '20px',
-                      fontSize: '0.8rem',
-                      background: user.role === 'admin' ? 'var(--primary)' : 'transparent',
-                      color: user.role === 'admin' ? '#fff' : 'var(--text-secondary)',
-                      border: user.role === 'admin' ? 'none' : '1px solid var(--border)'
-                    }}>
+                  <td data-testid="user-email">{user.email}</td>
+                  <td data-testid="user-role">
+                    <span 
+                      className={`badge ${user.role === 'admin' ? 'badge-primary' : 'badge-outline'}`} 
+                      data-testid="role-badge"
+                      data-state={user.role}
+                      style={{ 
+                        padding: '4px 10px', 
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        background: user.role === 'admin' ? 'var(--primary)' : 'transparent',
+                        color: user.role === 'admin' ? '#fff' : 'var(--text-secondary)',
+                        border: user.role === 'admin' ? 'none' : '1px solid var(--border)'
+                      }}
+                    >
                       {user.role}
                     </span>
                   </td>
-                  <td>
+                  <td data-testid="user-status">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--success)', fontSize: '0.9rem' }}>
                       <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'currentColor' }}></span>
                       Active

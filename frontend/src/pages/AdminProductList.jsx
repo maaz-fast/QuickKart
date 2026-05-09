@@ -68,26 +68,26 @@ const AdminProductList = () => {
           <table className="admin-table" data-testid="admin-products-table">
             <thead>
               <tr>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th data-testid="column-image">Image</th>
+                <th data-testid="column-name">Name</th>
+                <th data-testid="column-category">Category</th>
+                <th data-testid="column-price">Price</th>
+                <th data-testid="column-stock">Stock</th>
+                <th style={{ textAlign: 'right' }} data-testid="column-actions">Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.map((product) => (
                 <tr key={product._id} data-testid={`admin-product-row-${product._id}`}>
-                  <td>
+                  <td data-testid="product-image-cell">
                     <img src={product.image} alt={product.name} className="product-img-mini" />
                   </td>
-                  <td>
+                  <td data-testid="product-name">
                     <strong>{product.name}</strong>
                   </td>
-                  <td>{product.category?.name || 'Uncategorized'}</td>
-                  <td>${product.price.toFixed(2)}</td>
-                  <td>
+                  <td data-testid="product-category">{product.category?.name || 'Uncategorized'}</td>
+                  <td data-testid="product-price">${product.price.toFixed(2)}</td>
+                  <td data-testid="product-stock">
                     <span className={product.stock < 10 ? 'text-error' : ''}>
                       {product.stock} units
                     </span>

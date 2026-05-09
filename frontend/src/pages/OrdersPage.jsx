@@ -115,7 +115,7 @@ const OrdersPage = () => {
               <span className="order-total-price-sm">${order.totalAmount.toFixed(2)}</span>
             </div>
 
-            <div className="order-status-badge">
+            <div className="order-status-badge" data-testid="status-badge" data-state={order.status.toLowerCase()}>
               <span 
                 className="status-dot" 
                 style={{ backgroundColor: getStatusColor(order.status) }} 
@@ -123,7 +123,7 @@ const OrdersPage = () => {
               {order.status}
             </div>
             
-            <button className="btn btn-sm btn-outline">Details</button>
+            <button className="btn btn-sm btn-outline" data-testid="view-details-button">Details</button>
           </div>
         ))}
       </div>

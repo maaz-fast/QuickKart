@@ -125,32 +125,32 @@ const AdminOrderList = () => {
           <table className="admin-table" data-testid="admin-orders-table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th data-testid="column-date">Date</th>
+                <th data-testid="column-order-id">Order ID</th>
+                <th data-testid="column-customer">Customer</th>
+                <th data-testid="column-total">Total</th>
+                <th data-testid="column-status">Status</th>
+                <th style={{ textAlign: 'right' }} data-testid="column-actions">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.map((order) => (
                 <tr key={order._id} data-testid={`admin-order-row-${order._id}`}>
-                  <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                  <td>
+                  <td data-testid="order-date">{new Date(order.createdAt).toLocaleDateString()}</td>
+                  <td data-testid="order-id-cell">
                     <code style={{ fontSize: '0.85rem' }}>ORD-{order._id.slice(-8).toUpperCase()}</code>
                   </td>
-                  <td>
+                  <td data-testid="order-customer">
                     <div>
                       <strong>{order.user?.name}</strong>
                       <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{order.user?.email}</div>
                     </div>
                   </td>
-                  <td>
+                  <td data-testid="order-total">
                     <strong>${order.totalAmount.toFixed(2)}</strong>
                   </td>
                   <td>
-                    <div className="order-status-badge">
+                    <div className="order-status-badge" data-testid="status-badge" data-state={order.status.toLowerCase()}>
                       <span className="status-dot" style={{ background: getStatusColor(order.status) }}></span>
                       <span style={{ color: getStatusColor(order.status) }}>{order.status}</span>
                     </div>

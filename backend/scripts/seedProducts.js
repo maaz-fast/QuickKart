@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const mongoose = require('mongoose');
 const Product = require('../models/Product');
 
@@ -138,14 +138,38 @@ const seedDB = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('✅ Connected to MongoDB');
 
-    // Optional: Clear existing products
-    // await Product.deleteMany({});
-    // console.log('🗑️ Existing products removed');
+    const Category = require('../models/Category');
 
-    await Product.insertMany(products);
-    console.log(`✅ Successfully seeded ${products.length} products!`);
-    
-    process.exit();
+    // 1. Collect unique category names from the product list
+    const uniqueCategoryNames = [...new Set(products.map(p => p.category))];
+
+    // 2. Upsert each category and build a name → _id map
+    const categoryMap = {};
+    for (const name of uniqueCategoryNames) {
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const cat = await Category.findOneAndUpdate(
+        { slug },
+        { name, slug },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+      categoryMap[name] = cat._id;
+      console.log(`📁 Category ready: ${name} (${cat._id})`);
+    }
+
+    // 3. Map products to use ObjectId references
+    const productsWithRefs = products.map(p => ({
+      ...p,
+      category: categoryMap[p.category],
+    }));
+
+    // 4. Clear existing products and insert fresh ones
+    await Product.deleteMany({});
+    console.log('🗑️  Cleared existing products');
+
+    await Product.insertMany(productsWithRefs);
+    console.log(`✅ Successfully seeded ${productsWithRefs.length} products!`);
+
+    process.exit(0);
   } catch (error) {
     console.error('❌ Seeding Error:', error);
     process.exit(1);

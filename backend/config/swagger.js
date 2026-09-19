@@ -10,6 +10,10 @@ const options = {
     },
     servers: [
       {
+        url: 'https://quickkart-shop-nine.vercel.app',
+        description: 'Production Server',
+      },
+      {
         url: 'http://localhost:5000',
         description: 'Development Server',
       },

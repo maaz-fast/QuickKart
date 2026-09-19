@@ -70,9 +70,11 @@ app.use('/support', supportRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
+  const host = req.get('host');
+  const protocol = req.protocol;
   res.json({
     message: '🛒 Welcome to QuickKart API',
-    docs: 'http://localhost:5000/api-docs',
+    docs: `${protocol}://${host}/api-docs`,
   });
 });
 

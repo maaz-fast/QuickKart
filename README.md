@@ -5,6 +5,7 @@ A fully functional mini e-commerce web application built with MongoDB, Express, 
 ## 🚀 Features
 
 - **Storefront & Admin Portals**: High-fidelity, mobile-responsive e-commerce platform with a dedicated administrative dashboard.
+- **Public Landing Page**: Animated, auth-aware marketing page (CSS-only animations + IntersectionObserver reveals) shown to anonymous visitors at `/`, with signed-in users landing straight on the catalog.
 - **Activity Logging System**: Comprehensive audit trail tracking critical business events (Logins, Orders, Inventory changes) with a premium explorer interface.
 - **Branded Design System**: Modern dark-mode aesthetic featuring glassmorphism, dynamic animations, and a custom branded loading experience.
 - **Authentication & RBAC**: JWT-based authentication with Role-Based Access Control restricting admin features from customers.
@@ -133,6 +134,7 @@ npm run dev
             │   └── WishlistContext.jsx
             ├── hooks/
             │   └── useDebounce.js
+            │   └── useInView.js
             └── pages/
                 ├── AdminActivityLogs.jsx
                 ├── AdminCategoryList.jsx
@@ -147,6 +149,7 @@ npm run dev
                 ├── ContactPage.jsx
                 ├── ForgotPasswordPage.jsx
                 ├── HomePage.jsx
+                ├── LandingPage.jsx
                 ├── LoginPage.jsx
                 ├── NotFoundPage.jsx
                 ├── NotificationsPage.jsx

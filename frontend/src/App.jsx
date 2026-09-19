@@ -19,6 +19,7 @@ import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import HomePage from './pages/HomePage';
+import LandingPage from './pages/LandingPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
@@ -53,6 +54,22 @@ const GlobalReadyObserver = ({ children }) => {
   return children;
 };
 
+// Auth-aware root: anonymous visitors see the public Landing Page,
+// authenticated users land directly on the product catalog.
+const RootSwitch = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="spinner" />
+      </div>
+    );
+  }
+
+  return isAuthenticated ? <HomePage /> : <LandingPage />;
+};
+
 function App() {
   return (
     <Router>
@@ -74,13 +91,11 @@ function App() {
                         <Route path="/reset-password" element={<ResetPasswordPage />} />
                         <Route path="/contact" element={<ContactPage />} />
 
-                        {/* Protected Routes */}
+                        {/* Root: public landing for visitors, catalog for authenticated users */}
                         <Route
                           path="/"
                           element={
-                            <ProtectedRoute>
-                              <HomePage />
-                            </ProtectedRoute>
+                            <RootSwitch />
                           }
                         />
                         <Route

@@ -8,6 +8,52 @@
 
 ## 🧑‍💻 Section 1: Customer (User) Test Cases
 
+### 0. Public Landing Page (Not Logged In)
+
+These tests ensure the marketing/landing page (shown to anonymous visitors at `/`) is functional, responsive, and correctly routes users into the application.
+
+**TC-USER-LAND-001: Anonymous Visitor Sees Landing Page**
+- **Steps:** Clear session/localStorage, then navigate to `/`.
+- **Expected:** The landing page renders with hero title, subtitle, stats strip, feature cards, and CTA buttons, instead of being redirected to `/login`. `<body>` has `data-landing-ready="true"`.
+
+**TC-USER-LAND-002: Landing Page Hero CTA → Signup**
+- **Steps:** On the landing page, click "Start Shopping" (`[data-testid="landing-cta-signup"]`).
+- **Expected:** Navigates to `/signup`.
+
+**TC-USER-LAND-003: Landing Page CTA → Login**
+- **Steps:** On the landing page, click "Sign In" (`[data-testid="landing-cta-login"]`).
+- **Expected:** Navigates to `/login`.
+
+**TC-USER-LAND-004: Landing Page Feature Cards Render**
+- **Steps:** Scroll to the features section (`[data-testid="landing-features-grid"]`).
+- **Expected:** All six feature cards are visible, each with an icon, title, and description (e.g., `landing-feature-storefront`, `landing-feature-admin`, `landing-feature-notifications`, `landing-feature-checkout`, `landing-feature-wishlist`, `landing-feature-logs`).
+
+**TC-USER-LAND-005: Landing Page Stats Render**
+- **Steps:** Check the stats strip (`[data-testid="landing-stats"]`).
+- **Expected:** Four stat blocks render with values and labels (e.g., `landing-stat-products`, `landing-stat-categories`, `landing-stat-security`, `landing-stat-support`).
+
+**TC-USER-LAND-006: Landing Page Bottom CTA Band**
+- **Steps:** Scroll to the bottom CTA band (`[data-testid="landing-cta-band"]`) and click "Create Free Account".
+- **Expected:** Navigates to `/signup`.
+
+**TC-USER-LAND-007: Scroll-Reveal Animations Do Not Hide Content**
+- **Steps:** With a modern browser, load the landing page and scroll through sections; then reload with "prefers-reduced-motion: reduce" enabled (or an emulated device setting).
+- **Expected:** All content is reachable and readable in both cases. With reduced motion, sections appear immediately (no reveal delay). Playwright `WaitForSelector`/visibility checks pass without needing animation waits.
+
+**TC-USER-LAND-008: Landing Page is Responsive (Mobile)**
+- **Steps:** Resize the viewport to a mobile width (e.g., 375×667) and load `/`.
+- **Expected:** Hero text stacks and scales; the feature grid collapses to one column; stats collapse to two columns; CTAs remain fully clickable.
+
+**TC-USER-LAND-009: Authenticated Users Bypass Landing Page**
+- **Steps:** Log in, then navigate to `/`.
+- **Expected:** Logged-in users land directly on the product catalog (`[data-testid="products-grid"]`), not the landing page. The landing page never blocks authenticated access.
+
+**TC-USER-LAND-010: Dark/Light Theme Works on Landing Page**
+- **Steps:** On the landing page, click the theme toggle (`[data-testid="theme-toggle-button"]`).
+- **Expected:** The page colors change between dark and light themes without breaking layout or animation readability.
+
+---
+
 ### 1. Account & Authentication
 These tests make sure users can sign up, log in, and manage their passwords.
 

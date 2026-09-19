@@ -23,6 +23,7 @@ Detailed breakdown of the QuickKart monolithic codebase structure, organized by 
 - `src/context/AuthContext.jsx` — Stores active user profile, JWT, and roles
 - `src/components/Navbar.jsx` — Top navigation with auth states
 - `src/components/ProtectedRoute.jsx` — Route guard for authenticated paths
+- `src/pages/LandingPage.jsx` — Auth-aware public landing page (anonymous visitors at `/`) with CSS-only animations and IntersectionObserver scroll reveals
 - `src/pages/HomePage.jsx` — Catalog browser
 - `src/pages/ProductDetailPage.jsx` — Single item viewing
 - `src/pages/LoginPage.jsx` & `src/pages/SignupPage.jsx` — User onboarding

@@ -363,6 +363,11 @@ const AdminDashboard = () => {
                   </ResponsiveContainer>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── API Docs Security Settings Card ── */}
       <div className="chart-card" style={{ marginTop: '24px' }}>
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>

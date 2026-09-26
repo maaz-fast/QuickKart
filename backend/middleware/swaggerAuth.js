@@ -12,6 +12,7 @@ const swaggerAuth = basicAuth({
   },
   challenge: true,
   realm: 'QuickKart API Documentation',
+  unauthorizedResponse: (req) => 'Access Denied: QuickKart API Documentation requires authentication.',
 });
 
 module.exports = swaggerAuth;

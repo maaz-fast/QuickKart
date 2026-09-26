@@ -40,6 +40,7 @@ import AdminOrderList from './pages/AdminOrderList';
 import AdminUserList from './pages/AdminUserList';
 import AdminSupport from './pages/AdminSupport';
 import AdminActivityLogs from './pages/AdminActivityLogs';
+import AdminSwaggerSettings from './pages/AdminSwaggerSettings';
 
 // Observer to set global ready flag for automation
 const GlobalReadyObserver = ({ children }) => {
@@ -175,6 +176,7 @@ function App() {
                             <Route path="/admin/users" element={<AdminUserList />} />
                             <Route path="/admin/support" element={<AdminSupport />} />
                             <Route path="/admin/activity-logs" element={<AdminActivityLogs />} />
+                            <Route path="/admin/swagger-settings" element={<AdminSwaggerSettings />} />
                           </Route>
                         </Route>
 

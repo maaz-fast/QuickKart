@@ -382,22 +382,41 @@ const getSwaggerPasswordSetting = async (req, res, next) => {
 // @access  Private/Admin
 const updateSwaggerPasswordSetting = async (req, res, next) => {
   try {
-    const { password } = req.body;
-    if (!password || password.trim().length < 4) {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (!currentPassword) {
       res.status(400);
-      throw new Error('Password must be at least 4 characters long');
+      throw new Error('Current password is required');
+    }
+
+    if (!newPassword || newPassword.trim().length < 4) {
+      res.status(400);
+      throw new Error('New password must be at least 4 characters long');
+    }
+
+    if (newPassword !== confirmPassword) {
+      res.status(400);
+      throw new Error('New password and confirm password do not match');
+    }
+
+    // Verify current password
+    const existingSetting = await SystemSetting.findOne({ key: 'swagger_password' });
+    const actualCurrentPassword = existingSetting ? existingSetting.value : (process.env.SWAGGER_PASSWORD || 'quickkart2026');
+
+    if (currentPassword !== actualCurrentPassword) {
+      res.status(400);
+      throw new Error('Incorrect current password');
     }
 
     const setting = await SystemSetting.findOneAndUpdate(
       { key: 'swagger_password' },
-      { value: password.trim(), description: 'Swagger API documentation access password' },
+      { value: newPassword.trim(), description: 'Swagger API documentation access password' },
       { upsert: true, new: true }
     );
 
     res.status(200).json({
       success: true,
       message: 'Swagger API documentation password updated successfully',
-      swaggerPassword: setting.value,
     });
 
     // Log Activity

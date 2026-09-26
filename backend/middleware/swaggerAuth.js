@@ -40,7 +40,7 @@ const swaggerAuth = (req, res, next) => {
       res.setHeader('Set-Cookie', `quickkart_swagger_auth=${SWAGGER_PASSWORD}; Path=/; HttpOnly; Max-Age=86400`);
       return res.redirect('/api-docs/');
     } else {
-      return res.status(401).send(renderLoginPage('Invalid Password! Please try again.'));
+      return res.status(200).send(renderLoginPage('Invalid Password! Please try again.'));
     }
   }
 

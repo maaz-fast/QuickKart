@@ -40,6 +40,8 @@ app.use(express.urlencoded({ extended: false }));
 
 
 
+const swaggerAuth = require('./middleware/swaggerAuth');
+
 // Swagger UI with CDN assets for Vercel Serverless compatibility
 const SWAGGER_CSS = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui.min.css';
 const SWAGGER_JS = [
@@ -47,7 +49,7 @@ const SWAGGER_JS = [
   'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui-standalone-preset.js'
 ];
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+app.use('/api-docs', swaggerAuth, swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'QuickKart API Docs',
   customCssUrl: SWAGGER_CSS,

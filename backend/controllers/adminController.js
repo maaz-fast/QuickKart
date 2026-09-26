@@ -357,6 +357,56 @@ const getActivityLogs = async (req, res, next) => {
   }
 };
 
+const SystemSetting = require('../models/SystemSetting');
+
+// @desc    Get Swagger password configuration
+// @route   GET /api/admin/swagger-password
+// @access  Private/Admin
+const getSwaggerPasswordSetting = async (req, res, next) => {
+  try {
+    const setting = await SystemSetting.findOne({ key: 'swagger_password' });
+    const password = setting ? setting.value : (process.env.SWAGGER_PASSWORD || 'quickkart2026');
+
+    res.status(200).json({
+      success: true,
+      swaggerPassword: password,
+      isCustomized: !!setting,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update Swagger password configuration
+// @route   PUT /api/admin/swagger-password
+// @access  Private/Admin
+const updateSwaggerPasswordSetting = async (req, res, next) => {
+  try {
+    const { password } = req.body;
+    if (!password || password.trim().length < 4) {
+      res.status(400);
+      throw new Error('Password must be at least 4 characters long');
+    }
+
+    const setting = await SystemSetting.findOneAndUpdate(
+      { key: 'swagger_password' },
+      { value: password.trim(), description: 'Swagger API documentation access password' },
+      { upsert: true, new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Swagger API documentation password updated successfully',
+      swaggerPassword: setting.value,
+    });
+
+    // Log Activity
+    await logActivity(req.user, 'ADMIN_UPDATE_SWAGGER_PASSWORD', 'Admin updated Swagger API documentation access password');
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllOrders,
@@ -367,5 +417,8 @@ module.exports = {
   deleteProduct,
   getAnalytics,
   getAdminCounts,
-  getActivityLogs
+  getActivityLogs,
+  getSwaggerPasswordSetting,
+  updateSwaggerPasswordSetting,
 };
+

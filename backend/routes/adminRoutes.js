@@ -11,6 +11,8 @@ const {
   getAnalytics,
   getAdminCounts,
   getActivityLogs,
+  getSwaggerPasswordSetting,
+  updateSwaggerPasswordSetting,
 } = require('../controllers/adminController');
 const {
   getQueries,
@@ -409,5 +411,8 @@ router.put('/support/:id', updateQueryStatus);
  *         description: Not authorized (Admin role required)
  */
 router.get('/activity-logs', getActivityLogs);
+
+router.get('/swagger-password', getSwaggerPasswordSetting);
+router.put('/swagger-password', updateSwaggerPasswordSetting);
 
 module.exports = router;

@@ -29,17 +29,25 @@ const AdminDashboard = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const [swaggerPass, setSwaggerPass] = useState('');
+  const [swaggerLoading, setSwaggerLoading] = useState(false);
+  const [swaggerMsg, setSwaggerMsg] = useState({ type: '', text: '' });
+
   // Initial Fetch (Stats, Default Chart & Analytics)
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
-        const [dashRes, analyticsRes] = await Promise.all([
+        const [dashRes, analyticsRes, swaggerRes] = await Promise.all([
           api.get(`/admin/dashboard?period=${period}`),
           api.get('/admin/analytics'),
+          api.get('/admin/swagger-password').catch(() => ({ data: { swaggerPassword: '' } }))
         ]);
         setStats(dashRes.data);
         setAnalytics(analyticsRes.data);
+        if (swaggerRes.data && swaggerRes.data.swaggerPassword) {
+          setSwaggerPass(swaggerRes.data.swaggerPassword);
+        }
       } catch (err) {
         setError('Failed to load dashboard data');
       } finally {
@@ -48,6 +56,20 @@ const AdminDashboard = () => {
     };
     fetchInitialData();
   }, []);
+
+  const handleUpdateSwaggerPass = async (e) => {
+    e.preventDefault();
+    setSwaggerLoading(true);
+    setSwaggerMsg({ type: '', text: '' });
+    try {
+      const { data } = await api.put('/admin/swagger-password', { password: swaggerPass });
+      setSwaggerMsg({ type: 'success', text: data.message || 'Password updated successfully!' });
+    } catch (err) {
+      setSwaggerMsg({ type: 'error', text: err.response?.data?.message || 'Failed to update password' });
+    } finally {
+      setSwaggerLoading(false);
+    }
+  };
 
   // Filter-based Fetch (Chart only)
   useEffect(() => {
@@ -341,10 +363,70 @@ const AdminDashboard = () => {
                   </ResponsiveContainer>
                 </div>
               )}
-            </div>
+      {/* ── API Docs Security Settings Card ── */}
+      <div className="chart-card" style={{ marginTop: '24px' }}>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2em', height: '1.2em' }}>
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          API Documentation Security Settings
+        </h3>
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+          Manage the password for interactive Swagger API Documentation (<a href="/api-docs/" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', textDecoration: 'underline' }}>/api-docs/</a>).
+        </p>
+
+        {swaggerMsg.text && (
+          <div style={{
+            padding: '10px 14px',
+            borderRadius: '8px',
+            marginBottom: '16px',
+            fontSize: '0.875rem',
+            background: swaggerMsg.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+            color: swaggerMsg.type === 'success' ? '#34d399' : '#fca5a5',
+            border: `1px solid ${swaggerMsg.type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
+          }}>
+            {swaggerMsg.text}
           </div>
-        </div>
-      )}
+        )}
+
+        <form onSubmit={handleUpdateSwaggerPass} style={{ display: 'flex', gap: '12px', maxWidth: '520px', flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            value={swaggerPass}
+            onChange={(e) => setSwaggerPass(e.target.value)}
+            placeholder="Set Swagger Access Password..."
+            required
+            style={{
+              flex: '1',
+              minWidth: '220px',
+              padding: '10px 14px',
+              borderRadius: '8px',
+              border: '1px solid var(--border)',
+              background: 'var(--bg-input, #0f172a)',
+              color: 'var(--text-primary)',
+              fontSize: '0.9rem',
+              outline: 'none'
+            }}
+          />
+          <button
+            type="submit"
+            disabled={swaggerLoading}
+            style={{
+              padding: '10px 20px',
+              borderRadius: '8px',
+              background: 'var(--primary)',
+              color: '#ffffff',
+              border: 'none',
+              fontWeight: '600',
+              cursor: swaggerLoading ? 'not-allowed' : 'pointer',
+              fontSize: '0.9rem'
+            }}
+          >
+            {swaggerLoading ? 'Saving...' : 'Update Password'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

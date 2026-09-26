@@ -1,8 +1,19 @@
+const SystemSetting = require('../models/SystemSetting');
+
 /**
- * Vercel-compatible Password Protection for Swagger API Docs
+ * Dynamic Vercel-compatible Password Protection for Swagger API Docs
  */
-const SWAGGER_USER = process.env.SWAGGER_USER || 'admin';
-const SWAGGER_PASSWORD = process.env.SWAGGER_PASSWORD || 'quickkart2026';
+async function getSwaggerPassword() {
+  try {
+    const setting = await SystemSetting.findOne({ key: 'swagger_password' });
+    if (setting && setting.value) {
+      return setting.value;
+    }
+  } catch (err) {
+    // Database fallback
+  }
+  return process.env.SWAGGER_PASSWORD || 'quickkart2026';
+}
 
 function parseCookies(request) {
   const list = {};
@@ -18,26 +29,28 @@ function parseCookies(request) {
   return list;
 }
 
-const swaggerAuth = (req, res, next) => {
-  // Allow static assets if already inside session
+const swaggerAuth = async (req, res, next) => {
+  const currentPassword = await getSwaggerPassword();
+
+  // Allow static assets / logged-in sessions
   const cookies = parseCookies(req);
   const authCookie = cookies['quickkart_swagger_auth'];
 
   // Check query parameter (e.g. /api-docs?pass=quickkart2026)
-  if (req.query.pass === SWAGGER_PASSWORD || req.query.key === SWAGGER_PASSWORD) {
-    res.setHeader('Set-Cookie', `quickkart_swagger_auth=${SWAGGER_PASSWORD}; Path=/; HttpOnly; Max-Age=86400`);
+  if (req.query.pass === currentPassword || req.query.key === currentPassword) {
+    res.setHeader('Set-Cookie', `quickkart_swagger_auth=${currentPassword}; Path=/; HttpOnly; Max-Age=86400`);
     return next();
   }
 
   // Check valid cookie
-  if (authCookie === SWAGGER_PASSWORD) {
+  if (authCookie === currentPassword) {
     return next();
   }
 
   // Handle HTML Form Submit
   if (req.method === 'POST' && req.body && req.body.swagger_password) {
-    if (req.body.swagger_password === SWAGGER_PASSWORD) {
-      res.setHeader('Set-Cookie', `quickkart_swagger_auth=${SWAGGER_PASSWORD}; Path=/; HttpOnly; Max-Age=86400`);
+    if (req.body.swagger_password === currentPassword) {
+      res.setHeader('Set-Cookie', `quickkart_swagger_auth=${currentPassword}; Path=/; HttpOnly; Max-Age=86400`);
       return res.redirect('/api-docs/');
     } else {
       return res.status(200).send(renderLoginPage('Invalid Password! Please try again.'));

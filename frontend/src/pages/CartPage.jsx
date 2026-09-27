@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axiosConfig';
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-toastify';
 import BrandedLoader from '../components/common/BrandedLoader';
@@ -6,6 +8,37 @@ import BrandedLoader from '../components/common/BrandedLoader';
 const CartPage = () => {
   const { cartItems, cartTotal, cartCount, loading, removeFromCart } = useCart();
   const navigate = useNavigate();
+
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast.error('Please enter a coupon code');
+      return;
+    }
+    setValidatingCoupon(true);
+    try {
+      const { data } = await api.post('/coupons/validate', {
+        code: couponCode,
+        orderAmount: cartTotal,
+      });
+      if (data.success) {
+        setAppliedCoupon(data.coupon);
+        toast.success(`Coupon ${data.coupon.code} applied!`);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Invalid coupon code');
+      setAppliedCoupon(null);
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
+  const taxableAmount = Math.max(0, cartTotal - discountAmount);
+  const finalTotal = taxableAmount * 1.08;
 
   const handleRemove = async (cartItemId, itemName) => {
     const result = await removeFromCart(cartItemId);
@@ -102,7 +135,7 @@ const CartPage = () => {
                     {product.name}
                   </p>
                   <p className="cart-item-price" data-testid={`cart-item-price-${item._id}`}>
-                    ${product.price.toFixed(2)} each
+                    Rs. {product.price.toFixed(2)} each
                   </p>
                   <p className="cart-item-qty" data-testid={`cart-item-qty-${item._id}`}>
                     Qty: <strong>{item.quantity}</strong>
@@ -111,7 +144,7 @@ const CartPage = () => {
 
                 {/* Subtotal */}
                 <div className="cart-item-subtotal" data-testid={`cart-item-subtotal-${item._id}`}>
-                  ${subtotal}
+                  Rs. {subtotal}
                 </div>
 
                 {/* Remove Button */}
@@ -138,21 +171,74 @@ const CartPage = () => {
 
           <div className="summary-row">
             <span>Subtotal ({cartCount} items)</span>
-            <span data-testid="cart-subtotal">${cartTotal.toFixed(2)}</span>
+            <span data-testid="cart-subtotal">Rs. {cartTotal.toFixed(2)}</span>
           </div>
+
+          {/* Coupon Input Section */}
+          <div className="coupon-section" style={{ margin: '15px 0', padding: '12px', background: 'var(--bg-card)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+            <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Promo / Coupon Code</label>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input
+                type="text"
+                placeholder="ENTER CODE"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                data-testid="coupon-input"
+                style={{
+                  flex: 1,
+                  padding: '8px 12px',
+                  background: 'var(--bg-input)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.85rem',
+                  textTransform: 'uppercase'
+                }}
+              />
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={handleApplyCoupon}
+                disabled={validatingCoupon}
+                data-testid="coupon-apply-button"
+              >
+                {validatingCoupon ? 'Applying...' : 'Apply'}
+              </button>
+            </div>
+            {appliedCoupon && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '0.8rem', color: '#10b981' }}>
+                <span>Code <strong>{appliedCoupon.code}</strong> applied!</span>
+                <button
+                  type="button"
+                  onClick={() => { setAppliedCoupon(null); setCouponCode(''); toast.info('Coupon removed'); }}
+                  style={{ background: 'none', border: 'none', color: 'var(--error)', cursor: 'pointer', fontSize: '0.8rem' }}
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+
+          {appliedCoupon && (
+            <div className="summary-row" style={{ color: '#10b981' }}>
+              <span>Discount ({appliedCoupon.code})</span>
+              <span data-testid="coupon-discount-amount">-Rs. {discountAmount.toFixed(2)}</span>
+            </div>
+          )}
+
           <div className="summary-row">
             <span>Shipping</span>
             <span className="shipping-free" data-testid="cart-shipping">FREE</span>
           </div>
           <div className="summary-row">
             <span>Tax (8%)</span>
-            <span data-testid="cart-tax">${(cartTotal * 0.08).toFixed(2)}</span>
+            <span data-testid="cart-tax">Rs. {(taxableAmount * 0.08).toFixed(2)}</span>
           </div>
 
           <div className="summary-total">
             <span>Total</span>
             <span data-testid="cart-total">
-              ${(cartTotal * 1.08).toFixed(2)}
+              Rs. {finalTotal.toFixed(2)}
             </span>
           </div>
 

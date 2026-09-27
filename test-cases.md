@@ -295,3 +295,66 @@ These tests ensure Admins can see who is registered on the website.
 **TC-GEN-003: "Page Not Found" Handling**
 - **Steps:** Type a random, non-existent URL (like `/random-fake-page`).
 - **Expected:** The website catches the mistake and safely redirects the user back to the Home page.
+
+---
+
+## 🚀 Section 4: New Feature Test Cases
+
+### 1. Address Book (Multiple Saved Addresses)
+**TC-FEAT-ADDR-001: Add New Shipping Address**
+- **Steps:** Navigate to Profile or Checkout, click `[data-testid="address-add-button"]`, fill out form and save.
+- **Expected:** Address appears under `[data-testid="address-list"]`.
+
+**TC-FEAT-ADDR-002: Set Default Address & Checkout Selection**
+- **Steps:** In Address Book, click `[data-testid="address-set-default-button"]`. At Checkout, select an address via `[data-testid="checkout-address-select"]`.
+- **Expected:** Default badge updates and Checkout form populates with selected address details.
+
+### 2. Search with Filters & Sorting
+**TC-FEAT-SEARCH-001: Text Search with Debounce & URL Sync**
+- **Steps:** Type "shirt" in `[data-testid="search-input"]`.
+- **Expected:** URL updates with `?q=shirt` and `[data-testid="products-grid"]` filters matching items.
+
+**TC-FEAT-SEARCH-002: Category, Price Range, and Rating Filters**
+- **Steps:** Select category `[data-testid="filter-category-electronics"]`, set `[data-testid="filter-price-min"]` to 10, set `[data-testid="filter-price-max"]` to 100, and select rating `[data-testid="filter-rating-4"]`.
+- **Expected:** Products filter dynamically. Clicking `[data-testid="clear-filters-button"]` resets all filters.
+
+### 3. Product Reviews & Ratings
+**TC-FEAT-REV-001: Submit Star Rating & Review**
+- **Steps:** Open Product Detail page, select 5 stars `[data-testid="review-star-5"]`, enter comment in `[data-testid="review-form"]`, and click `[data-testid="review-submit-button"]`.
+- **Expected:** Review appears under `[data-testid="review-item"]` and product aggregate star rating updates.
+
+**TC-FEAT-REV-002: Delete Owned Review**
+- **Steps:** On product detail page, click `[data-testid="review-delete-button"]` on your review.
+- **Expected:** Review is removed and aggregate rating recalculates.
+
+### 4. Coupon / Discount Codes
+**TC-FEAT-COUPON-001: Admin Create & Manage Coupon**
+- **Steps:** Go to Admin Coupons page, click `[data-testid="admin-coupon-create-button"]`, fill code and discount, view in `[data-testid="admin-coupon-table"]`.
+- **Expected:** Coupon is saved and displayed in admin list.
+
+**TC-FEAT-COUPON-002: Customer Apply Coupon at Checkout**
+- **Steps:** Enter promo code in `[data-testid="coupon-input"]` and click `[data-testid="coupon-apply-button"]`.
+- **Expected:** Discount is calculated and displayed at `[data-testid="coupon-discount-amount"]`.
+
+### 5. CSV Bulk Import/Export
+**TC-FEAT-CSV-001: Export Products Catalog to CSV**
+- **Steps:** On Admin Products page, click `[data-testid="admin-export-csv-button"]`.
+- **Expected:** Browser downloads `quickkart_products.csv`.
+
+**TC-FEAT-CSV-002: Import Products via CSV Upload**
+- **Steps:** Click `[data-testid="admin-import-csv-button"]`, select CSV file via `[data-testid="admin-import-file-input"]`.
+- **Expected:** Results summary renders at `[data-testid="admin-import-results-summary"]` with created/updated counts.
+
+### 6. Real Payment Gateway — Safepay (Sandbox Mode)
+**TC-FEAT-PAY-001: Sandbox Test Mode Banner Display**
+- **Steps:** Proceed to Checkout page.
+- **Expected:** Visible banner `[data-testid="payment-status-banner"]` alerts user that transactions are in Sandbox mode.
+
+**TC-FEAT-PAY-002: Safepay Hosted Checkout Session Creation**
+- **Steps:** Select Safepay option and click `[data-testid="payment-checkout-button"]`.
+- **Expected:** Overlay `[data-testid="payment-redirect-pending"]` displays while redirecting to Safepay Hosted Checkout.
+
+### 7. WebSockets Real-time Notifications
+**TC-FEAT-WS-001: Real-time Push Notification via WebSocket**
+- **Steps:** Log in as customer and perform action (e.g., place order or update profile).
+- **Expected:** Notification indicator updates instantly without page refresh or interval polling delay. Socket status element `[data-testid="notification-socket-status"]` has `data-connected="true"`.

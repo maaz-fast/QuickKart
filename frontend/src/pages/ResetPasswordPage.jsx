@@ -17,15 +17,16 @@ const ResetPasswordPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Email passed from ForgotPasswordPage via router state
+  // Email and resetToken passed from VerifyOtpPage via router state
   const email = location.state?.email;
+  const resetToken = location.state?.resetToken;
 
-  // Guard: redirect if no email in state
+  // Guard: redirect if no email or reset token in state
   useEffect(() => {
-    if (!email) {
+    if (!email && !resetToken) {
       navigate('/forgot-password', { replace: true });
     }
-  }, [email, navigate]);
+  }, [email, resetToken, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -56,10 +57,9 @@ const ResetPasswordPage = () => {
 
     try {
       setLoading(true);
-      await api.post('/auth/reset-password', { email, password, confirmPassword });
+      await api.post('/auth/reset-password', { resetToken, email, password, confirmPassword });
       setSuccess(true);
       toast.success('Password reset successfully!');
-      // Redirect to login after 2.5 seconds
       setTimeout(() => navigate('/login', { replace: true }), 2500);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to reset password. Try again.');

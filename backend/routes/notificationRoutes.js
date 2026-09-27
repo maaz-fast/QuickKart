@@ -1,5 +1,5 @@
 const express = require('express');
-const { getNotifications, markAsRead } = require('../controllers/notificationController');
+const { getNotifications, markAsRead, markAllAsRead } = require('../controllers/notificationController');
 const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -32,6 +32,22 @@ const router = express.Router();
  *         description: Not authorized
  */
 router.route('/').get(protect, getNotifications);
+
+/**
+ * @swagger
+ * /api/notifications/read-all:
+ *   put:
+ *     summary: Mark all notifications as read
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: All notifications marked as read
+ *       401:
+ *         description: Not authorized
+ */
+router.route('/read-all').put(protect, markAllAsRead);
 
 /**
  * @swagger

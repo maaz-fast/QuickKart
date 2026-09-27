@@ -49,7 +49,12 @@ const LoginPage = () => {
         navigate('/', { replace: true });
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed. Please try again.');
+      if (err.response?.data?.isVerified === false) {
+        toast.info(err.response?.data?.message || 'Please verify your email with the 6-digit OTP code.');
+        navigate('/verify-otp', { state: { email, purpose: 'signup' } });
+      } else {
+        toast.error(err.response?.data?.message || 'Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

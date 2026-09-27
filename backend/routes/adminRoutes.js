@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const uploadCSV = multer({ storage: multer.memoryStorage() });
+
 const {
   getDashboardStats,
   getAllOrders,
@@ -11,8 +14,11 @@ const {
   getAnalytics,
   getAdminCounts,
   getActivityLogs,
+  getAdminPayments,
   getSwaggerPasswordSetting,
   updateSwaggerPasswordSetting,
+  exportProductsCSV,
+  importProductsCSV,
 } = require('../controllers/adminController');
 const {
   getQueries,
@@ -24,6 +30,12 @@ const {
   updateCategory,
   deleteCategory
 } = require('../controllers/categoryController');
+const {
+  getCoupons,
+  createCoupon,
+  updateCoupon,
+  deleteCoupon,
+} = require('../controllers/couponController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 /**
@@ -50,6 +62,78 @@ router.use(admin);
  *         description: Dashboard statistics and performance data
  */
 router.get('/dashboard', getDashboardStats);
+
+/**
+ * @swagger
+ * /api/admin/payments:
+ *   get:
+ *     summary: Get all payments and transaction metrics
+ *     description: Retrieve paginated list of transactions, metrics (total revenue, paid count, pending count, average order value), and search/filter by status or method. Admin only.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 15
+ *         description: Items per page
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: Filter by payment status (paid, pending, failed, refunded)
+ *       - in: query
+ *         name: method
+ *         schema:
+ *           type: string
+ *         description: Filter by payment method (safepay, cod, card)
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search query by Customer Name, Email, Order ID, or Tracker Token
+ *     responses:
+ *       200:
+ *         description: Payments list and metrics retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 metrics:
+ *                   type: object
+ *                   properties:
+ *                     totalRevenue:
+ *                       type: number
+ *                     paidCount:
+ *                       type: integer
+ *                     pendingCount:
+ *                       type: integer
+ *                     avgOrderValue:
+ *                       type: number
+ *                 payments:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 page:
+ *                   type: integer
+ *                 pages:
+ *                   type: integer
+ *                 total:
+ *                   type: integer
+ */
+router.get('/payments', getAdminPayments);
 router.get('/counts', getAdminCounts);
 
 /**
@@ -414,5 +498,56 @@ router.get('/activity-logs', getActivityLogs);
 
 router.get('/swagger-password', getSwaggerPasswordSetting);
 router.put('/swagger-password', updateSwaggerPasswordSetting);
+
+// Admin Coupon Routes
+router.route('/coupons')
+  .get(getCoupons)
+  .post(createCoupon);
+
+router.route('/coupons/:id')
+  .put(updateCoupon)
+  .delete(deleteCoupon);
+
+/**
+ * @swagger
+ * /api/admin/products/export:
+ *   get:
+ *     summary: Export product catalog as CSV (Admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: CSV file stream
+ *         content:
+ *           text/csv:
+ *             schema:
+ *               type: string
+ *               format: binary
+ */
+router.get('/products/export', exportProductsCSV);
+
+/**
+ * @swagger
+ * /api/admin/products/import:
+ *   post:
+ *     summary: Bulk import products from CSV (Admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: CSV import results summary
+ */
+router.post('/products/import', uploadCSV.single('file'), importProductsCSV);
 
 module.exports = router;

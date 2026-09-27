@@ -1,10 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
+import { useAuth } from '../context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { getNotificationTargetUrl } from '../utils/notificationNavigation';
 
 const NotificationDropdown = () => {
-  const { notifications, unreadCount, markAsRead } = useNotification();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotification();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -24,6 +28,14 @@ const NotificationDropdown = () => {
     if (!notification.isRead) {
       markAsRead(notification._id);
     }
+    const targetUrl = getNotificationTargetUrl(notification, user);
+    setIsOpen(false);
+    navigate(targetUrl);
+  };
+
+  const formatMessage = (msg) => {
+    if (!msg) return '';
+    return msg.replace(/\b([a-fA-F0-9]{24})\b/g, (match) => 'ORD-' + match.slice(-8).toUpperCase());
   };
 
   return (
@@ -47,8 +59,25 @@ const NotificationDropdown = () => {
 
       {isOpen && (
         <div className="notification-dropdown" data-testid="notification-dropdown">
-          <div className="notification-header">
+          <div className="notification-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3>Notifications</h3>
+            {unreadCount > 0 && (
+              <button
+                onClick={markAllAsRead}
+                data-testid="mark-all-read-btn"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--primary-light, #6c63ff)',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  padding: 0
+                }}
+              >
+                Mark all read
+              </button>
+            )}
           </div>
           <div className="notification-list">
             {notifications.length === 0 ? (
@@ -60,8 +89,9 @@ const NotificationDropdown = () => {
                   className={`notification-item ${!notification.isRead ? 'unread' : ''}`}
                   onClick={() => handleNotificationClick(notification)}
                   data-testid="notification-item"
+                  style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
                 >
-                  <div className="notification-icon-type" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="notification-icon-type" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {notification.type === 'order' && (
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
                         <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
@@ -78,13 +108,16 @@ const NotificationDropdown = () => {
                       </svg>
                     )}
                   </div>
-                  <div className="notification-content">
-                    <p className="notification-message">{notification.message}</p>
+                  <div className="notification-content" style={{ flex: 1 }}>
+                    <p className="notification-message">{formatMessage(notification.message)}</p>
                     <span className="notification-time">
                       {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                     </span>
                   </div>
                   {!notification.isRead && <span className="unread-dot" />}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px', color: 'var(--text-muted)', flexShrink: 0, opacity: 0.6 }}>
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
                 </div>
               ))
             )}

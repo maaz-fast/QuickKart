@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import BrandedLoader from '../components/common/BrandedLoader';
 
+import AddressBook from '../components/AddressBook';
+
 const ProfilePage = () => {
   const { user, login } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -256,6 +258,10 @@ const ProfilePage = () => {
             {saving ? 'Saving Changes...' : 'Save Profile'}
           </button>
         </form>
+      </div>
+
+      <div className="checkout-form-card" style={{ marginTop: '20px' }}>
+        <AddressBook />
       </div>
     </div>
   );

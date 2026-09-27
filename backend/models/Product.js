@@ -36,8 +36,20 @@ const productSchema = new mongoose.Schema(
         message: '{VALUE} is not a valid integer for stock'
       }
     },
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    numReviews: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
+
+productSchema.index({ name: 'text', description: 'text' });
 
 module.exports = mongoose.model('Product', productSchema);

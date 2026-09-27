@@ -190,9 +190,9 @@ const OrderDetailsPage = () => {
                     </div>
                   </td>
                   <td className="invoice-td" style={{ textAlign: 'center' }}>{item.quantity}</td>
-                  <td className="invoice-td" style={{ textAlign: 'right' }}>${item.price.toFixed(2)}</td>
+                  <td className="invoice-td" style={{ textAlign: 'right' }}>Rs. {item.price.toFixed(2)}</td>
                   <td className="invoice-td invoice-td-total" style={{ textAlign: 'right' }}>
-                    ${(item.price * item.quantity).toFixed(2)}
+                    Rs. {(item.price * item.quantity).toFixed(2)}
                   </td>
                 </tr>
               ))}
@@ -205,19 +205,19 @@ const OrderDetailsPage = () => {
           <div className="invoice-totals">
             <div className="invoice-total-row">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>Rs. {subtotal.toFixed(2)}</span>
             </div>
             <div className="invoice-total-row">
               <span>Tax</span>
-              <span>${order.taxAmount.toFixed(2)}</span>
+              <span>Rs. {order.taxAmount.toFixed(2)}</span>
             </div>
             <div className="invoice-total-row">
               <span>Shipping</span>
-              <span>{order.shippingPrice === 0 ? 'Free' : `$${order.shippingPrice.toFixed(2)}`}</span>
+              <span>{order.shippingPrice === 0 ? 'Free' : `Rs. ${order.shippingPrice.toFixed(2)}`}</span>
             </div>
             <div className="invoice-total-row invoice-grand-total">
               <span>Grand Total</span>
-              <span data-testid="invoice-grand-total">${order.totalAmount.toFixed(2)}</span>
+              <span data-testid="invoice-grand-total">Rs. {order.totalAmount.toFixed(2)}</span>
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ import api from '../api/axiosConfig';
 import { toast } from 'react-toastify';
 import PhoneInputPkg from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import AddressBook from '../components/AddressBook';
 
 const PhoneInput = PhoneInputPkg.default ? PhoneInputPkg.default : PhoneInputPkg;
 
@@ -30,14 +31,64 @@ const CheckoutPage = () => {
     cvv: '',
   });
 
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState(null);
 
-  const tax = cartTotal * 0.08;
+  const handleSelectAddress = (addr) => {
+    if (!addr) return;
+    setSelectedAddressId(addr._id);
+    const nameParts = (addr.fullName || '').split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+    setFormData((prev) => ({
+      ...prev,
+      firstName,
+      lastName,
+      phone: addr.phone || prev.phone,
+      address: addr.addressLine1 + (addr.addressLine2 ? `, ${addr.addressLine2}` : ''),
+      city: addr.city || prev.city,
+      state: addr.state || prev.state,
+      zipCode: addr.postalCode || prev.zipCode,
+      country: addr.country || prev.country,
+    }));
+  };
+
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast.error('Please enter a coupon code');
+      return;
+    }
+    setValidatingCoupon(true);
+    try {
+      const { data } = await api.post('/coupons/validate', {
+        code: couponCode,
+        orderAmount: cartTotal,
+      });
+      if (data.success) {
+        setAppliedCoupon(data.coupon);
+        toast.success(`Coupon ${data.coupon.code} applied!`);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Invalid coupon code');
+      setAppliedCoupon(null);
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
+  const taxableAmount = Math.max(0, cartTotal - discountAmount);
+  const tax = taxableAmount * 0.08;
   const shippingPrice = 0;
-  const grandTotal = (cartTotal + tax + shippingPrice).toFixed(2);
+  const grandTotal = (taxableAmount + tax + shippingPrice).toFixed(2);
 
   // Redirect if cart is empty
   if (cartItems.length === 0 && !orderPlaced) {
@@ -68,6 +119,9 @@ const CheckoutPage = () => {
     setErrors({ ...errors, [name]: '' });
   };
 
+  const [paymentMethod, setPaymentMethod] = useState('safepay');
+  const [redirectPending, setRedirectPending] = useState(false);
+
   const validate = () => {
     const newErrors = {};
     if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
@@ -79,34 +133,23 @@ const CheckoutPage = () => {
     if (!formData.address.trim()) newErrors.address = 'Address is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.zipCode.trim()) newErrors.zipCode = 'ZIP code is required';
-    if (!formData.cardName.trim()) newErrors.cardName = 'Cardholder name is required';
-    if (formData.cardNumber.replace(/\s/g, '').length !== 16) newErrors.cardNumber = 'Enter a valid 16-digit card number';
 
-    // Detailed Expiry Validation
-    if (!/^\d{2}\/\d{2}$/.test(formData.expiry)) {
-      newErrors.expiry = 'Enter expiry as MM/YY';
-    } else {
-      const [month, year] = formData.expiry.split('/').map(n => parseInt(n));
-      const now = new Date();
-      const currentMonth = now.getMonth() + 1; // getMonth is 0-indexed
-      const currentYear = parseInt(now.getFullYear().toString().slice(-2));
+    if (paymentMethod === 'card') {
+      if (!formData.cardName.trim()) newErrors.cardName = 'Cardholder name is required';
+      if (formData.cardNumber.replace(/\s/g, '').length !== 16) newErrors.cardNumber = 'Enter a valid 16-digit card number';
 
-      if (month < 1 || month > 12) {
-        newErrors.expiry = 'Invalid month (01-12)';
-      } else if (year < currentYear || (year === currentYear && month < currentMonth)) {
-        newErrors.expiry = 'Expiry date cannot be in the past';
+      if (!/^\d{2}\/\d{2}$/.test(formData.expiry)) {
+        newErrors.expiry = 'Enter expiry as MM/YY';
       }
+      if (!/^\d{3,4}$/.test(formData.cvv)) newErrors.cvv = 'Enter a valid CVV';
     }
 
-    if (!/^\d{3,4}$/.test(formData.cvv)) newErrors.cvv = 'Enter a valid CVV';
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('[CHECKOUT] handleSubmit called');
     const validationErrors = validate();
-    console.log('[CHECKOUT] validationErrors:', validationErrors);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -115,7 +158,6 @@ const CheckoutPage = () => {
 
     setSubmitting(true);
     try {
-      // Map cart items to order items schema
       const orderItems = cartItems.map(item => ({
         product: item.productId._id,
         name: item.productId.name,
@@ -135,20 +177,36 @@ const CheckoutPage = () => {
           country: formData.country,
           phone: formData.phone
         },
-        paymentMethod: 'Credit Card',
+        paymentMethod: paymentMethod === 'safepay' ? 'Safepay (Sandbox)' : 'Credit Card',
         totalAmount: Number(grandTotal),
         taxAmount: Number(tax.toFixed(2)),
-        shippingPrice: Number(shippingPrice)
+        shippingPrice: Number(shippingPrice),
+        couponCode: appliedCoupon ? appliedCoupon.code : '',
       };
 
-      console.log('[CHECKOUT] Sending order to backend:', orderData);
-      const { data } = await api.post('/orders', orderData);
-      console.log('[CHECKOUT] Order response:', data);
+      const { data: orderRes } = await api.post('/orders', orderData);
+      const createdId = orderRes.order._id;
+      setCreatedOrderId(createdId);
 
-      setCreatedOrderId(data.order._id);
+      if (paymentMethod === 'safepay') {
+        setRedirectPending(true);
+        try {
+          const { data: payRes } = await api.post('/payments/create-session', { orderId: createdId });
+          if (payRes.success && payRes.checkoutUrl) {
+            toast.info('Redirecting to Safepay Hosted Checkout (Sandbox)...');
+            setTimeout(() => {
+              window.location.href = payRes.checkoutUrl;
+            }, 1000);
+            return;
+          }
+        } catch (payErr) {
+          console.warn('Safepay checkout session failed, completing locally');
+        }
+      }
+
       setOrderPlaced(true);
       toast.success('Order placed successfully!');
-      await fetchCart(); // Refresh cart (will be empty)
+      await fetchCart();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to place order. Try again.');
     } finally {
@@ -209,11 +267,11 @@ const CheckoutPage = () => {
 
       <form onSubmit={handleSubmit} data-testid="checkout-form" noValidate>
         {/* Processing Overlay */}
-        {submitting && (
-          <div className="processing-overlay" data-testid="processing-order-overlay">
+        {(submitting || redirectPending) && (
+          <div className="processing-overlay" data-testid={redirectPending ? "payment-redirect-pending" : "processing-order-overlay"}>
             <div className="processing-content">
               <span className="btn-spinner" style={{ width: '40px', height: '40px', borderWidth: '4px' }} />
-              <h2>Processing Your Order...</h2>
+              <h2>{redirectPending ? 'Redirecting to Safepay Checkout (Sandbox)...' : 'Processing Your Order...'}</h2>
               <p>Please do not close this page.</p>
             </div>
           </div>
@@ -230,6 +288,9 @@ const CheckoutPage = () => {
                 </svg>
                 Shipping Information
               </h2>
+              <div data-testid="checkout-address-select" style={{ marginBottom: '20px' }}>
+                <AddressBook onSelectAddress={handleSelectAddress} selectedAddressId={selectedAddressId} />
+              </div>
               <div className="form-grid-2">
                 <div className="form-group">
                   <label htmlFor="firstName">First Name</label>
@@ -314,30 +375,120 @@ const CheckoutPage = () => {
                   <rect width="20" height="14" x="2" y="5" rx="2" />
                   <line x1="2" y1="10" x2="22" y2="10" />
                 </svg>
-                Payment Details
+                Payment Method
               </h2>
-              <div className="form-group">
-                <label htmlFor="cardName">Cardholder Name</label>
-                <input id="cardName" type="text" name="cardName" placeholder="Muhammad Maaz" value={formData.cardName} onChange={handleChange} data-testid="cardName-input" className={errors.cardName ? 'input-error' : ''} />
-                {errors.cardName && <span className="field-error" data-testid="cardName-error">{errors.cardName}</span>}
+
+              {/* Sandbox Test Mode Banner */}
+              <div
+                className="payment-status-banner"
+                data-testid="payment-status-banner"
+                style={{
+                  background: 'rgba(245, 158, 11, 0.15)',
+                  border: '1px solid #f59e0b',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '12px 16px',
+                  marginBottom: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  color: '#f59e0b',
+                  fontWeight: '500',
+                  fontSize: '0.88rem'
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '20px', height: '20px', flexShrink: 0 }}>
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span><strong>TEST MODE ENABLED:</strong> Safepay Gateway is running strictly in Sandbox mode. No real monetary transactions will occur.</span>
               </div>
-              <div className="form-group">
-                <label htmlFor="cardNumber">Card Number</label>
-                <input id="cardNumber" type="text" name="cardNumber" placeholder="0000 0000 0000 0000" value={formData.cardNumber} onChange={handleChange} data-testid="cardNumber-input" maxLength={19} className={errors.cardNumber ? 'input-error' : ''} />
-                {errors.cardNumber && <span className="field-error" data-testid="cardNumber-error">{errors.cardNumber}</span>}
+
+              {/* Payment Method Selector */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+                <label
+                  style={{
+                    padding: '14px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: paymentMethod === 'safepay' ? '2px solid var(--accent)' : '1px solid var(--border)',
+                    background: paymentMethod === 'safepay' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-card)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontWeight: '600'
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="safepay"
+                    checked={paymentMethod === 'safepay'}
+                    onChange={() => setPaymentMethod('safepay')}
+                  />
+                  <span>Safepay Gateway (Sandbox)</span>
+                </label>
+
+                <label
+                  style={{
+                    padding: '14px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: paymentMethod === 'card' ? '2px solid var(--accent)' : '1px solid var(--border)',
+                    background: paymentMethod === 'card' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-card)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontWeight: '600'
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="card"
+                    checked={paymentMethod === 'card'}
+                    onChange={() => setPaymentMethod('card')}
+                  />
+                  <span>Credit / Debit Card</span>
+                </label>
               </div>
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label htmlFor="expiry">Expiry (MM/YY)</label>
-                  <input id="expiry" type="text" name="expiry" placeholder="MM/YY" value={formData.expiry} onChange={handleChange} data-testid="expiry-input" maxLength={5} className={errors.expiry ? 'input-error' : ''} />
-                  {errors.expiry && <span className="field-error" data-testid="expiry-error">{errors.expiry}</span>}
+
+              {paymentMethod === 'safepay' ? (
+                <div style={{ padding: '16px', background: 'rgba(192, 138, 46, 0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(192, 138, 46, 0.25)', color: 'var(--color-text-primary)' }}>
+                  <p style={{ margin: '0 0 6px 0', fontWeight: '600', color: 'var(--color-warning)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Hosted Checkout via Safepay (Sandbox Mode)
+                  </p>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+                    You will be redirected to Safepay&apos;s secure Hosted Checkout page to complete your payment using test cards or mobile wallets.
+                  </p>
                 </div>
-                <div className="form-group">
-                  <label htmlFor="cvv">CVV</label>
-                  <input id="cvv" type="password" name="cvv" placeholder="123" value={formData.cvv} onChange={handleChange} data-testid="cvv-input" maxLength={4} className={errors.cvv ? 'input-error' : ''} />
-                  {errors.cvv && <span className="field-error" data-testid="cvv-error">{errors.cvv}</span>}
-                </div>
-              </div>
+              ) : (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="cardName">Cardholder Name</label>
+                    <input id="cardName" type="text" name="cardName" placeholder="Muhammad Maaz" value={formData.cardName} onChange={handleChange} data-testid="cardName-input" className={errors.cardName ? 'input-error' : ''} />
+                    {errors.cardName && <span className="field-error" data-testid="cardName-error">{errors.cardName}</span>}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="cardNumber">Card Number</label>
+                    <input id="cardNumber" type="text" name="cardNumber" placeholder="0000 0000 0000 0000" value={formData.cardNumber} onChange={handleChange} data-testid="cardNumber-input" maxLength={19} className={errors.cardNumber ? 'input-error' : ''} />
+                    {errors.cardNumber && <span className="field-error" data-testid="cardNumber-error">{errors.cardNumber}</span>}
+                  </div>
+                  <div className="form-grid-2">
+                    <div className="form-group">
+                      <label htmlFor="expiry">Expiry (MM/YY)</label>
+                      <input id="expiry" type="text" name="expiry" placeholder="MM/YY" value={formData.expiry} onChange={handleChange} data-testid="expiry-input" maxLength={5} className={errors.expiry ? 'input-error' : ''} />
+                      {errors.expiry && <span className="field-error" data-testid="expiry-error">{errors.expiry}</span>}
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="cvv">CVV</label>
+                      <input id="cvv" type="password" name="cvv" placeholder="123" value={formData.cvv} onChange={handleChange} data-testid="cvv-input" maxLength={4} className={errors.cvv ? 'input-error' : ''} />
+                      {errors.cvv && <span className="field-error" data-testid="cvv-error">{errors.cvv}</span>}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -358,19 +509,72 @@ const CheckoutPage = () => {
                 <div key={item._id} className="order-item">
                   <img src={item.productId.image} alt={item.productId.name} />
                   <div className="order-item-name">{item.productId.name} <span>×{item.quantity}</span></div>
-                  <div className="order-item-price">${(item.productId.price * item.quantity).toFixed(2)}</div>
+                  <div className="order-item-price">Rs. {(item.productId.price * item.quantity).toFixed(2)}</div>
                 </div>
               ))}
             </div>
-            <div className="summary-total">Grand Total <span>${grandTotal}</span></div>
+
+            {/* Coupon Code Section */}
+            <div className="coupon-section" style={{ margin: '15px 0', padding: '12px', background: 'var(--bg-card)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Have a Coupon Code?</label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  placeholder="ENTER CODE"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  data-testid="coupon-input"
+                  style={{
+                    flex: 1,
+                    padding: '8px 12px',
+                    background: 'var(--bg-input)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '0.85rem',
+                    textTransform: 'uppercase'
+                  }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  onClick={handleApplyCoupon}
+                  disabled={validatingCoupon}
+                  data-testid="coupon-apply-button"
+                >
+                  {validatingCoupon ? '...' : 'Apply'}
+                </button>
+              </div>
+              {appliedCoupon && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '0.8rem', color: '#10b981' }}>
+                  <span>Code <strong>{appliedCoupon.code}</strong> Applied</span>
+                  <button
+                    type="button"
+                    onClick={() => { setAppliedCoupon(null); setCouponCode(''); toast.info('Coupon removed'); }}
+                    style={{ background: 'none', border: 'none', color: 'var(--error)', cursor: 'pointer', fontSize: '0.8rem' }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {appliedCoupon && (
+              <div className="summary-row" style={{ color: '#10b981', display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span>Coupon Discount ({appliedCoupon.code})</span>
+                <span data-testid="coupon-discount-amount">-Rs. {discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+
+            <div className="summary-total">Grand Total <span>Rs. {grandTotal}</span></div>
             <button
               type="button"
               className="btn btn-success btn-full"
-              disabled={submitting}
-              data-testid="submit-button"
+              disabled={submitting || redirectPending}
+              data-testid="payment-checkout-button"
               onClick={handleSubmit}
             >
-              {submitting ? 'Processing...' : `Place Order • $${grandTotal}`}
+              {submitting || redirectPending ? 'Processing...' : `Place Order • Rs. ${grandTotal}`}
             </button>
           </div>
         </div>

@@ -560,4 +560,113 @@
 
 ---
 
+## 7. New Feature Test Suites
+
+### TC-FEAT-001 — Saved Address Book Management
+| Field | Details |
+|---|---|
+| **Test Case ID** | TC-FEAT-001 |
+| **Scenario** | User saves multiple shipping addresses and sets a default |
+
+**Steps:**
+1. Navigate to `/profile`
+2. Click **Add New Address** (`[data-testid="address-add-button"]`)
+3. Enter details (Label, Full Name, Phone, Street, City, Postal Code) and submit
+4. Select an address and click **Set as Default** (`[data-testid="address-set-default-button"]`)
+
+**Expected Result:** Address is created and visible under `[data-testid="address-list"]`. Default badge reflects updated status and auto-selects at Checkout.
+
+---
+
+### TC-FEAT-002 — Product Search, Filters, and Sorting
+| Field | Details |
+|---|---|
+| **Test Case ID** | TC-FEAT-002 |
+| **Scenario** | User searches products, applies category/price/rating filters, and sorts results |
+
+**Steps:**
+1. On Home page, type search query in `[data-testid="search-input"]`
+2. Select Category `[data-testid="filter-category-electronics"]`
+3. Enter Min Price in `[data-testid="filter-price-min"]` and Max Price in `[data-testid="filter-price-max"]`
+4. Select minimum rating from rating dropdown
+5. Select sorting option from `[data-testid="sort-select"]`
+
+**Expected Result:** Product grid updates dynamically. Search params sync with URL query string.
+
+---
+
+### TC-FEAT-003 — Product Reviews & Star Ratings
+| Field | Details |
+|---|---|
+| **Test Case ID** | TC-FEAT-003 |
+| **Scenario** | Customer submits a star rating and review on a product detail page |
+
+**Steps:**
+1. Open Product Detail page (`/products/:id`)
+2. Under Customer Reviews, select a star rating `[data-testid="review-star-5"]`
+3. Enter written feedback in `[data-testid="review-form"]` and click **Submit Review** (`[data-testid="review-submit-button"]`)
+
+**Expected Result:** Review is saved, displays under `[data-testid="review-item"]`, and aggregate star rating updates.
+
+---
+
+### TC-FEAT-004 — Coupon & Discount Code Creation & Application
+| Field | Details |
+|---|---|
+| **Test Case ID** | TC-FEAT-004 |
+| **Scenario** | Admin creates a coupon code and customer applies it at checkout |
+
+**Steps:**
+1. Log in as Admin, navigate to `/admin/coupons`, click `[data-testid="admin-coupon-create-button"]`, enter code `SAVE10` (10% off), and save
+2. Log in as Customer, add items to cart, proceed to `/checkout`
+3. Enter `SAVE10` in `[data-testid="coupon-input"]` and click **Apply** (`[data-testid="coupon-apply-button"]`)
+
+**Expected Result:** Discount is validated and computed at `[data-testid="coupon-discount-amount"]`. Order total is reduced.
+
+---
+
+### TC-FEAT-005 — CSV Catalog Export & Import
+| Field | Details |
+|---|---|
+| **Test Case ID** | TC-FEAT-005 |
+| **Scenario** | Admin exports catalog to CSV and bulk imports products from CSV file |
+
+**Steps:**
+1. Log in as Admin, navigate to `/admin/products`
+2. Click **Export CSV** (`[data-testid="admin-export-csv-button"]`)
+3. Click **Import CSV** (`[data-testid="admin-import-csv-button"]`), upload CSV file via `[data-testid="admin-import-file-input"]`
+
+**Expected Result:** Product catalog downloads as `quickkart_products.csv`. Import modal displays summary results at `[data-testid="admin-import-results-summary"]`.
+
+---
+
+### TC-FEAT-006 — Safepay Payment Gateway (Sandbox Mode)
+| Field | Details |
+|---|---|
+| **Test Case ID** | TC-FEAT-006 |
+| **Scenario** | Customer completes checkout via Safepay Sandbox Gateway |
+
+**Steps:**
+1. Proceed to `/checkout`
+2. Observe `[data-testid="payment-status-banner"]` confirming Sandbox mode
+3. Select Safepay Gateway option and click **Place Order** (`[data-testid="payment-checkout-button"]`)
+
+**Expected Result:** Overlay `[data-testid="payment-redirect-pending"]` displays and redirects user to Safepay Hosted Checkout.
+
+---
+
+### TC-FEAT-007 — Real-Time WebSocket Push Notifications
+| Field | Details |
+|---|---|
+| **Test Case ID** | TC-FEAT-007 |
+| **Scenario** | Real-time push notification delivered instantly via Socket.IO |
+
+**Steps:**
+1. Log in as user
+2. Perform an action that triggers a notification (e.g. place order or admin order status update)
+
+**Expected Result:** Notification badge and dropdown update instantly over WebSocket connection. Socket status element `[data-testid="notification-socket-status"]` has `data-connected="true"`.
+
+---
+
 *End of Test Suites Document*

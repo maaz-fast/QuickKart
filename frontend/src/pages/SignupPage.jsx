@@ -57,9 +57,8 @@ const SignupPage = () => {
     try {
       setLoading(true);
       const { data } = await api.post('/auth/signup', { name, email, password });
-      login(data.user, data.token);
-      toast.success('Account created successfully!');
-      navigate('/', { replace: true });
+      toast.info(data.message || 'Verification code sent to your email.');
+      navigate('/verify-otp', { state: { email, purpose: 'signup' } });
     } catch (err) {
       console.error('Signup Error:', err);
       toast.error(err.response?.data?.message || err.message || 'Sign up failed. Please try again.');

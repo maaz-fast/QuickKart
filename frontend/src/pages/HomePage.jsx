@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -19,12 +19,19 @@ const SkeletonCard = () => (
 
 const HomePage = () => {
   const { isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Read initial values from URL params
+  const [search, setSearch] = useState(searchParams.get('q') || searchParams.get('search') || '');
+  const [category, setCategory] = useState(searchParams.get('category') || 'All');
+  const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
+  const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
+  const [minRating, setMinRating] = useState(searchParams.get('minRating') || '');
+  const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'newest');
+  const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
+
   const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('All');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [categories, setCategories] = useState([]);
@@ -33,6 +40,14 @@ const HomePage = () => {
   const [addingId, setAddingId] = useState(null);
   const [successId, setSuccessId] = useState(null);
   const [addingWishlistId, setAddingWishlistId] = useState(null);
+
+  // Debounced values
+  const debouncedSearch = useDebounce(search, 400);
+  const debouncedMinPrice = useDebounce(minPrice, 400);
+  const debouncedMaxPrice = useDebounce(maxPrice, 400);
+
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   const getCategoryIcon = (name, size = "1.2em", color = "currentColor") => {
     const n = name.toLowerCase();
@@ -48,43 +63,14 @@ const HomePage = () => {
       style: { verticalAlign: 'middle' }
     };
 
-    if (n === 'all') return (
-      <svg {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    );
-    if (n.includes('elect')) return (
-      <svg {...props}><rect width="20" height="14" x="2" y="3" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-    );
-    if (n.includes('fash') || n.includes('cloth')) return (
-      <svg {...props}><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
-    );
-    if (n.includes('home')) return (
-      <svg {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    );
-    if (n.includes('sport')) return (
-      <svg {...props}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-    );
-    if (n.includes('beaut') || n.includes('care')) return (
-      <svg {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M3 5h4"/><path d="M19 17v4"/><path d="M17 19h4"/></svg>
-    );
-    if (n.includes('food') || n.includes('grocer')) return (
-      <svg {...props}><circle cx="12" cy="5" r="3"/><path d="M6.5 8a.5.5 0 0 0-.5.5V15a6 6 0 0 0 12 0V8.5a.5.5 0 0 0-.5-.5h-11Z"/><path d="M12 13V21"/><path d="M18 13v2a6 6 0 0 1-6 6 6 6 0 0 1-6-6v-2"/></svg>
-    );
-    if (n.includes('toy') || n.includes('kid')) return (
-      <svg {...props}><path d="M10 10 5 7V3l5 3 5-3v4l-5 3Z"/><path d="M14 17h.01"/><path d="M10 17h.01"/><path d="M10 13h4v4h-4z"/><path d="M5 7v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7"/></svg>
-    );
-    return (
-      <svg {...props}><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-    );
+    if (n === 'all') return <svg {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+    if (n.includes('elect')) return <svg {...props}><rect width="20" height="14" x="2" y="3" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>;
+    if (n.includes('fash') || n.includes('cloth')) return <svg {...props}><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>;
+    if (n.includes('home')) return <svg {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+    if (n.includes('sport')) return <svg {...props}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>;
+    if (n.includes('beaut') || n.includes('care')) return <svg {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>;
+    return <svg {...props}><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>;
   };
-  
-  // Debounced values
-  const debouncedSearch = useDebounce(search, 500);
-  const debouncedMinPrice = useDebounce(minPrice, 500);
-  const debouncedMaxPrice = useDebounce(maxPrice, 500);
-
-  const { addToCart } = useCart();
-  const { toggleWishlist, isInWishlist } = useWishlist();
-  const navigate = useNavigate();
 
   // Fetch unique categories once
   useEffect(() => {
@@ -99,6 +85,20 @@ const HomePage = () => {
     fetchCats();
   }, []);
 
+  // Update URL parameters whenever debounced search or filters change
+  useEffect(() => {
+    const params = {};
+    if (debouncedSearch) params.q = debouncedSearch;
+    if (category !== 'All') params.category = category;
+    if (debouncedMinPrice) params.minPrice = debouncedMinPrice;
+    if (debouncedMaxPrice) params.maxPrice = debouncedMaxPrice;
+    if (minRating) params.minRating = minRating;
+    if (sortBy !== 'newest') params.sortBy = sortBy;
+    if (page > 1) params.page = page;
+
+    setSearchParams(params, { replace: true });
+  }, [debouncedSearch, category, debouncedMinPrice, debouncedMaxPrice, minRating, sortBy, page, setSearchParams]);
+
   // Fetch products whenever filters or page changes
   useEffect(() => {
     const fetchProducts = async () => {
@@ -107,15 +107,17 @@ const HomePage = () => {
         setError('');
         
         let url = `/products?page=${page}&limit=8`;
-        if (debouncedSearch) url += `&search=${encodeURIComponent(debouncedSearch)}`;
+        if (debouncedSearch) url += `&q=${encodeURIComponent(debouncedSearch)}`;
         if (category !== 'All') url += `&category=${encodeURIComponent(category)}`;
         if (debouncedMinPrice) url += `&minPrice=${debouncedMinPrice}`;
         if (debouncedMaxPrice) url += `&maxPrice=${debouncedMaxPrice}`;
+        if (minRating) url += `&minRating=${minRating}`;
+        if (sortBy) url += `&sortBy=${sortBy}`;
 
         const { data } = await api.get(url);
         setProducts(data.products);
-        setTotalPages(data.totalPages);
-        setTotalCount(data.totalCount);
+        setTotalPages(data.totalPages || 1);
+        setTotalCount(data.totalCount || data.products.length);
       } catch (err) {
         setError('Failed to load products. Please try again.');
       } finally {
@@ -124,7 +126,7 @@ const HomePage = () => {
     };
 
     fetchProducts();
-  }, [debouncedSearch, category, debouncedMinPrice, debouncedMaxPrice, page]);
+  }, [debouncedSearch, category, debouncedMinPrice, debouncedMaxPrice, minRating, sortBy, page]);
 
   const handleAddToCart = async (e, productId) => {
     e.stopPropagation();
@@ -160,7 +162,26 @@ const HomePage = () => {
     setCategory('All');
     setMinPrice('');
     setMaxPrice('');
+    setMinRating('');
+    setSortBy('newest');
     setPage(1);
+  };
+
+  const renderStars = (rating = 0) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalf = rating % 1 >= 0.5;
+
+    for (let i = 1; i <= 5; i++) {
+      if (i <= fullStars) {
+        stars.push(<span key={i} style={{ color: '#f59e0b' }}>★</span>);
+      } else if (i === fullStars + 1 && hasHalf) {
+        stars.push(<span key={i} style={{ color: '#f59e0b' }}>★</span>);
+      } else {
+        stars.push(<span key={i} style={{ color: 'var(--text-muted)' }}>☆</span>);
+      }
+    }
+    return stars;
   };
 
   return (
@@ -180,9 +201,10 @@ const HomePage = () => {
       </div>
 
       {/* Advanced Filter Bar */}
-      <div className="filter-bar" data-testid="filter-bar">
-        <div className="filter-row-top">
-          <div className="search-wrapper">
+      <div className="filter-bar" data-testid="filter-bar" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="filter-row-top" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
+          {/* Search Box */}
+          <div className="search-wrapper" style={{ flex: '1 1 240px' }}>
             <span className="search-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
                 <circle cx="11" cy="11" r="8" />
@@ -208,65 +230,116 @@ const HomePage = () => {
             )}
           </div>
 
-          <div className="price-filters">
+          {/* Min & Max Price */}
+          <div className="price-filters" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <input
               type="number"
-              placeholder="Min $"
+              placeholder="Min PKR"
               value={minPrice}
               onChange={(e) => { setMinPrice(e.target.value); setPage(1); }}
               className="price-input"
-              data-testid="min-price-filter"
+              data-testid="filter-price-min"
             />
             <span className="price-sep">-</span>
             <input
               type="number"
-              placeholder="Max $"
+              placeholder="Max PKR"
               value={maxPrice}
               onChange={(e) => { setMaxPrice(e.target.value); setPage(1); }}
               className="price-input"
-              data-testid="max-price-filter"
+              data-testid="filter-price-max"
             />
-            {(minPrice || maxPrice) && (
-              <button 
-                className="price-clear" 
-                onClick={() => { setMinPrice(''); setMaxPrice(''); setPage(1); }}
-                title="Clear price filter"
-              >
-                ✕
-              </button>
-            )}
           </div>
+
+          {/* Rating Filter Selector */}
+          <div className="rating-filter-wrapper">
+            <select
+              value={minRating}
+              onChange={(e) => { setMinRating(e.target.value); setPage(1); }}
+              className="select-input"
+              style={{
+                background: 'var(--bg-input)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '8px 12px',
+                fontSize: '0.9rem',
+              }}
+            >
+              <option value="">All Ratings</option>
+              <option value="4" data-testid="filter-rating-4">4★ & above</option>
+              <option value="3" data-testid="filter-rating-3">3★ & above</option>
+              <option value="2" data-testid="filter-rating-2">2★ & above</option>
+              <option value="1" data-testid="filter-rating-1">1★ & above</option>
+            </select>
+          </div>
+
+          {/* Sort Selector Dropdown */}
+          <div className="sort-wrapper">
+            <select
+              value={sortBy}
+              onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+              className="select-input"
+              data-testid="sort-select"
+              style={{
+                background: 'var(--bg-input)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '8px 12px',
+                fontSize: '0.9rem',
+              }}
+            >
+              <option value="newest">Sort by: Newest</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+            </select>
+          </div>
+
+          {/* Clear Filters Button */}
+          {(search || category !== 'All' || minPrice || maxPrice || minRating || sortBy !== 'newest') && (
+            <button
+              className="btn btn-outline btn-sm"
+              onClick={clearFilters}
+              data-testid="clear-filters-button"
+              style={{ fontSize: '0.85rem' }}
+            >
+              Clear Filters ✕
+            </button>
+          )}
         </div>
 
+        {/* Category Tabs */}
         <div className="category-tabs" data-testid="category-tabs">
           <button
             className={`category-tab ${category === 'All' ? 'active' : ''}`}
             onClick={() => { setCategory('All'); setPage(1); }}
-            data-testid="category-tab-all"
+            data-testid="filter-category-all"
           >
             <span className="tab-icon">{getCategoryIcon('all')}</span> All
           </button>
-          {categories.map((cat) => (
-            <button
-              key={cat._id}
-              className={`category-tab ${category === cat._id ? 'active' : ''}`}
-              onClick={() => { setCategory(cat._id); setPage(1); }}
-              data-testid={`category-tab-${cat.name.toLowerCase()}`}
-            >
-              <span className="tab-icon">{getCategoryIcon(cat.name)}</span> {cat.name}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const catName = typeof cat === 'string' ? cat : cat.name;
+            const catId = typeof cat === 'string' ? cat : cat._id;
+            const slug = catName.toLowerCase().replace(/\s+/g, '-');
+            return (
+              <button
+                key={catId}
+                className={`category-tab ${category === catId ? 'active' : ''}`}
+                onClick={() => { setCategory(catId); setPage(1); }}
+                data-testid={`filter-category-${slug}`}
+              >
+                <span className="tab-icon">{getCategoryIcon(catName)}</span> {catName}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Error */}
       {error && (
         <div className="alert alert-error" data-testid="products-error-message">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px', marginRight: '10px', verticalAlign: 'middle' }}>
-            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
           {error}
         </div>
       )}
@@ -282,7 +355,7 @@ const HomePage = () => {
 
       {/* Empty state */}
       {!loading && !error && products.length === 0 && (
-        <div className="empty-state" data-testid="products-empty-state">
+        <div className="empty-state" data-testid="products-empty-state" style={{ padding: '60px 20px', textAlign: 'center' }}>
           <span className="empty-state-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '64px', height: '64px' }}>
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -337,11 +410,20 @@ const HomePage = () => {
                   <h3 className="product-card-name" data-testid={`product-name-${product._id}`}>
                     {product.name}
                   </h3>
+
+                  {/* Rating Stars Badge */}
+                  <div className="product-rating" style={{ display: 'flex', alignItems: 'center', gap: '4px', margin: '4px 0', fontSize: '0.85rem' }}>
+                    {renderStars(product.averageRating || 0)}
+                    <span style={{ color: 'var(--text-secondary)', marginLeft: '4px' }}>
+                      ({product.numReviews || 0})
+                    </span>
+                  </div>
+
                   <p className="product-card-desc">{product.description}</p>
 
                   <div className="product-card-footer">
                     <span className="product-card-price" data-testid={`product-price-${product._id}`}>
-                      ${product.price.toFixed(2)}
+                      Rs. {product.price.toFixed(2)}
                     </span>
                     {!isAdmin && (
                       <div style={{ display: 'flex', gap: '8px' }}>

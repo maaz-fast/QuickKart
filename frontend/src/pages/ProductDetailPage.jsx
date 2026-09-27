@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { toast } from 'react-toastify';
 import BrandedLoader from '../components/common/BrandedLoader';
+import ProductReviews from '../components/ProductReviews';
 
 const ProductDetailPage = () => {
   const { isAdmin } = useAuth();
@@ -132,7 +133,7 @@ const ProductDetailPage = () => {
           </h1>
 
           <p className="product-detail-price" data-testid="product-detail-price">
-            ${product.price.toFixed(2)}
+            Rs. {product.price.toFixed(2)}
           </p>
 
           <p className="product-detail-desc" data-testid="product-detail-description">
@@ -242,6 +243,11 @@ const ProductDetailPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Product Reviews */}
+      <ProductReviews productId={product._id} onRatingUpdated={() => {
+        api.get(`/products/${id}`).then(({ data }) => setProduct(data.product)).catch(() => {});
+      }} />
     </div>
   );
 };

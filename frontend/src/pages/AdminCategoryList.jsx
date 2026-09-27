@@ -3,6 +3,7 @@ import api from '../api/axiosConfig';
 import Pagination from '../components/common/Pagination';
 import BrandedLoader from '../components/common/BrandedLoader';
 import ConfirmationModal from '../components/common/ConfirmationModal';
+import ActionMenu, { TrashIcon } from '../components/common/ActionMenu';
 
 const AdminCategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -127,16 +128,19 @@ const AdminCategoryList = () => {
                 <tr key={cat._id} data-testid={`category-row-${cat._id}`}>
                   <td data-testid="category-name"><strong>{cat.name}</strong></td>
                   <td data-testid="category-created-at">{new Date(cat.createdAt).toLocaleDateString()}</td>
-                  <td>
-                    <div className="actions-cell" style={{ justifyContent: 'flex-end' }}>
-                      <button 
-                        className="btn btn-sm btn-error"
-                        onClick={() => handleDeleteClick(cat._id)}
-                        data-testid={`delete-category-${cat._id}`}
-                      >
-                        Delete
-                      </button>
-                    </div>
+                  <td style={{ textAlign: 'right' }}>
+                    <ActionMenu
+                      items={[
+                        {
+                          label: 'Delete',
+                          icon: <TrashIcon />,
+                          isDelete: true,
+                          onClick: () => handleDeleteClick(cat._id),
+                          testId: `delete-category-${cat._id}`
+                        }
+                      ]}
+                      testId={`category-actions-${cat._id}`}
+                    />
                   </td>
                 </tr>
               ))}

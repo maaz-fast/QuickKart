@@ -19,6 +19,10 @@ const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 const userRoutes = require('./routes/userRoutes');
+const addressRoutes = require('./routes/addressRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const couponRoutes = require('./routes/couponRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const supportRoutes = require('./routes/supportRoutes');
 
@@ -58,22 +62,32 @@ app.use('/api-docs', swaggerAuth, swaggerUi.serve, swaggerUi.setup(swaggerSpec, 
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/products/:id/reviews', reviewRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/users/me/addresses', addressRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/support', supportRoutes);
 
 // Vercel Serverless Fallbacks (Handles when Vercel automatically strips the /api prefix)
 app.use('/auth', authRoutes);
+app.use('/products/:id/reviews', reviewRoutes);
 app.use('/products', productRoutes);
+app.use('/reviews', reviewRoutes);
+app.use('/coupons', couponRoutes);
+app.use('/payments', paymentRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
 app.use('/admin', adminRoutes);
 app.use('/wishlist', wishlistRoutes);
+app.use('/users/me/addresses', addressRoutes);
 app.use('/users', userRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/support', supportRoutes);
@@ -91,11 +105,16 @@ app.get('/', (req, res) => {
 // Centralized error handling
 app.use(errorHandler);
 
+const http = require('http');
+const { initSocket } = require('./config/socket');
+
 const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
+initSocket(server);
 
 // Only listen locally, Vercel Serverless Functions handle binding automatically
 if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`📚 Swagger Docs at http://localhost:${PORT}/api-docs`);
   });

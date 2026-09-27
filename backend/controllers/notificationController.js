@@ -51,7 +51,23 @@ const markAsRead = async (req, res) => {
   }
 };
 
+// @desc    Mark all user notifications as read
+// @route   PUT /api/notifications/read-all
+// @access  Private
+const markAllAsRead = async (req, res) => {
+  try {
+    await Notification.updateMany(
+      { userId: req.user._id, isRead: false },
+      { $set: { isRead: true } }
+    );
+    res.json({ message: 'All notifications marked as read' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error marking all notifications as read' });
+  }
+};
+
 module.exports = {
   getNotifications,
-  markAsRead
+  markAsRead,
+  markAllAsRead
 };

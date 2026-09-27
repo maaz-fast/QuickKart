@@ -156,7 +156,7 @@ const AdminProductForm = () => {
 
           <div className="form-grid-2">
             <div className="form-group">
-              <label htmlFor="price">Price ($)</label>
+              <label htmlFor="price">Price (PKR)</label>
               <input 
                 id="price" 
                 name="price" 

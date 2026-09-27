@@ -1,8 +1,14 @@
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const Coupon = require('../models/Coupon');
 const { createNotification, notifyAdmins } = require('../utils/notificationService');
 const { logActivity } = require('../utils/activityLogger');
+const {
+  sendOrderConfirmationEmail,
+  sendAdminNewOrderAlert,
+  sendAdminLowStockAlert,
+} = require('../utils/emailService');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -15,7 +21,8 @@ const createOrder = async (req, res, next) => {
       paymentMethod, 
       totalAmount,
       taxAmount,
-      shippingPrice 
+      shippingPrice,
+      couponCode 
     } = req.body;
 
     if (!orderItems || orderItems.length === 0) {
@@ -24,6 +31,7 @@ const createOrder = async (req, res, next) => {
     }
 
     // Check stock availability for all items
+    let subtotal = 0;
     for (const item of orderItems) {
       const product = await Product.findById(item.product);
       if (!product) {
@@ -34,7 +42,31 @@ const createOrder = async (req, res, next) => {
         res.status(400);
         throw new Error(`Not enough stock for ${product.name}. Available: ${product.stock}`);
       }
+      subtotal += product.price * item.quantity;
     }
+
+    // Server-side Coupon validation & calculation
+    let calculatedDiscount = 0;
+    let validatedCouponCode = '';
+
+    if (couponCode && couponCode.trim() !== '') {
+      const uppercaseCode = couponCode.trim().toUpperCase();
+      const couponDoc = await Coupon.findOne({ code: uppercaseCode });
+
+      if (couponDoc && couponDoc.isActive && new Date() <= new Date(couponDoc.expiresAt) && couponDoc.usedCount < couponDoc.maxUses && subtotal >= couponDoc.minOrderValue) {
+        validatedCouponCode = couponDoc.code;
+        if (couponDoc.discountType === 'percentage') {
+          calculatedDiscount = (subtotal * couponDoc.discountValue) / 100;
+        } else {
+          calculatedDiscount = Math.min(couponDoc.discountValue, subtotal);
+        }
+        // Increment usedCount atomically
+        await Coupon.findByIdAndUpdate(couponDoc._id, { $inc: { usedCount: 1 } });
+      }
+    }
+
+    const calculatedTax = Number(((Math.max(0, subtotal - calculatedDiscount)) * 0.08).toFixed(2));
+    const finalCalculatedTotal = Number((Math.max(0, subtotal - calculatedDiscount) + calculatedTax + (Number(shippingPrice) || 0)).toFixed(2));
 
     // Create order
     const order = new Order({
@@ -42,26 +74,46 @@ const createOrder = async (req, res, next) => {
       orderItems,
       shippingAddress,
       paymentMethod,
-      totalAmount,
-      taxAmount,
-      shippingPrice
+      totalAmount: finalCalculatedTotal || totalAmount,
+      taxAmount: calculatedTax || taxAmount,
+      shippingPrice: shippingPrice || 0,
+      discountAmount: Number(calculatedDiscount.toFixed(2)),
+      couponCode: validatedCouponCode,
     });
 
     const createdOrder = await order.save();
 
-    // Decrement stock for each product
+    // Decrement stock & check low stock threshold (< 5)
     for (const item of orderItems) {
-      await Product.findByIdAndUpdate(item.product, {
-        $inc: { stock: -item.quantity }
-      });
+      const updatedProduct = await Product.findByIdAndUpdate(
+        item.product,
+        { $inc: { stock: -item.quantity } },
+        { new: true }
+      );
+      if (updatedProduct && updatedProduct.stock < 5) {
+        sendAdminLowStockAlert(updatedProduct).catch(err => console.error('Low stock email failed:', err));
+      }
     }
 
     // Clear user's cart in DB after successful order
     await Cart.deleteMany({ userId: req.user._id });
 
-    // Notify User and Admins
-    await createNotification(req.user._id, 'Your order has been placed successfully', 'order');
-    await notifyAdmins(`New order received from ${req.user.name || req.user.email}`, 'order');
+    const formattedOrderId = `ORD-${createdOrder._id.toString().slice(-8).toUpperCase()}`;
+
+    const isCod = paymentMethod && (paymentMethod.toLowerCase().includes('cash') || paymentMethod.toLowerCase().includes('cod'));
+
+    // Only notify & email for COD immediately; for Online payment, wait until payment is completed
+    if (isCod) {
+      // Notify User and Admins via Socket.io/DB
+      await createNotification(req.user._id, `Your order ${formattedOrderId} has been placed successfully`, 'order');
+      await notifyAdmins(`New COD order ${formattedOrderId} received from ${req.user.name || req.user.email}`, 'order');
+
+      // Send Emails (Asynchronous / Non-blocking)
+      if (req.user.email) {
+        sendOrderConfirmationEmail(req.user.email, createdOrder).catch(err => console.error('Order confirmation email failed:', err));
+      }
+      sendAdminNewOrderAlert(createdOrder).catch(err => console.error('Admin order alert email failed:', err));
+    }
 
     res.status(201).json({
       success: true,
@@ -69,7 +121,7 @@ const createOrder = async (req, res, next) => {
     });
 
     // Log Activity
-    await logActivity(req.user, 'PLACE_ORDER', `Order placed: ${createdOrder._id}`, { orderId: createdOrder._id, amount: createdOrder.totalAmount });
+    await logActivity(req.user, 'PLACE_ORDER', `Order placed: ${formattedOrderId}`, { orderId: createdOrder._id, amount: createdOrder.totalAmount });
   } catch (error) {
     next(error);
   }

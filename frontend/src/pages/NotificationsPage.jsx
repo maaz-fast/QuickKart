@@ -1,11 +1,15 @@
 import { useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
+import { useAuth } from '../context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BrandedLoader from '../components/common/BrandedLoader';
+import { getNotificationTargetUrl } from '../utils/notificationNavigation';
 
 const NotificationsPage = () => {
-  const { notifications, loading, markAsRead, refreshNotifications } = useNotification();
+  const { notifications, unreadCount, loading, markAsRead, markAllAsRead, refreshNotifications } = useNotification();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     refreshNotifications();
@@ -20,13 +24,35 @@ const NotificationsPage = () => {
     if (!notification.isRead) {
       markAsRead(notification._id);
     }
+    const targetUrl = getNotificationTargetUrl(notification, user);
+    navigate(targetUrl);
+  };
+
+  const formatMessage = (msg) => {
+    if (!msg) return '';
+    return msg.replace(/\b([a-fA-F0-9]{24})\b/g, (match) => 'ORD-' + match.slice(-8).toUpperCase());
   };
 
   return (
     <div className="container" style={{ padding: '40px 20px', maxWidth: '800px', margin: '0 auto' }}>
-      <div className="page-header" style={{ marginBottom: '30px' }}>
-        <h1>Your Notifications</h1>
-        <p>Stay updated on your account activity and orders</p>
+      <div className="page-header" style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1>Your Notifications</h1>
+          <p>Stay updated on your account activity and orders</p>
+        </div>
+        {unreadCount > 0 && (
+          <button 
+            className="btn btn-outline btn-sm" 
+            onClick={markAllAsRead}
+            data-testid="mark-all-read-page-btn"
+            style={{ borderRadius: '8px', gap: '6px' }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+              <path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/>
+            </svg>
+            Mark All as Read
+          </button>
+        )}
       </div>
 
       <div className="notification-page-list">
@@ -43,9 +69,9 @@ const NotificationsPage = () => {
                 key={notification._id}
                 className={`notification-item ${!notification.isRead ? 'unread' : ''}`}
                 onClick={() => handleNotificationClick(notification)}
-                style={{ padding: '20px', display: 'flex', alignItems: 'center' }}
+                style={{ padding: '20px', display: 'flex', alignItems: 'center', cursor: 'pointer', gap: '16px' }}
               >
-                <div className="notification-icon-type" style={{ width: '48px', height: '48px', fontSize: '1.5rem', marginRight: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="notification-icon-type" style={{ width: '48px', height: '48px', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   {notification.type === 'order' && (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
                       <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
@@ -62,13 +88,16 @@ const NotificationsPage = () => {
                     </svg>
                   )}
                 </div>
-                <div className="notification-content">
-                  <p className="notification-message" style={{ fontSize: '1rem' }}>{notification.message}</p>
+                <div className="notification-content" style={{ flex: 1 }}>
+                  <p className="notification-message" style={{ fontSize: '1rem' }}>{formatMessage(notification.message)}</p>
                   <span className="notification-time">
                     {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                   </span>
                 </div>
-                {!notification.isRead && <span className="unread-dot" style={{ position: 'static', marginLeft: '16px' }} />}
+                {!notification.isRead && <span className="unread-dot" style={{ position: 'static' }} />}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', color: 'var(--text-muted)', flexShrink: 0, opacity: 0.6 }}>
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
               </div>
             ))}
           </div>

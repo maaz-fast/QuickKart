@@ -112,7 +112,7 @@ const OrdersPage = () => {
 
             <div className="order-details-preview">
               <span className="order-item-count">{order.orderItems.length} items</span>
-              <span className="order-total-price-sm">${order.totalAmount.toFixed(2)}</span>
+              <span className="order-total-price-sm">Rs. {order.totalAmount.toFixed(2)}</span>
             </div>
 
             <div className="order-status-badge" data-testid="status-badge" data-state={order.status.toLowerCase()}>

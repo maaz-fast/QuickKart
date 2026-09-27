@@ -16,6 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // Pages
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import VerifyOtpPage from './pages/VerifyOtpPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import HomePage from './pages/HomePage';
@@ -23,6 +24,8 @@ import LandingPage from './pages/LandingPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import CheckoutSuccessPage from './pages/CheckoutSuccessPage';
+import CheckoutCancelPage from './pages/CheckoutCancelPage';
 import OrdersPage from './pages/OrdersPage';
 import OrderDetailsPage from './pages/OrderDetailsPage';
 import ProfilePage from './pages/ProfilePage';
@@ -41,6 +44,8 @@ import AdminUserList from './pages/AdminUserList';
 import AdminSupport from './pages/AdminSupport';
 import AdminActivityLogs from './pages/AdminActivityLogs';
 import AdminSwaggerSettings from './pages/AdminSwaggerSettings';
+import AdminCouponList from './pages/AdminCouponList';
+import AdminPayments from './pages/AdminPayments';
 
 // Observer to set global ready flag for automation
 const GlobalReadyObserver = ({ children }) => {
@@ -88,6 +93,7 @@ function App() {
                         {/* Public Routes */}
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/signup" element={<SignupPage />} />
+                        <Route path="/verify-otp" element={<VerifyOtpPage />} />
                         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                         <Route path="/reset-password" element={<ResetPasswordPage />} />
                         <Route path="/contact" element={<ContactPage />} />
@@ -120,6 +126,22 @@ function App() {
                           element={
                             <ProtectedRoute>
                               <CheckoutPage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/checkout/success"
+                          element={
+                            <ProtectedRoute>
+                              <CheckoutSuccessPage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/checkout/cancel"
+                          element={
+                            <ProtectedRoute>
+                              <CheckoutCancelPage />
                             </ProtectedRoute>
                           }
                         />
@@ -172,7 +194,9 @@ function App() {
                             <Route path="/admin/products/add" element={<AdminProductForm />} />
                             <Route path="/admin/products/edit/:id" element={<AdminProductForm />} />
                             <Route path="/admin/categories" element={<AdminCategoryList />} />
+                            <Route path="/admin/coupons" element={<AdminCouponList />} />
                             <Route path="/admin/orders" element={<AdminOrderList />} />
+                            <Route path="/admin/payments" element={<AdminPayments />} />
                             <Route path="/admin/users" element={<AdminUserList />} />
                             <Route path="/admin/support" element={<AdminSupport />} />
                             <Route path="/admin/activity-logs" element={<AdminActivityLogs />} />

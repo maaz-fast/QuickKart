@@ -4,6 +4,8 @@ const router = express.Router();
 const {
   signup,
   login,
+  verifyOtp,
+  resendOtp,
   forgotPassword,
   resetPassword,
   logout,
@@ -154,6 +156,8 @@ router.post('/forgot-password', forgotPassword);
  *       404:
  *         description: Email not found
  */
+router.post('/verify-otp', verifyOtp);
+router.post('/resend-otp', resendOtp);
 router.post('/reset-password', resetPassword);
 router.post('/logout', protect, logout);
 

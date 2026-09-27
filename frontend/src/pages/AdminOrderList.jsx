@@ -120,8 +120,8 @@ const AdminOrderList = () => {
         </div>
       </div>
 
-      <div className="admin-card admin-mt-4">
-        <div className="admin-table-container">
+      <div className="admin-card admin-mt-4" style={{ position: 'relative', zIndex: 1, overflow: 'visible' }}>
+        <div className="admin-table-container" style={{ overflow: 'visible' }}>
           <table className="admin-table" data-testid="admin-orders-table">
             <thead>
               <tr>
@@ -134,7 +134,9 @@ const AdminOrderList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order) => (
+              {filteredOrders.map((order, index) => {
+                const openUpward = index >= filteredOrders.length - 2 && filteredOrders.length > 3;
+                return (
                 <tr key={order._id} data-testid={`admin-order-row-${order._id}`}>
                   <td data-testid="order-date">{new Date(order.createdAt).toLocaleDateString()}</td>
                   <td data-testid="order-id-cell">
@@ -147,7 +149,7 @@ const AdminOrderList = () => {
                     </div>
                   </td>
                   <td data-testid="order-total">
-                    <strong>${order.totalAmount.toFixed(2)}</strong>
+                    <strong>Rs. {order.totalAmount.toFixed(2)}</strong>
                   </td>
                   <td>
                     <div className="order-status-badge" data-testid="status-badge" data-state={order.status.toLowerCase()}>
@@ -185,7 +187,7 @@ const AdminOrderList = () => {
                         </div>
 
                         {activeDropdown === order._id && (
-                          <div className="custom-select-options" style={{ left: 0, right: 0 }}>
+                          <div className="custom-select-options" style={{ left: 0, right: 0, top: openUpward ? 'auto' : '100%', bottom: openUpward ? '100%' : 'auto', marginTop: openUpward ? 0 : '4px', marginBottom: openUpward ? '4px' : 0 }}>
                             {STATUS_OPTIONS.map((status) => (
                               <div 
                                 key={status}
@@ -210,7 +212,8 @@ const AdminOrderList = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
               {filteredOrders.length === 0 && (
                 <tr>
                   <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>

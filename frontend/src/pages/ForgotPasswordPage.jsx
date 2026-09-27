@@ -31,10 +31,9 @@ const ForgotPasswordPage = () => {
 
     try {
       setLoading(true);
-      await api.post('/auth/forgot-password', { email });
-      toast.success('Email verified successfully!');
-      // Navigate to reset page carrying the email as state
-      navigate('/reset-password', { state: { email } });
+      const { data } = await api.post('/auth/forgot-password', { email });
+      toast.info(data.message || 'OTP verification code sent to your email.');
+      navigate('/verify-otp', { state: { email, purpose: 'password_reset' } });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Something went wrong. Try again.');
     } finally {

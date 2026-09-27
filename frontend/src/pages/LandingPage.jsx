@@ -34,7 +34,7 @@ const FEATURES = [
   {
     id: 'storefront',
     title: 'Premium Storefront',
-    description: 'A glassmorphic, mobile-first catalog with live search, multi-category tabs, and price filtering.',
+    description: 'An elegant, boutique storefront catalog with live search, multi-category tabs, and price filtering.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />

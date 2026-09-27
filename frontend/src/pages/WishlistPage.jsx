@@ -101,7 +101,7 @@ const WishlistPage = () => {
                   >
                     {product.name}
                   </p>
-                  <p className="cart-item-price">${product.price.toFixed(2)}</p>
+                  <p className="cart-item-price">Rs. {product.price.toFixed(2)}</p>
                   <p style={{ fontSize: '0.8rem', color: product.stock > 0 ? 'var(--success)' : 'var(--error)' }}>
                     {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
                   </p>

@@ -31,6 +31,43 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    otpCode: {
+      type: String,
+      default: null,
+    },
+    otpExpiresAt: {
+      type: Date,
+      default: null,
+    },
+    otpPurpose: {
+      type: String,
+      enum: ['signup', 'password_reset', null],
+      default: null,
+    },
+    otpAttempts: {
+      type: Number,
+      default: 0,
+    },
+    otpLockUntil: {
+      type: Date,
+      default: null,
+    },
+    otpResendCooldown: {
+      type: Date,
+      default: null,
+    },
+    resetToken: {
+      type: String,
+      default: null,
+    },
+    resetTokenExpiresAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
@@ -46,6 +83,12 @@ userSchema.pre('save', async function (next) {
 // Compare passwords
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Compare OTP code
+userSchema.methods.matchOtp = async function (enteredOtp) {
+  if (!this.otpCode) return false;
+  return await bcrypt.compare(enteredOtp, this.otpCode);
 };
 
 module.exports = mongoose.model('User', userSchema);

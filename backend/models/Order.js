@@ -49,6 +49,23 @@ const orderSchema = new mongoose.Schema(
       required: true,
       default: 0.0,
     },
+    discountAmount: {
+      type: Number,
+      default: 0.0,
+    },
+    couponCode: {
+      type: String,
+      default: '',
+    },
+    safepayToken: {
+      type: String,
+      default: '',
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'paid', 'failed'],
+      default: 'pending',
+    },
     status: {
       type: String,
       required: true,
@@ -58,11 +75,10 @@ const orderSchema = new mongoose.Schema(
     isPaid: {
       type: Boolean,
       required: true,
-      default: true, // Simulation: mark as paid immediately
+      default: false,
     },
     paidAt: {
       type: Date,
-      default: Date.now,
     },
   },
   {

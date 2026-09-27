@@ -152,9 +152,22 @@ const AdminOrderList = () => {
                     <strong>Rs. {order.totalAmount.toFixed(2)}</strong>
                   </td>
                   <td>
-                    <div className="order-status-badge" data-testid="status-badge" data-state={order.status.toLowerCase()}>
-                      <span className="status-dot" style={{ background: getStatusColor(order.status) }}></span>
-                      <span style={{ color: getStatusColor(order.status) }}>{order.status}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <div className="order-status-badge" data-testid="status-badge" data-state={order.status.toLowerCase()}>
+                        <span className="status-dot" style={{ background: getStatusColor(order.status) }}></span>
+                        <span style={{ color: getStatusColor(order.status) }}>{order.status}</span>
+                      </div>
+                      <span 
+                        style={{
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          color: order.isPaid ? '#10b981' : '#f59e0b',
+                          letterSpacing: '0.4px',
+                        }}
+                      >
+                        Payment: {order.isPaid ? 'Paid' : 'Pending'}
+                      </span>
                     </div>
                   </td>
                   <td>

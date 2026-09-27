@@ -115,12 +115,30 @@ const OrdersPage = () => {
               <span className="order-total-price-sm">Rs. {order.totalAmount.toFixed(2)}</span>
             </div>
 
-            <div className="order-status-badge" data-testid="status-badge" data-state={order.status.toLowerCase()}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
               <span 
-                className="status-dot" 
-                style={{ backgroundColor: getStatusColor(order.status) }} 
-              />
-              {order.status}
+                className="status-badge-pill"
+                data-testid="payment-badge"
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: '20px',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  background: order.isPaid ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                  color: order.isPaid ? '#10b981' : '#f59e0b',
+                  border: order.isPaid ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(245, 158, 11, 0.3)'
+                }}
+              >
+                {order.isPaid ? 'Paid' : 'Unpaid'}
+              </span>
+
+              <div className="order-status-badge" data-testid="status-badge" data-state={order.status.toLowerCase()}>
+                <span 
+                  className="status-dot" 
+                  style={{ backgroundColor: getStatusColor(order.status) }} 
+                />
+                {order.status}
+              </div>
             </div>
             
             <button className="btn btn-sm btn-outline" data-testid="view-details-button">Details</button>

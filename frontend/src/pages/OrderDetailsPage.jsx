@@ -130,7 +130,28 @@ const OrderDetailsPage = () => {
                   <td>{orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
                 </tr>
                 <tr>
-                  <td>Status</td>
+                  <td>Payment</td>
+                  <td>
+                    <span
+                      style={{
+                        background: order.isPaid ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                        color: order.isPaid ? '#10b981' : '#f59e0b',
+                        border: order.isPaid ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(245, 158, 11, 0.3)',
+                        padding: '3px 10px',
+                        borderRadius: '100px',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        letterSpacing: '0.5px',
+                        textTransform: 'uppercase',
+                        display: 'inline-block',
+                      }}
+                    >
+                      {order.isPaid ? 'PAID' : 'PENDING'}
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Fulfillment</td>
                   <td><StatusBadge status={order.status} /></td>
                 </tr>
               </tbody>

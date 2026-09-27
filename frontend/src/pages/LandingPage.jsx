@@ -4,12 +4,7 @@ import useInView from '../hooks/useInView';
 
 /**
  * Public marketing/landing page shown to unauthenticated visitors at `/`.
- * Logged-in users are routed to the product catalog, so this page never
- * blocks authenticated access. Pure CSS animations + a tiny IntersectionObserver
- * hook — no animation library dependency.
- *
- * Every interactive element carries a stable `data-testid` for automation.
- * Scroll-reveal wrapper: fades/slides content in once it enters the viewport.
+ * Logged-in users are routed to the product catalog.
  */
 const Reveal = ({ children, delay = 0, className = '' }) => {
   const [ref, isInView] = useInView();
@@ -24,17 +19,15 @@ const Reveal = ({ children, delay = 0, className = '' }) => {
 const STATS = [
   { id: 'products', value: '500+', label: 'Curated Products' },
   { id: 'categories', value: '10+', label: 'Product Categories' },
-  { id: 'security', value: 'JWT', label: 'Secure Auth & RBAC' },
-  { id: 'support', value: '24/7', label: 'Support & Monitoring' },
+  { id: 'security', value: '100%', label: 'Encrypted & Secure Checkout' },
+  { id: 'support', value: '24/7', label: 'Dedicated Customer Support' },
 ];
-
-const CHIPS = ['React + Vite', 'Express + MongoDB', 'JWT & RBAC', 'Automation-ready'];
 
 const FEATURES = [
   {
     id: 'storefront',
-    title: 'Premium Storefront',
-    description: 'An elegant, boutique storefront catalog with live search, multi-category tabs, and price filtering.',
+    title: 'Boutique Storefront',
+    description: 'Explore an elegant catalog with instant search, multi-category browsing, and seamless filtering.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -43,20 +36,20 @@ const FEATURES = [
     ),
   },
   {
-    id: 'admin',
-    title: 'Admin Command Center',
-    description: 'A dedicated dashboard with revenue analytics, product, category, order, and user management.',
+    id: 'tracking',
+    title: 'Live Order Tracking',
+    description: 'Stay informed every step of the way with instant status updates from checkout to doorstep delivery.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-        <path d="m9 12 2 2 4-4" />
+        <rect width="20" height="14" x="2" y="5" rx="2" />
+        <line x1="2" x2="22" y1="10" y2="10" />
       </svg>
     ),
   },
   {
     id: 'notifications',
-    title: 'Real-time Notifications',
-    description: 'Automatic alerts for orders, broadcasts, and wishlist events polled silently in the background.',
+    title: 'Instant Alerts',
+    description: 'Receive real-time notifications the moment your order status changes or saved items update.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
@@ -66,19 +59,19 @@ const FEATURES = [
   },
   {
     id: 'checkout',
-    title: 'Secure Checkout',
-    description: 'A multi-step, validated checkout flow with tax math and a branded printable order invoice.',
+    title: 'Verified Payments',
+    description: 'Enjoy smooth, encrypted payments with automated receipts and instant digital invoice generation.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect width="20" height="14" x="2" y="5" rx="2" />
-        <line x1="2" x2="22" y1="10" y2="10" />
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+        <path d="m9 12 2 2 4-4" />
       </svg>
     ),
   },
   {
     id: 'wishlist',
     title: 'Smart Wishlist',
-    description: 'Save products for later with interactive heart icons synced across the whole session.',
+    description: 'Save your favorite items for later with interactive heart icons synced seamlessly across devices.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
@@ -86,9 +79,9 @@ const FEATURES = [
     ),
   },
   {
-    id: 'logs',
-    title: 'Audit Activity Logs',
-    description: 'A comprehensive trail of logins, orders, and inventory changes with role filters.',
+    id: 'protection',
+    title: 'Buyer Protection',
+    description: 'Experience complete shopping confidence with transparent pricing, easy returns, and responsive assistance.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -101,7 +94,6 @@ const FEATURES = [
 ];
 
 const LandingPage = () => {
-  // Expose a readiness flag for Playwright/Selenium waits (mirrors the app's data-app-ready pattern).
   useEffect(() => {
     document.body.setAttribute('data-landing-ready', 'true');
     return () => document.body.removeAttribute('data-landing-ready');
@@ -109,7 +101,7 @@ const LandingPage = () => {
 
   return (
     <div className="landing-page" data-testid="landing-page">
-      {/* Ambient floating gradient orbs (pure CSS) */}
+      {/* Ambient floating gradient orbs */}
       <div className="landing-orb landing-orb-1" aria-hidden="true" />
       <div className="landing-orb landing-orb-2" aria-hidden="true" />
 
@@ -117,7 +109,7 @@ const LandingPage = () => {
       <section className="landing-hero" data-testid="landing-hero">
         <span className="landing-badge" data-testid="landing-badge">
           <span className="landing-badge-dot" />
-          Premium MERN E-Commerce Platform
+          Premium Online Shopping, Reimagined
         </span>
 
         <h1 className="landing-hero-title" data-testid="landing-hero-title">
@@ -127,9 +119,7 @@ const LandingPage = () => {
         </h1>
 
         <p className="landing-hero-subtitle" data-testid="landing-hero-subtitle">
-          QuickKart is a complete storefront and admin suite — glassmorphic dark UI,
-          real-time notifications, wishlists, order tracking, and a full audit trail.
-          Built to be loved by shoppers and tested with confidence.
+          Discover curated products, track every order in real time, and check out in seconds — all in one beautifully simple store.
         </p>
 
         <div className="landing-hero-cta" data-testid="landing-hero-cta">
@@ -144,17 +134,6 @@ const LandingPage = () => {
             Sign In
           </Link>
         </div>
-
-        <ul className="landing-chips" data-testid="landing-chips">
-          {CHIPS.map((chip) => (
-            <li key={chip} className="landing-chip" data-testid={`landing-chip-${chip.toLowerCase().replace(/\W+/g, '-')}`}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '12px', height: '12px' }}>
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              {chip}
-            </li>
-          ))}
-        </ul>
       </section>
 
       {/* ============ STATS ============ */}
@@ -176,7 +155,7 @@ const LandingPage = () => {
             Everything you need, built in
           </h2>
           <p className="landing-section-sub" data-testid="landing-features-sub">
-            QuickKart ships with a premium storefront, a full admin command center, and the tooling to test it all with confidence.
+            Discover a seamless shopping experience crafted for style, speed, and absolute peace of mind.
           </p>
           <div className="landing-features-grid" data-testid="landing-features-grid">
             {FEATURES.map((feature, index) => (

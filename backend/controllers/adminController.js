@@ -137,6 +137,13 @@ const updateOrderStatus = async (req, res, next) => {
     }
 
     order.status = status;
+    if (status === 'Delivered') {
+      order.isPaid = true;
+      order.paymentStatus = 'paid';
+      if (!order.paidAt) {
+        order.paidAt = new Date();
+      }
+    }
     const updatedOrder = await order.save();
 
     const formattedOrderId = `ORD-${order._id.toString().slice(-8).toUpperCase()}`;

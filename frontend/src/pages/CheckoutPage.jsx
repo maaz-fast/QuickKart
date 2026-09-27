@@ -25,10 +25,6 @@ const CheckoutPage = () => {
     state: '',
     zipCode: '',
     country: 'Pakistan',
-    cardName: '',
-    cardNumber: '',
-    expiry: '',
-    cvv: '',
   });
 
   const [selectedAddressId, setSelectedAddressId] = useState(null);
@@ -98,23 +94,6 @@ const CheckoutPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Format card number with spaces
-    if (name === 'cardNumber') {
-      const cleaned = value.replace(/\D/g, '').slice(0, 16);
-      const formatted = cleaned.replace(/(.{4})/g, '$1 ').trim();
-      setFormData({ ...formData, cardNumber: formatted });
-      setErrors({ ...errors, cardNumber: '' });
-      return;
-    }
-    // Format expiry MM/YY
-    if (name === 'expiry') {
-      const cleaned = value.replace(/\D/g, '').slice(0, 4);
-      const formatted = cleaned.length >= 2 ? `${cleaned.slice(0, 2)}/${cleaned.slice(2)}` : cleaned;
-      setFormData({ ...formData, expiry: formatted });
-      setErrors({ ...errors, expiry: '' });
-      return;
-    }
     setFormData({ ...formData, [name]: value });
     setErrors({ ...errors, [name]: '' });
   };
@@ -133,16 +112,6 @@ const CheckoutPage = () => {
     if (!formData.address.trim()) newErrors.address = 'Address is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.zipCode.trim()) newErrors.zipCode = 'ZIP code is required';
-
-    if (paymentMethod === 'card') {
-      if (!formData.cardName.trim()) newErrors.cardName = 'Cardholder name is required';
-      if (formData.cardNumber.replace(/\s/g, '').length !== 16) newErrors.cardNumber = 'Enter a valid 16-digit card number';
-
-      if (!/^\d{2}\/\d{2}$/.test(formData.expiry)) {
-        newErrors.expiry = 'Enter expiry as MM/YY';
-      }
-      if (!/^\d{3,4}$/.test(formData.cvv)) newErrors.cvv = 'Enter a valid CVV';
-    }
 
     return newErrors;
   };
@@ -177,7 +146,7 @@ const CheckoutPage = () => {
           country: formData.country,
           phone: formData.phone
         },
-        paymentMethod: paymentMethod === 'safepay' ? 'Safepay (Sandbox)' : 'Credit Card',
+        paymentMethod: paymentMethod === 'safepay' ? 'Safepay (Sandbox)' : 'Cash on Delivery',
         totalAmount: Number(grandTotal),
         taxAmount: Number(tax.toFixed(2)),
         shippingPrice: Number(shippingPrice),
@@ -378,31 +347,33 @@ const CheckoutPage = () => {
                 Payment Method
               </h2>
 
-              {/* Sandbox Test Mode Banner */}
-              <div
-                className="payment-status-banner"
-                data-testid="payment-status-banner"
-                style={{
-                  background: 'rgba(245, 158, 11, 0.15)',
-                  border: '1px solid #f59e0b',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '12px 16px',
-                  marginBottom: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  color: '#f59e0b',
-                  fontWeight: '500',
-                  fontSize: '0.88rem'
-                }}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '20px', height: '20px', flexShrink: 0 }}>
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                  <line x1="12" y1="9" x2="12" y2="13"/>
-                  <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                <span><strong>TEST MODE ENABLED:</strong> Safepay Gateway is running strictly in Sandbox mode. No real monetary transactions will occur.</span>
-              </div>
+              {/* Sandbox Test Mode Banner (Only shown if Safepay selected) */}
+              {paymentMethod === 'safepay' && (
+                <div
+                  className="payment-status-banner"
+                  data-testid="payment-status-banner"
+                  style={{
+                    background: 'rgba(245, 158, 11, 0.15)',
+                    border: '1px solid #f59e0b',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '12px 16px',
+                    marginBottom: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    color: '#f59e0b',
+                    fontWeight: '500',
+                    fontSize: '0.88rem'
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '20px', height: '20px', flexShrink: 0 }}>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  <span><strong>TEST MODE ENABLED:</strong> Safepay Gateway is running strictly in Sandbox mode. No real monetary transactions will occur.</span>
+                </div>
+              )}
 
               {/* Payment Method Selector */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
@@ -433,8 +404,8 @@ const CheckoutPage = () => {
                   style={{
                     padding: '14px',
                     borderRadius: 'var(--radius-sm)',
-                    border: paymentMethod === 'card' ? '2px solid var(--accent)' : '1px solid var(--border)',
-                    background: paymentMethod === 'card' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-card)',
+                    border: paymentMethod === 'cod' ? '2px solid var(--accent)' : '1px solid var(--border)',
+                    background: paymentMethod === 'cod' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-card)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -445,11 +416,11 @@ const CheckoutPage = () => {
                   <input
                     type="radio"
                     name="paymentMethod"
-                    value="card"
-                    checked={paymentMethod === 'card'}
-                    onChange={() => setPaymentMethod('card')}
+                    value="cod"
+                    checked={paymentMethod === 'cod'}
+                    onChange={() => setPaymentMethod('cod')}
                   />
-                  <span>Credit / Debit Card</span>
+                  <span>Cash on Delivery (COD)</span>
                 </label>
               </div>
 
@@ -464,30 +435,15 @@ const CheckoutPage = () => {
                   </p>
                 </div>
               ) : (
-                <>
-                  <div className="form-group">
-                    <label htmlFor="cardName">Cardholder Name</label>
-                    <input id="cardName" type="text" name="cardName" placeholder="Muhammad Maaz" value={formData.cardName} onChange={handleChange} data-testid="cardName-input" className={errors.cardName ? 'input-error' : ''} />
-                    {errors.cardName && <span className="field-error" data-testid="cardName-error">{errors.cardName}</span>}
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="cardNumber">Card Number</label>
-                    <input id="cardNumber" type="text" name="cardNumber" placeholder="0000 0000 0000 0000" value={formData.cardNumber} onChange={handleChange} data-testid="cardNumber-input" maxLength={19} className={errors.cardNumber ? 'input-error' : ''} />
-                    {errors.cardNumber && <span className="field-error" data-testid="cardNumber-error">{errors.cardNumber}</span>}
-                  </div>
-                  <div className="form-grid-2">
-                    <div className="form-group">
-                      <label htmlFor="expiry">Expiry (MM/YY)</label>
-                      <input id="expiry" type="text" name="expiry" placeholder="MM/YY" value={formData.expiry} onChange={handleChange} data-testid="expiry-input" maxLength={5} className={errors.expiry ? 'input-error' : ''} />
-                      {errors.expiry && <span className="field-error" data-testid="expiry-error">{errors.expiry}</span>}
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="cvv">CVV</label>
-                      <input id="cvv" type="password" name="cvv" placeholder="123" value={formData.cvv} onChange={handleChange} data-testid="cvv-input" maxLength={4} className={errors.cvv ? 'input-error' : ''} />
-                      {errors.cvv && <span className="field-error" data-testid="cvv-error">{errors.cvv}</span>}
-                    </div>
-                  </div>
-                </>
+                <div style={{ padding: '16px', background: 'rgba(16, 185, 129, 0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(16, 185, 129, 0.25)', color: 'var(--color-text-primary)' }}>
+                  <p style={{ margin: '0 0 6px 0', fontWeight: '600', color: '#10b981', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    Cash on Delivery (COD)
+                  </p>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+                    Pay with cash when your package is delivered to your doorstep. No prepayment required.
+                  </p>
+                </div>
               )}
             </div>
           </div>

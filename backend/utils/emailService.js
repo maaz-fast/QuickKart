@@ -95,7 +95,9 @@ const sendOtpEmail = async (to, otp, purpose = 'signup') => {
   // OTP delivery is critical — if the provider rejected the message, surface it
   // to the caller instead of pretending the code was sent.
   if (!result.success) {
-    const providerError = result.response || result.error || 'unknown error';
+    const cfg = result.config || {};
+    const diag = `[host=${cfg.host} port=${cfg.port} secure=${cfg.secure} userSet=${cfg.userSet} passSet=${cfg.passSet} from=${cfg.from} transport=${cfg.resolvedTransport}]`;
+    const providerError = `${result.response || result.error || 'unknown error'} ${diag}`;
     console.error('📧 [OTP delivery failed]:', providerError);
 
     const error = new Error(

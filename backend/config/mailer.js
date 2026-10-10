@@ -46,6 +46,23 @@ const getTransporter = () => {
 };
 
 /**
+ * Snapshot of the mail configuration actually visible to the running process.
+ * Contains no secrets — only booleans and non-sensitive values.
+ */
+const describeConfig = () => {
+  const hostRaw = process.env.SMTP_HOST;
+  return {
+    host: hostRaw || '(unset)',
+    port: process.env.SMTP_PORT || '(unset)',
+    secure: process.env.SMTP_SECURE || '(unset)',
+    userSet: Boolean(process.env.SMTP_USER),
+    passSet: Boolean(process.env.SMTP_PASS),
+    from: process.env.EMAIL_FROM_ADDRESS || process.env.SMTP_USER || '(unset)',
+    resolvedTransport: (hostRaw || 'smtp.gmail.com') === 'smtp.gmail.com' ? 'gmail-service' : 'generic-smtp',
+  };
+};
+
+/**
  * Safe mail delivery wrapper that handles failures gracefully without crashing main flow.
  */
 const sendMail = async (options) => {
@@ -71,12 +88,14 @@ const sendMail = async (options) => {
     }
     return { success: true, info };
   } catch (error) {
-    console.error('⚠️ [Email Delivery Error]:', error.message, '| code:', error.code, '| response:', error.response);
+    const config = describeConfig();
+    console.error('⚠️ [Email Delivery Error]:', error.message, '| code:', error.code, '| config:', JSON.stringify(config));
     return {
       success: false,
       error: error.message,
       code: error.code,
       response: error.response,
+      config,
     };
   }
 };

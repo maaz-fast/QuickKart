@@ -86,11 +86,23 @@ const sendOtpEmail = async (to, otp, purpose = 'signup') => {
     <p style="font-size: 13px; color: #94a3b8; margin: 0;">If you didn't request this code, you can safely ignore this email.</p>
   `;
 
-  return sendMail({
+  const result = await sendMail({
     to,
     subject,
     html: wrapEmailTemplate(subject, content),
   });
+
+  // OTP delivery is critical — if the provider rejected the message, surface it
+  // to the caller instead of pretending the code was sent.
+  if (!result.success) {
+    const error = new Error(
+      'We could not send the verification email right now. Please try again in a moment.'
+    );
+    error.statusCode = 502;
+    throw error;
+  }
+
+  return result;
 };
 
 /**

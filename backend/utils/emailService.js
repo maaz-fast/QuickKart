@@ -95,10 +95,14 @@ const sendOtpEmail = async (to, otp, purpose = 'signup') => {
   // OTP delivery is critical — if the provider rejected the message, surface it
   // to the caller instead of pretending the code was sent.
   if (!result.success) {
+    const providerError = result.response || result.error || 'unknown error';
+    console.error('📧 [OTP delivery failed]:', providerError);
+
     const error = new Error(
       'We could not send the verification email right now. Please try again in a moment.'
     );
     error.statusCode = 502;
+    error.providerError = providerError;
     throw error;
   }
 

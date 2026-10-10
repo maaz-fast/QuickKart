@@ -71,8 +71,13 @@ const sendMail = async (options) => {
     }
     return { success: true, info };
   } catch (error) {
-    console.error('⚠️ [Email Delivery Error]:', error.message);
-    return { success: false, error: error.message };
+    console.error('⚠️ [Email Delivery Error]:', error.message, '| code:', error.code, '| response:', error.response);
+    return {
+      success: false,
+      error: error.message,
+      code: error.code,
+      response: error.response,
+    };
   }
 };
 

@@ -131,6 +131,35 @@ production delivery, **authenticate a domain you own** in Brevo
 
 ---
 
+## ☁️ Production (Vercel)
+
+The deployed backend reads environment variables from **Vercel**, not from
+`backend/.env`. Two rules cause most "works locally, fails in production" issues:
+
+1. **Set every variable in Vercel** → Project → Settings → Environment
+   Variables, with the **Production** scope ticked:
+
+   | Key | Value |
+   | --- | --- |
+   | `SMTP_HOST` | `smtp-relay.brevo.com` |
+   | `SMTP_PORT` | `587` |
+   | `SMTP_SECURE` | `false` |
+   | `SMTP_USER` | your Brevo SMTP login |
+   | `SMTP_PASS` | your Brevo SMTP key |
+   | `EMAIL_FROM_ADDRESS` | a sender **verified** in Brevo |
+   | `EMAIL_FROM_NAME` | `QuickKart` |
+   | `ADMIN_NOTIFICATION_EMAIL` | your real admin inbox |
+   | `CLIENT_URL` | your live frontend URL (not localhost) |
+
+2. **Env var changes only apply to a NEW deployment.** After editing them you
+   must **Redeploy** (Deployments → ⋯ → Redeploy) or push a new commit —
+   editing the variable alone will not update the running deployment.
+
+> Vercel blocks outbound port **25** but allows **587** and **465**, so the
+> default Brevo port works. If a send ever times out, try `SMTP_PORT=2525`.
+
+---
+
 ## 🧩 Code changes
 
 | File | Change |
@@ -138,6 +167,7 @@ production delivery, **authenticate a domain you own** in Brevo
 | `backend/config/mailer.js` | Provider is now chosen purely by `SMTP_HOST` (removed Gmail auto-detection that hijacked `@gmail.com` logins). Added fail-fast timeouts and a separate `EMAIL_FROM_ADDRESS` for the visible sender. |
 | `backend/utils/emailService.js` | `sendOtpEmail` now **throws** when the provider rejects a message, instead of silently succeeding. |
 | `backend/controllers/authController.js` | No change needed — the thrown error now reaches the error handler, so the API returns an honest failure. |
+| `backend/middleware/errorHandler.js` | Propagates `err.statusCode` and exposes the provider error as `details` (temporary diagnostic aid). |
 | `backend/.env` | Switched to Brevo; previous Gmail values kept commented. |
 | `backend/scratch/test-smtp.js` | Provider-agnostic SMTP diagnostic. |
 
